@@ -3,10 +3,10 @@ unit: 003-family-income-acceptance
 intent: 002-family-income-management
 unit_type: infrastructure
 default_bolt_type: simple-construction-bolt
-phase: inception
-status: stories-defined
+phase: construction
+status: in-progress
 created: 2026-09-23T08:24:02Z
-updated: 2026-09-23T08:32:25Z
+updated: 2026-09-29T21:07:18Z
 ---
 
 # Odbiór modelu rodziny i źródeł

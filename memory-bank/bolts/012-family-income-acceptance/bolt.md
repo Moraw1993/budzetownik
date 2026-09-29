@@ -3,14 +3,14 @@ id: 012-family-income-acceptance
 unit: 003-family-income-acceptance
 intent: 002-family-income-management
 type: simple-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 001-migration-and-isolation
   - 002-family-user-journey
 created: 2026-09-23T08:28:54Z
-started: null
+started: 2026-09-29T21:07:18Z
 completed: null
-current_stage: null
+current_stage: plan
 stages_completed: []
 requires_bolts: ["011-family-management-ui"]
 enables_bolts: []
