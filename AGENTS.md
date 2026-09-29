@@ -15,6 +15,9 @@ Przed implementacją przeczytaj memory-bank/standards/coding-standards.md oraz a
 - Przed merge do `develop` pobierz aktualne referencje, porównaj obie wersje, sprawdź konflikty i zweryfikuj połączone zmiany zgodnie ze standardem Git. Stabilne wydania trafiają z `develop` do `main` z tagiem `vMAJOR.MINOR.PATCH`.
 
 ## Obowiązkowo po utworzeniu lub edycji pliku kodu
+
+Przed implementacją nowego okna UI/UX obowiązuje [bramka projektowania i oceny](memory-bank/standards/ui-design-review.md): plan → wizualizacja → niezależny agent → jawna akceptacja z Score > 7,5/10 → kod. Wynik 7,5 nie wystarcza. Ocena wymaga osobnego subagenta, a nie samooceny autora.
+
 - Uruchom właściwy formatter bezpośrednio po zmianie, a następnie sprawdź wynik.
 - Python: Ruff format i Ruff check. TypeScript/TSX/JavaScript/JSON/YAML/CSS: Prettier; TS/JS dodatkowo ESLint, CSS dodatkowo Stylelint.
 - Nie zapisuj minifikowanego CSS/JS jako kodu źródłowego. Każdy blok CSS jest wielowierszowy, deklaracje w osobnych wierszach, bloki oddzielone pustą linią.
