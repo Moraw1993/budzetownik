@@ -1,0 +1,9 @@
+.specsmd/
+.codex/
+memory-bank/
+.runtime/
+node_modules/
+.next/
+frontend/next-env.d.ts
+frontend/package-lock.json
+*.xlsx

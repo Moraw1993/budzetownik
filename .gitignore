@@ -1,0 +1,23 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.venv/
+node_modules/
+.next/
+.runtime/
+*.log
+.ruff_cache/
+*.tsbuildinfo
+frontend/test-results/
+frontend/playwright-report/
+
+# Local dependencies and generated builds
+.pnpm-store/
+dist/
+coverage/
+playwright-report/
+test-results/
+# Private financial source documents
+memory-bank/source-materials/*.xlsx

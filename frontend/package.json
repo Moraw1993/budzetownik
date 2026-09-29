@@ -1,0 +1,42 @@
+{
+  "name": "myhomebudget-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --ignore-path ../.prettierignore --write \"app/**/*.{ts,tsx,css}\" \"tests/**/*.ts\" \"*.{json,mjs,ts}\" \".stylelintrc.json\" \"../compose.yaml\" \"../.prettierrc.json\"",
+    "format:check": "prettier --ignore-path ../.prettierignore --check \"app/**/*.{ts,tsx,css}\" \"tests/**/*.ts\" \"*.{json,mjs,ts}\" \".stylelintrc.json\" \"../compose.yaml\" \"../.prettierrc.json\"",
+    "lint": "eslint . --max-warnings 0",
+    "lint:css": "stylelint \"app/**/*.css\" --max-warnings 0",
+    "lint:css:fix": "stylelint \"app/**/*.css\" --fix --max-warnings 0",
+    "test:ui": "playwright test"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "5.3.0",
+    "@radix-ui/react-slot": "1.3.3",
+    "@tailwindcss/postcss": "4.3.3",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.47.0",
+    "next": "16.3.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwind-merge": "3.7.0",
+    "tailwindcss": "4.3.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.20.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.4",
+    "prettier": "3.9.6",
+    "stylelint": "17.15.0",
+    "stylelint-config-standard": "40.0.0",
+    "typescript": "5.9.3"
+  }
+}

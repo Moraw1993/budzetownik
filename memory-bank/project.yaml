@@ -1,0 +1,8 @@
+project_type: full-stack-web
+project_name: MyHomeBudget
+product_name: Domowe Finanse / Household Finance Manager
+initialized_at: '2026-09-09T22:10:59.861Z'
+source_prd: standards/product-requirements.md
+initialization_basis: user-provided-prd
+phase: construction
+active_intent: 001-household-foundation

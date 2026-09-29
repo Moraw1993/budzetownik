@@ -1,0 +1,16 @@
+{
+    auto_https disable_redirects
+}
+http://localhost:8080 {
+    redir https://localhost:8443{uri} permanent
+}
+https://localhost:8443 {
+    tls internal
+    @api path /api/*
+    handle @api {
+        reverse_proxy backend:8000
+    }
+    handle {
+        reverse_proxy frontend:3000
+    }
+}

@@ -1,0 +1,8 @@
+services:
+  backend:
+    environment:
+      CSRF_TRUSTED_ORIGINS_EXTRA: https://localhost:${ACCEPTANCE_HTTPS_PORT:?Set an isolated HTTPS port}
+
+  proxy:
+    ports: !override
+      - 127.0.0.1:${ACCEPTANCE_HTTPS_PORT:?Set an isolated HTTPS port}:8443

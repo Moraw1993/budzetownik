@@ -1,0 +1,53 @@
+---
+id: 012-family-income-acceptance
+unit: 003-family-income-acceptance
+intent: 002-family-income-management
+type: simple-construction-bolt
+status: planned
+stories:
+  - 001-migration-and-isolation
+  - 002-family-user-journey
+created: 2026-09-23T08:28:54Z
+started: null
+completed: null
+current_stage: null
+stages_completed: []
+requires_bolts: ["011-family-management-ui"]
+enables_bolts: []
+requires_units: ["001-family-income-api", "002-family-management-ui"]
+blocks: true
+complexity:
+  avg_complexity: 2
+  avg_uncertainty: 1
+  max_dependencies: 2
+  testing_scope: 3
+---
+
+# Odbiór zarządzania rodziną
+
+## Cel
+
+Potwierdzić na lokalnej instalacji migrację starego źródła, konfigurację rodziny i umów, dostęp według ról, izolację gospodarstw oraz trwałość po restarcie.
+
+## Stories
+
+- [ ] [001-migration-and-isolation](../../intents/002-family-income-management/units/003-family-income-acceptance/stories/001-migration-and-isolation.md): Odbiór migracji i izolacji.
+- [ ] [002-family-user-journey](../../intents/002-family-income-management/units/003-family-income-acceptance/stories/002-family-user-journey.md): Pełny scenariusz użytkownika.
+
+## Etapy
+
+- [ ] Plan danych i scenariuszy odbioru.
+- [ ] Przygotowanie izolowanej kopii syntetycznych danych i testów E2E.
+- [ ] Wykonanie testów, kontrola jakości i raport wyników.
+
+## Wyniki
+
+Raport z rzeczywistymi wynikami, dowody zachowania starych źródeł, testy ról i gospodarstw oraz zrzuty kontrolne interfejsu. Testy nie dotykają prywatnych danych użytkownika.
+
+## Zależności
+
+Wymaga ukończonego [011-family-management-ui](../011-family-management-ui/bolt.md), który zależy od API bolta 010.
+
+## Warunki zakończenia
+
+Wszystkie kryteria obu stories są potwierdzone; brak utraty danych i regresji uprawnień. Ograniczenia środowiska i wyniki są jawnie zapisane.
