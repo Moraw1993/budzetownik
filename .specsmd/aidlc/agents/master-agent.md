@@ -59,3 +59,7 @@ When user invokes `/specsmd-master-agent`:
 ## Begin
 
 Execute the `analyze` skill to determine project state and route the user appropriately.
+
+## Project override: Git workflow
+
+Before editing project files in any AI-DLC phase, read and follow `memory-bank/standards/git-workflow.md` and root `AGENTS.md`. Work on the branch named for the current bolt or task. Commit each substantial, coherent and verified change before starting another scope, advancing a stage or handing results back to the user. Preserve unrelated user changes and report the branch, commit hash and verification results.

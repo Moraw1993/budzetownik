@@ -2,6 +2,12 @@
 
 Przed implementacją przeczytaj memory-bank/standards/coding-standards.md oraz aktywny bolt specs.md.
 
+## Git i AI-DLC
+
+- Przed zmianami stosuj [standard pracy z Git](memory-bank/standards/git-workflow.md). Obowiązuje we wszystkich fazach AI-DLC oraz zadaniach poza boltem.
+- Nowe funkcje i zmiany wykonuj na branchu nazwanym według bolta lub taska, nigdy bezpośrednio na `main`.
+- Po każdej większej, spójnej i zweryfikowanej zmianie wykonaj commit przed rozpoczęciem kolejnego zakresu pracy oraz przed oddaniem etapu użytkownikowi.
+
 ## Obowiązkowo po utworzeniu lub edycji pliku kodu
 - Uruchom właściwy formatter bezpośrednio po zmianie, a następnie sprawdź wynik.
 - Python: Ruff format i Ruff check. TypeScript/TSX/JavaScript/JSON/YAML/CSS: Prettier; TS/JS dodatkowo ESLint, CSS dodatkowo Stylelint.

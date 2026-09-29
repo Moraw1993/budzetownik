@@ -5,6 +5,8 @@ Wymagania jakościowe z [product-requirements.md](product-requirements.md), sekc
 Formatowanie: Prettier i Ruff. Kontrola jakości: ESLint, Stylelint i Ruff. Testy backendu: Django TestCase oraz integracyjne testy runtime.
 
 ## Organizacja
+
+Praca na branchach bolta/taska i commit po każdej większej zmianie są obowiązkowe zgodnie z [git-workflow.md](git-workflow.md).
 Backend organizowany według domen modularnego monolitu z sekcji 56.
 Reguły finansowe i autoryzacja egzekwowane w backendzie.
 Nazwy encji zgodne ze słownikiem z sekcji 61. Użytkownik i członek gospodarstwa to odrębne pojęcia.

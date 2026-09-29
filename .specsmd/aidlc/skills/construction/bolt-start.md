@@ -440,3 +440,7 @@ input: bolt-id, bolt type definition
 output: Artifacts as defined by bolt type
 checkpoints: As defined by bolt type (0 to N)
 ```
+
+## Project override: branch and commit checkpoints
+
+Before executing a stage, follow `memory-bank/standards/git-workflow.md` and select the branch for this bolt. After each substantial verified change and before each stage handoff, commit only the files belonging to this work. Include the branch and commit hash in the handoff; a Git commit does not replace the bolt type's validation checkpoints.

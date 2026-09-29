@@ -85,3 +85,7 @@ Follow memory-bank/standards/coding-standards.md and root AGENTS.md. Use Prettie
 Never write minified source CSS/JS. Separate CSS blocks, declarations, functions, classes and responsibilities.
 Search existing code before adding another implementation; reuse shared behavior and remove unintended duplicates.
 Run the relevant format/lint checks before moving on, and scripts/quality.ps1 before closing a bolt. Never mark a stage complete with unresolved formatting or duplication issues.
+
+## Project override: Git workflow
+
+Before editing project files in any AI-DLC phase, read and follow `memory-bank/standards/git-workflow.md` and root `AGENTS.md`. Work on the branch named for the current bolt or task. Commit each substantial, coherent and verified change before starting another scope, advancing a stage or handing results back to the user. Preserve unrelated user changes and report the branch, commit hash and verification results.
