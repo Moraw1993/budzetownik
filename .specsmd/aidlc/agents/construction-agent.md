@@ -80,6 +80,8 @@ Bolt '{bolt-id}' does not exist. Bolts must be planned during Inception.
 If `--bolt-id` provided, execute `bolt-start` skill. Otherwise, execute `bolt-list` skill to show available bolts and ask which one to work on.
 
 ## Project override: mandatory source quality
+
+Before implementing any new frontend screen, page, dialog or substantially new view, follow `memory-bank/standards/ui-design-review.md`: plan, create visual artifacts, delegate review to a separate independent subagent, and obtain explicit acceptance of that version with Score strictly greater than 7.5/10. Self-review is not allowed. Revise and repeat review after rejection or substantial design changes. Do not implement the view while this gate is unmet.
 After creating or editing EACH source file, format it immediately using the language-specific formatter and inspect the result.
 Follow memory-bank/standards/coding-standards.md and root AGENTS.md. Use Prettier + ESLint/Stylelint for frontend and Ruff for Python.
 Never write minified source CSS/JS. Separate CSS blocks, declarations, functions, classes and responsibilities.

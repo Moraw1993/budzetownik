@@ -6,6 +6,8 @@ Formatowanie: Prettier i Ruff. Kontrola jakości: ESLint, Stylelint i Ruff. Test
 
 ## Organizacja
 
+Nowe okna UI/UX wymagają planu, wizualizacji i akceptacji niezależnego agenta z Score > 7,5/10 przed implementacją, zgodnie z [ui-design-review.md](ui-design-review.md).
+
 Praca na branchach bolta/taska i commit po każdej większej zmianie są obowiązkowe zgodnie z [git-workflow.md](git-workflow.md).
 Backend organizowany według domen modularnego monolitu z sekcji 56.
 Reguły finansowe i autoryzacja egzekwowane w backendzie.

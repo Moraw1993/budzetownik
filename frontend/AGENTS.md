@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Obowiązkowa bramka UI/UX
+
+Przed implementacją nowego ekranu, strony, dialogu lub istotnie nowego widoku przeczytaj `memory-bank/standards/ui-design-review.md` w katalogu głównym projektu. Najpierw zapisz plan i wizualizację, następnie przekaż je niezależnemu subagentowi. Kod aplikacji zmieniaj dopiero po zapisanej akceptacji konkretnej wersji z Score > 7,5/10. Po odrzuceniu popraw wizualizację i powtórz ocenę; nie oceniaj własnego projektu.
