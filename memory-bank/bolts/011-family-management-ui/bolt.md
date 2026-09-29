@@ -49,6 +49,8 @@ Zastąpić obecny podział „Członkowie” i „Dochody” działem „Zarząd
 
 Nowa nawigacja i ekran rodziny, formularze firm/umów/innych źródeł, aktualizacja typów API, testy UI i raport wizualny szerokiego oraz mobilnego widoku.
 
+Aktualny kierunek wizualny: jasny design v3, wspólny dla całej aplikacji, opisany w [design systemie](../../standards/design-system.md) i [przeglądzie implementacji](implementation-walkthrough.md). Testy mają obejmować zakładki, karty członków i formularze otwierane na żądanie w tym designie. Wcześniejszy raport wizualny na danych demonstracyjnych nie zamyka etapu testów bolta.
+
 ## Zależności
 
 Wymaga ukończonego [010-family-income-api](../010-family-income-api/bolt.md) i zachowuje wynik responsywnego bolta 009. Po zakończeniu umożliwia odbiór w 012.

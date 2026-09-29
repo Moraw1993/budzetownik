@@ -42,6 +42,20 @@ Istniejąca powłoka gospodarstwa utrzymuje wybór gospodarstwa i sekcji. Kompoz
 
 ## Zmiany względem planu
 
+### Aktualny kierunek wizualny — 29 września 2026
+
+Obowiązuje jasny design v3 z wątku „Zaproponuj 3 widoki zarządzania” (ID `01a0df63-b2ca-7872-8447-983e623be6a4`), potwierdzony przez użytkownika podczas kontynuacji bolta. Jasne tło, białe panele, zielone akcje i granatowa nawigacja są wspólnym standardem całej aplikacji, zgodnie z [design-system.md](../../standards/design-system.md). Nie przywracać wcześniejszego ciemnego motywu ani osobnego motywu dla rodziny.
+
+- [x] Moduł rodziny ma osobne zakładki „Członkowie”, „Źródła dochodu” i „Umowy”, rzeczywiste liczniki oraz nawigację klawiaturą.
+- [x] Członkowie są prezentowani w kartach; formularze i słowniki otwierają się na żądanie. Dodanie firmy z umowy korzysta z modalu i zachowuje dane umowy.
+- [x] Wspólna jasna paleta obejmuje również ustawienia, dostępy, tworzenie gospodarstwa, logowanie, pierwsze konto i zaproszenia.
+
+[Raport kontroli wizualnej v3](../../../design-qa.md) i przywołany wątek opisują oceny 8,0/10 dla koncepcji oraz 8,1/10 dla wdrożenia. Są to wyniki wcześniejszej recenzji na danych demonstracyjnych, a nie pełny odbiór funkcjonalny bolta. Etap testów nadal musi potwierdzić rzeczywiste przepływy API, role, archiwizację, izolację gospodarstw, klawiaturę i szerokości 1440, 1024 oraz 390 px w aktualnym jasnym designie.
+
+Kontynuacja odbywa się na branchu `feat/bolt-011-family-management-ui`, utworzonym z `chore/task-ai-dlc-git-workflow`, ponieważ obecny kod bolta i zmiany wizualne są dostępne w tym checkoutcie. Zastane niezacommitowane zmiany w raporcie wizualnym, design systemie, wspólnych stylach i shellu pozostają poza commitem dokumentacji.
+
+Podczas tej kontynuacji `scripts/quality.ps1` przeszedł po udostępnieniu lokalnego Dockera (Ruff, Prettier, ESLint, Stylelint i TypeScript); produkcyjny build Next.js również przeszedł. Nie wykonywano ponownie testów backendu ani zapisów w rzeczywistej bazie. Etap implementacji nadal oczekuje na zatwierdzenie przed etapem testów.
+
 Istniejący panel dochodów został zastąpiony panelem innych źródeł, ponieważ dawny formularz mieszał źródła z nowymi umowami i wymagał obowiązkowej podpowiedzi kwoty. Mechanizm formularzy, klienta API, stylów i zarządzania osobami pozostał współdzielony.
 
 Po audycie z 26 września rozszerzono etap o poprawki backendu z ukończonych wcześniej boltów: aktywny Owner, wersjonowanie edycji oraz pełniejszą historię dostępu. Nie zmieniono schematu bazy danych.
