@@ -4,6 +4,8 @@ Przed implementacją przeczytaj memory-bank/standards/coding-standards.md oraz a
 
 ## Git i AI-DLC
 
+- Branche boltów/tasków usuwaj lokalnie i na GitHub dopiero po pełnym scaleniu do `develop` i opublikowaniu stabilnego release zawierającego ich zmiany, zgodnie ze standardem Git. Zachowuj branche z aktywną lub niewydaną pracą.
+
 - Wydanie uruchamiaj wyłącznie po jawnej komendzie użytkownika `$realease_app`. Sama wzmianka o komendzie lub prośba o zapisanie tej reguły nie uruchamia wydania. Szczegóły określa standard pracy z Git.
 
 - Przed zmianami stosuj [standard pracy z Git](memory-bank/standards/git-workflow.md). Obowiązuje we wszystkich fazach AI-DLC oraz zadaniach poza boltem.
