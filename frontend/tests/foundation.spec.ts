@@ -83,7 +83,11 @@ async function mockApi(
     }
     const home = state.homes.find((item) => path.includes("/" + item.id + "/"));
     if (!home) return reply({}, 404);
-    if (path.endsWith("/members/") || path.endsWith("/relation-types/"))
+    if (
+      ["/members/", "/relation-types/", "/income-sources/", "/companies/", "/contracts/"].some(
+        (suffix) => path.endsWith(suffix),
+      )
+    )
       return reply({ count: 0, next: null, previous: null, results: [] });
     if (path.endsWith("/memberships/")) {
       if (home.id === "home-a" && state.delayMembers) await state.delayMembers;
@@ -101,7 +105,7 @@ async function mockApi(
         home.role = "viewer";
         return reply({}, 403);
       }
-      if (body?.role !== "owner") return reply({}, 409);
+      if (body?.role !== "owner") return reply({ code: "last_owner" }, 409);
       return reply({});
     }
     if (path.endsWith("/invitations/")) {
@@ -148,7 +152,9 @@ test("pierwsze konto: walidacja zachowuje login, usuwa hasło i prowadzi do gosp
   await expect(page.locator(".notice[role=alert]")).toBeFocused();
   await page.getByLabel("Hasło", { exact: true }).fill("Fixture-Password-123!");
   await page.getByLabel("Hasło", { exact: true }).press("Enter");
-  await expect(page.getByRole("heading", { name: "Dom rodzinny", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Twoja rodzina, w jednym miejscu", exact: true }),
+  ).toBeVisible();
 });
 
 test("błędne logowanie i wylogowanie z ponowną kontrolą historii", async ({ page }) => {
@@ -219,10 +225,12 @@ test("ochrona ostatniego Ownera i odświeżenie odebranych uprawnień", async ({
 test("utworzenie gospodarstwa wybiera nowy kontekst", async ({ page }) => {
   await mockApi(page);
   await page.goto("/");
-  await page.getByRole("button", { name: "Nowe gospodarstwo", exact: true }).click();
+  await page.getByLabel("Aktywne gospodarstwo").selectOption("create");
   await page.getByLabel("Nazwa gospodarstwa").fill("Nowy dom");
   await page.getByRole("button", { name: "Utwórz gospodarstwo" }).click();
-  await expect(page.getByRole("heading", { name: "Nowy dom", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Aktywne gospodarstwo").locator("option:checked")).toHaveText(
+    "Nowy dom",
+  );
   await expect(page.getByLabel("Aktywne gospodarstwo")).toHaveValue("home-c");
 });
 
@@ -257,7 +265,9 @@ test("zaproszona osoba tworzy konto, token znika z adresu i wybiera właściwy d
   await page.getByLabel("Login", { exact: true }).fill("nowa-osoba");
   await page.getByLabel("Hasło", { exact: true }).fill("Fixture-Password-123!");
   await page.getByRole("button", { name: "Utwórz konto i dołącz" }).click();
-  await expect(page.getByRole("heading", { name: "Dom rodziców", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Aktywne gospodarstwo").locator("option:checked")).toHaveText(
+    "Dom rodziców",
+  );
   expect(new URL(page.url()).hash).toBe("");
   expect(new URL(page.url()).pathname).toBe("/");
   expect(
@@ -272,7 +282,9 @@ test("zaproszenie zachowuje token podczas logowania istniejącej osoby", async (
   await page.getByLabel("Hasło", { exact: true }).fill("Fixture-Password-123!");
   await page.getByRole("button", { name: "Zaloguj się", exact: true }).click();
   await page.getByRole("button", { name: "Przyjmij zaproszenie" }).click();
-  await expect(page.getByRole("heading", { name: "Dom rodziców", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Aktywne gospodarstwo").locator("option:checked")).toHaveText(
+    "Dom rodziców",
+  );
 });
 
 test("zużyty lub nieprawidłowy link pokazuje czytelny błąd", async ({ page }) => {
@@ -292,7 +304,9 @@ test("błąd serwera nie ujawnia jego treści, ponowienie przywraca widok", asyn
   await expect(page.getByText("INTERNAL SECRET STACK")).toHaveCount(0);
   state.serverError = false;
   await page.getByRole("button", { name: "Spróbuj ponownie" }).click();
-  await expect(page.getByRole("heading", { name: "Dom rodzinny", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Twoja rodzina, w jednym miejscu", exact: true }),
+  ).toBeVisible();
 });
 
 test("desktop i telefon zachowują akcje bez przewijania całej strony w poziomie", async ({
@@ -327,7 +341,7 @@ test("ukończenie starego zapisu nie zmienia nowo wybranego gospodarstwa", async
     release = resolve;
   });
   await page.goto("/");
-  await page.getByRole("button", { name: "Nowe gospodarstwo", exact: true }).click();
+  await page.getByLabel("Aktywne gospodarstwo").selectOption("create");
   await page.getByLabel("Nazwa gospodarstwa").fill("Opóźniony dom");
   await page.getByRole("button", { name: "Utwórz gospodarstwo" }).click();
   await expect
@@ -337,6 +351,7 @@ test("ukończenie starego zapisu nie zmienia nowo wybranego gospodarstwa", async
       ),
     )
     .toBe(true);
+  await page.getByRole("button", { name: "Anuluj", exact: true }).click();
   await page.getByLabel("Aktywne gospodarstwo").selectOption("home-b");
   const completed = page.waitForResponse(
     (response) =>
@@ -384,7 +399,7 @@ test("dostępy są w ustawieniach aktywnego gospodarstwa", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await mockApi(page);
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Członkowie gospodarstwa" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Członkowie rodziny" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Dostęp użytkowników" })).toHaveCount(0);
   await page.getByRole("button", { name: "Ustawienia" }).click();
   await expect(page.getByRole("heading", { name: "Ustawienia gospodarstwa" })).toBeVisible();
@@ -395,10 +410,10 @@ test("dostępy są w ustawieniach aktywnego gospodarstwa", async ({ page }) => {
   const roleAction = await page.getByRole("button", { name: "Zapisz rolę" }).boundingBox();
   expect(roleAction!.width).toBeLessThan(200);
   await page.screenshot({
-    path: "../memory-bank/bolts/009-household-foundation-ui/evidence/after-settings-1440.png",
+    path: "../.runtime/bolt011-settings-1440.png",
     fullPage: true,
   });
   await page.getByLabel("Aktywne gospodarstwo").selectOption("home-b");
-  await expect(page.getByRole("heading", { name: "Członkowie gospodarstwa" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Członkowie rodziny" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Dostęp użytkowników" })).toHaveCount(0);
 });
