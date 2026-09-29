@@ -54,6 +54,8 @@ Nowa nawigacja i ekran rodziny, formularze firm/umów/innych źródeł, aktualiz
 
 Aktualny kierunek wizualny: jasny design v3, wspólny dla całej aplikacji, opisany w [design systemie](../../standards/design-system.md) i [przeglądzie implementacji](implementation-walkthrough.md). Testy mają obejmować zakładki, karty członków i formularze otwierane na żądanie w tym designie. Wcześniejszy raport wizualny na danych demonstracyjnych nie zamyka etapu testów bolta.
 
+[Raport testów](test-walkthrough.md) jest gotowy do zatwierdzenia: 42/42 uruchomione testy UI, 83/83 testy Django, build i kontrola jakości przeszły. Trzy scenariusze wymagające instalacji odbiorowej pominięto jawnie; pełny odbiór rzeczywistej instalacji pozostaje zakresem bolta 012.
+
 ## Zależności
 
 Wymaga ukończonego [010-family-income-api](../010-family-income-api/bolt.md) i zachowuje wynik responsywnego bolta 009. Po zakończeniu umożliwia odbiór w 012.

@@ -2,7 +2,7 @@
 unit: 002-family-management-ui
 intent: 002-family-income-management
 created: 2026-09-26T19:46:13Z
-last_updated: 2026-09-29T20:37:58Z
+last_updated: 2026-09-29T20:51:49Z
 ---
 
 # Dziennik konstrukcji: interfejs zarządzania rodziną
@@ -12,6 +12,8 @@ last_updated: 2026-09-29T20:37:58Z
 Jeden bolt `011-family-management-ui` obejmuje trzy historie: nawigację rodziny, formularze firmy i umowy oraz inne źródła z jawną konwersją. Zależne bolty 009 i 010 są ukończone.
 
 ## Przebieg
+
+- **2026-09-29T20:51:49Z**: przygotowano [raport testów](../../../../bolts/011-family-management-ui/test-walkthrough.md). 42/42 uruchomione testy UI przeszły; trzy scenariusze live/odbiorowe pominięto jawnie. Po rozszerzeniu responsywności formularzy ponowne 16/16 testów rodziny przeszło. Pełne Django: 83/83 na odrębnej syntetycznej bazie PostgreSQL; kontener i sieć testowa zostały usunięte. Build i końcowy `scripts/quality.ps1` przeszły. Zapisano lokalne zrzuty 1440/1024/390 px i sprawdzono wizualnie jasny design. Testy zapisano w commicie `29929d9`; cztery zastane zmiany wizualne pozostają poza commitem. Jednostka otrzymała status `in-progress` i fazę `construction`, zgodne z aktywnym boltem. Etap testów oczekuje na zatwierdzenie przed formalnym zamknięciem bolta.
 
 - **2026-09-29T20:37:58Z**: użytkownik zatwierdził implementację z jasnym designem v3; zakończono etap implementacji i rozpoczęto etap testów bolta 011.
 
