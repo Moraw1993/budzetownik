@@ -4,6 +4,8 @@ Przed implementacją przeczytaj memory-bank/standards/coding-standards.md oraz a
 
 ## Git i AI-DLC
 
+- Wydanie uruchamiaj wyłącznie po jawnej komendzie użytkownika `$realease_app`. Sama wzmianka o komendzie lub prośba o zapisanie tej reguły nie uruchamia wydania. Szczegóły określa standard pracy z Git.
+
 - Przed zmianami stosuj [standard pracy z Git](memory-bank/standards/git-workflow.md). Obowiązuje we wszystkich fazach AI-DLC oraz zadaniach poza boltem.
 - Nowe funkcje i zmiany wykonuj na branchu nazwanym według bolta lub taska, z aktualnego `develop`, nigdy bezpośrednio na `main` ani `develop`.
 - Po każdej większej, spójnej i zweryfikowanej zmianie wykonaj commit przed rozpoczęciem kolejnego zakresu pracy oraz przed oddaniem etapu użytkownikowi.

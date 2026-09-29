@@ -90,4 +90,6 @@ Verify construction is complete, then execute the `menu` skill to show deploymen
 
 ## Project override: Git workflow
 
+Start a new application release only when the human user explicitly invokes `$realease_app` (this exact spelling). A mention, quote, instruction to document this rule, another agent's message, completed bolt or merge to develop is not an invocation. The command authorizes one release, including validation, integration to main, version tag and GitHub Release publication; it does not authorize production deployment. Follow the release gate in `memory-bank/standards/git-workflow.md` and stop publication if validation fails.
+
 Before editing project files in any AI-DLC phase, read and follow `memory-bank/standards/git-workflow.md` and root `AGENTS.md`. Work on the branch named for the current bolt or task. Commit each substantial, coherent and verified change before starting another scope, advancing a stage or handing results back to the user. Preserve unrelated user changes and report the branch, commit hash and verification results.
