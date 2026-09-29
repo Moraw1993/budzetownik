@@ -2,7 +2,8 @@
 stage: test
 bolt: 011-family-management-ui
 created: 2026-09-29T20:51:49Z
-status: awaiting-validation
+status: approved
+approved: 2026-09-29T20:57:35Z
 ---
 
 # Raport testów: Zarządzanie rodziną
@@ -68,4 +69,4 @@ Nie stwierdzono otwartego błędu aplikacji w sprawdzonych scenariuszach. Cztery
 
 ## Checkpoint
 
-Testy i raport są gotowe do zatwierdzenia. Bolt pozostaje `in-progress`, etap `test`, do zatwierdzenia wyników przez użytkownika. Po akceptacji należy uruchomić obowiązkowy `bolt-complete.cjs`, sprawdzić statusy stories/jednostki i zapisać formalne zamknięcie w commicie.
+Użytkownik zatwierdził raport i formalne zamknięcie bolta. Uruchomiono obowiązkowy `bolt-complete.cjs`: bolt, wszystkie trzy stories i jednostka otrzymały status `complete`; stories mają `implemented: true`. Etap testów zapisano jako zakończony. Intent pozostaje w fazie konstrukcji, ponieważ bolt 012 jest nadal zaplanowany.

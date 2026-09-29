@@ -2,12 +2,16 @@
 id: 003-other-source-and-conversion
 unit: 002-family-management-ui
 intent: 002-family-income-management
-status: draft
+status: complete
 priority: must
-created: 2026-09-23T08:26:40Z
+created: '2026-09-23T08:26:40Z'
 assigned_bolt: 011-family-management-ui
-implemented: false
-requirements: ["FR-04", "FR-05", "FR-06", "FR-07"]
+implemented: true
+requirements:
+  - FR-04
+  - FR-05
+  - FR-06
+  - FR-07
 ---
 
 # Inne źródło i jawna konwersja

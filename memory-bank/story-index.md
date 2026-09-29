@@ -177,19 +177,19 @@ Aktualizacja: 2026-09-23T08:28:13Z. Fundament ma 24 scenariusze (20 ukończonych
 **Tytuł**: Dział zarządzania rodziną
 **Plik**: [001-family-navigation](intents/002-family-income-management/units/002-family-management-ui/stories/001-family-navigation.md)
 **Bolt**: [011-family-management-ui](bolts/011-family-management-ui/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 002-family-management-ui/002-contract-company-forms.md ✅ GENERATED
 **Tytuł**: Formularz firmy i umowy
 **Plik**: [002-contract-company-forms](intents/002-family-income-management/units/002-family-management-ui/stories/002-contract-company-forms.md)
 **Bolt**: [011-family-management-ui](bolts/011-family-management-ui/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 002-family-management-ui/003-other-source-and-conversion.md ✅ GENERATED
 **Tytuł**: Inne źródło i jawna konwersja
 **Plik**: [003-other-source-and-conversion](intents/002-family-income-management/units/002-family-management-ui/stories/003-other-source-and-conversion.md)
 **Bolt**: [011-family-management-ui](bolts/011-family-management-ui/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 003-family-income-acceptance/001-migration-and-isolation.md ✅ GENERATED
 **Tytuł**: Odbiór migracji i izolacji gospodarstw
