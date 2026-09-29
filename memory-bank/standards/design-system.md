@@ -2,117 +2,96 @@
 artifact: design-system
 status: accepted
 scope: application-ui
-source: product-requirements.md sections 51-53
+source: product-requirements.md sections 51-53; accepted family-management design v3
 created: 2026-09-11T19:04:54+02:00
-updated: 2026-09-11T19:04:54+02:00
+updated: 2026-09-29
 ---
 
 # System projektowy UI — Domowe Finanse
 
-## Cel i status
+## Cel i kierunek
 
-Ten dokument jest wiążącym standardem interfejsu dla aplikacji. Uzupełnia [wymagania produktu](product-requirements.md), nie zastępuje kryteriów story, reguł domenowych ani kontroli autoryzacji po stronie backendu.
+Wiążący standard całej aplikacji. Uzupełnia [wymagania produktu](product-requirements.md), nie zastępuje reguł domenowych, kryteriów story ani autoryzacji backendu.
 
-Kierunek: **Future / Premium Financial Dashboard** — nowoczesny, spokojny i minimalistyczny. Wrażenie przyszłości budują głębia powierzchni, światło i oszczędne akcenty; nie cyberpunk, gaming ani nadmiar neonów.
+Kierunek: **jasna przestrzeń domowa, granatowa nawigacja i zielone akcenty**. Zatwierdzony widok zarządzania rodziną v3 jest podstawą wizualną pozostałych ekranów. Poprzednia ciemna paleta z niebieskimi akcjami została zastąpiona wspólnym jasnym motywem. Nie utrzymywać oddzielnego motywu dla pojedynczego modułu.
 
-Priorytet decyzji projektowej: **czytelność → funkcjonalność → hierarchia informacji → spójność → estetyka**.
+Priorytet: **czytelność → funkcjonalność → hierarchia informacji → spójność → estetyka**. Efekt premium budują typografia, odstępy, subtelne obramowania i spokojne powierzchnie.
 
-## Adnotacje dla agenta `specs.md`
+## Stosowanie standardu
 
-Przed zaplanowaniem lub zmianą ekranu agent:
+Przed zmianą ekranu przeczytać aktywny bolt, właściwe story i ADR-y z [indeksu decyzji](decision-index.md). Zakres funkcjonalny wynika z story; nie dodawać pustych modułów ani CTA kolejnych MVP. Dla interakcji uwzględnić default, hover, focus-visible, disabled, loading, success i error tam, gdzie mają zastosowanie. W odbiorze podać dowody dla klawiatury, walidacji, statusów tekstowych i uprawnień API.
 
-1. Czyta aktywny `specs.md`/bolt, właściwy `unit-brief.md`, story i wymagania. Ustalenia konkretnego bolta mają pierwszeństwo w zakresie funkcji, ale nie mogą osłabić wymagań dostępności i niezmiennych zasad poniżej.
-2. Czyta ten standard oraz właściwe ADR-y z `memory-bank/standards/decision-index.md`.
-3. Projektuje tylko to, co obejmuje story. Nie dodaje pustych ekranów ani CTA dla MVP 2–5.
-4. Dla każdej interakcji opisuje stan: domyślny, hover, `focus-visible`, disabled, loading, success i error — o ile stan ma zastosowanie.
-5. W kryteriach odbioru zapisuje dowody: zachowanie klawiatury, walidację, tekstowy status oraz odpowiedź API tam, gdzie dotyczy uprawnień.
+## Wspólne tokeny
 
-### Kontekst bieżącej implementacji
+Źródłem implementacji jest `frontend/app/globals.css`, sekcja `:root`. Ciemna nawigacja lokalnie korzysta z tokenów tekstu sidebaru. Nie kopiować palety do komponentów ani wprowadzać wyjątków kolorystycznych per moduł.
 
-Początkowy ekran informujący o gotowości środowiska w `frontend/app/` używa zielonej palety i marketingowego copy. Jest ekranem bootstrapowym, a nie wzorcem docelowego systemu. Bolt, który pierwszy zmienia ten widok lub tworzy docelowy shell aplikacji, musi zastosować ten standard albo udokumentować świadome odstępstwo w ADR.
-
-### Mapowanie na aktualny zakres UI
-
-| Artefakt | Wymaganie dla implementacji |
-| --- | --- |
-| 003-household-foundation-ui / stories 001–003 | Formularze kont, gospodarstw i zaproszeń: funkcjonalne copy, czytelne komunikaty błędów, pełna obsługa klawiaturą. |
-| 003-household-foundation-ui / stories 004–005 | Tabele lub listy członków i źródeł dochodu, stany puste, dostępne akcje edycji oraz jawne potwierdzenie dezaktywacji. |
-| Przyszłe budżety, kredyty i oszczędności | Stosować model dashboardu, tabele i semantykę kolorów poniżej; nie włączać tych modułów do bolta fundamentu. |
-
-## Fundament wizualny
-
-### Kolory
-
-| Rola | Token | Wartość | Zastosowanie |
+| Rola | Token | Wartość |
 | --- | --- | --- |
-| Tło aplikacji | `--color-background` | `#08111F` | Główne tło; nie używać czystej czerni jako dominującego tła. |
-| Sidebar | `--color-sidebar` | `#07101D` | Stała nawigacja desktopowa. |
-| Powierzchnia | `--color-surface` | `#101C30` | Karty, formularze, tabele. |
-| Powierzchnia podniesiona | `--color-surface-elevated` | `#132039` | Popover, modal, wyróżniona karta. |
-| Akcja neutralna | `--color-primary` | `#4F8CFF` | Główna interakcja, aktywny wybór. |
-| Sukces | `--color-success` | `#41D6A3` | Stan poprawny, zapłacony, wzrost. |
-| Informacja pomocnicza | `--color-purple` | `#9B75FF` | Drugorzędne wyróżnienie, nie błąd. |
-| Uwaga | `--color-warning` | `#E9B35C` | Stan wymagający uwagi. |
-| Błąd | `--color-danger` | `#FF647C` | Błąd, zaległość, strata. |
-| Tekst główny | `--color-text-primary` | `#F4F7FC` | Nagłówki i wartości. |
-| Tekst drugorzędny | `--color-text-secondary` | `#A7B4C8` | Etykiety i opis. |
-| Tekst pomocniczy | `--color-text-muted` | `#7788A1` | Metadane i pomoc. |
+| Tło aplikacji | `--color-background` | `#F5F6F2` |
+| Nawigacja | `--color-sidebar` | `#07101D` |
+| Powierzchnia karty, formularza i tabeli | `--color-surface` | `#FFFFFF` |
+| Powierzchnia pomocnicza | `--color-surface-elevated` | `#F0F4F1` |
+| Akcja główna | `--color-primary` | `#126B61` |
+| Hover akcji i linku | `--color-primary-hover` | `#0C5149` |
+| Miękkie wyróżnienie | `--color-primary-soft` | `#EDF6F2` |
+| Fokus na jasnej powierzchni | `--color-focus` | `#126B61` |
+| Sukces | `--color-success` | `#126B61` |
+| Ostrzeżenie | `--color-warning` | `#865B14` |
+| Błąd | `--color-danger` | `#B6374D` |
+| Tekst główny | `--color-text-primary` | `#172536` |
+| Tekst pomocniczy | `--color-text-secondary` | `#596879` |
+| Obramowanie pola | `--color-border` | `#C8D2D6` |
+| Podział powierzchni | `--color-divider` | `#E0E6E5` |
+| Tekst nawigacji | `--color-sidebar-text` | `#F4F7FC` |
+| Tekst pomocniczy nawigacji | `--color-sidebar-muted` | `#A7B4C8` |
 
-Kolor koduje znaczenie, nie typ obiektu: kredyt nie jest automatycznie czerwony. Status zawsze łączy **tekst + ikonę + kolor**, np. `✓ Zapłacona`, `○ Planowana`, `! Zaległa`.
+Status i błąd zawsze mają etykietę tekstową; kolor nie jest jedynym nośnikiem znaczenia. Ikony statusów stosować jako uzupełnienie. Typ obiektu nie wyznacza koloru: kredyt nie jest automatycznie czerwony.
 
-### Typografia, wartości i spacing
+## Typografia i odstępy
 
-- Preferowane kroje: Inter, Geist lub Manrope. Wybór techniczny należy ustalić raz dla aplikacji, nie per ekran.
-- Hierarchia: nazwa widoku → główne wartości → nazwy sekcji → dane → informacje pomocnicze.
-- Kwoty formatuje się konsekwentnie dla waluty gospodarstwa i wyrównuje w tabelach tak, aby były skanowalne; ich źródłem są wartości dziesiętne z API, nigdy obliczenia float w UI.
-- Używać spójnej skali opartej na 4 px. Elementy nie powinny otrzymywać pojedynczych, przypadkowych odstępów.
-- Kontrast tekstu, ikon i obramowań musi spełniać WCAG 2.2 AA w rzeczywistych kolorach komponentu.
+- Jeden font: **Geist Variable**, dostarczany lokalnie przez `@fontsource-variable/geist`. Ikony: Lucide, z tekstem dla istotnych działań.
+- Tekst bazowy 15 px, wysokość linii 1,6. Tytuł ekranu 28–40 px; na telefonie 26 px. Tytuł sekcji 20–28 px, etykiety 13 px, metadane 11–13 px.
+- Skala odstępów oparta na 4 px: 8, 12, 16, 20, 24, 28, 32. Promień kart 16 px, pól i przycisków 8 px, nawigacji zakładek 14 px.
+- Subtelny cień powierzchni: `0 6px 24px #19382D04`. Bez dominujących gradientów, glow i glassmorphism.
+- Kwoty formatować konsekwentnie dla waluty gospodarstwa. Źródłem są wartości dziesiętne API; nie obliczać kwot przez float w UI. Nie utożsamiać kwoty umowy lub podpowiedzi miesięcznej z faktycznym przychodem.
+- Kontrast tekstu i istotnych elementów interaktywnych sprawdzać w rzeczywistym zestawieniu kolorów zgodnie z WCAG 2.2 AA. Subtelne separatory nie zastępują etykiet ani widocznego fokusu.
 
-### Layout i responsywność
+## Shell i responsywność
 
-Desktopowy shell ma układ **Sidebar + Topbar + Main Content**. Widoki zachowują wspólną szerokość treści, spacing, tytuł widoku i hierarchię.
+Desktop: **Sidebar + Topbar + Main Content**. Sidebar ma 248 px, treść wspólną maksymalną szerokość 1800 px i odstęp 32 px. Nagłówek, wybór gospodarstwa i breadcrumbs są wspólne dla rodziny oraz ustawień. Formularz nowego gospodarstwa korzysta z tego samego shellu.
 
-- Breadcrumb jest widoczny w widokach hierarchicznych, np. `Budżet / 2026 / Wrzesień`.
-- Dashboard zawiera zwykle 3–5 głównych KPI oraz 2–4 sekcje. Szczegóły prowadzą na kolejne poziomy.
-- Ekran operacyjny (miesiąc budżetowy, harmonogram kredytu, edycja dochodów) eksponuje zadanie; wykresy i KPI nie mogą go zdominować.
-- Projekt jest desktop-first, ale przy węższym widoku nie może ukrywać krytycznych akcji, danych ani alternatywy dla gestu.
+Przy szerokości do 900 px nawigacja przechodzi nad treść. Do 480 px nagłówek nawigacji i topbar są kompaktowe; breadcrumbs można ukryć, zachowując tytuł i wybór gospodarstwa. Nie ukrywać krytycznych działań. Karty osób przechodzą do jednej kolumny. Szerokie tabele mają własny, podpisany i dostępny klawiaturą obszar przewijania; nie rozszerzają całej strony.
 
-## Komponenty i zachowanie
+Logowanie, pierwsze konto i przyjęcie zaproszenia korzystają z tej samej jasnej palety, białych paneli i zielonych przycisków. Nie wymagają sidebaru przed uwierzytelnieniem.
 
-### Karty, dane i wykresy
+## Komponenty i wzorce ekranów
 
-- Standardowa karta odpowiada za jeden temat i najwyżej jedno główne CTA.
-- Dla danych strukturalnych preferowane są tabele, szczególnie dla budżetu, harmonogramów, dochodów, inwestycji i historii operacji. Karty nie zastępują tabel wyłącznie dla estetyki.
-- Wykresy są proste i analityczne: line, area, bar, horizontal bar albo donut. Bez 3D, wielu gauge, agresywnych gradientów i dekoracyjnych animacji.
-- Subtelny glow, gradient, glassmorphism i głębia są akcentem użytym oszczędnie, nie warstwą na większości elementów.
+| Ekran / obiekt | Wzorzec |
+| --- | --- |
+| Członkowie rodziny | Karty: inicjały, imię, relacja, tekstowy status, konto, przypisane źródła, Edytuj. Jedno wspólne objaśnienie o koncie. |
+| Źródła dochodu | Oddzielne dane osób i gospodarstwa, kompaktowe stany puste, biała tabela. |
+| Umowy i firmy | Biała tabela, formularz otwierany na żądanie, słownik firm jako osobny widok; mały modal nowej firmy zachowuje dane umowy. |
+| Ustawienia, dostępy, zaproszenia | Białe panele, wspólne pola, tabele i statusy; czytelna różnica między rolą konta a relacją rodzinną. |
+| Tworzenie gospodarstwa | Jeden formularz i lokalne Anuluj, gdy użytkownik ma inne gospodarstwo. |
+| Konto i przyjęcie zaproszenia | Skupiony formularz, wyraźny tytuł, wspólne komunikaty i akcje. |
+| Przyszłe moduły finansowe | Ten sam shell i tokeny; tabele danych strukturalnych, analityczne wykresy i KPI stosownie do zadania. |
 
-### Formularze i akcje
+Zakładki modułu mają jedną aktywną sekcję, rzeczywiste liczniki, role tablist/tab/tabpanel i obsługę strzałek oraz Home/End. Nie prezentować wszystkich formularzy i słowników równocześnie.
 
-- Proste wartości edytować inline lub w małym popoverze; duże modale rezerwować dla złożonych obiektów, operacji destrukcyjnych, zaawansowanej edycji i istotnych potwierdzeń.
-- Każde pole ma widoczną etykietę. Błąd wyjaśnia co poprawić i zachowuje niesekretne dane wpisane przez użytkownika.
-- Każda kontrolka interaktywna jest dostępna klawiaturą, ma wyraźny `focus-visible` i aktywny obszar co najmniej 32 × 32 px (dla przycisków ikonowych preferowane 36–40 px). Glow sam w sobie nie jest focusem.
-- Drag and drop zawsze ma równoważną akcję klawiaturową lub przyciskową, np. „Przenieś wyżej”, „Przenieś niżej”, „Przenieś do grupy”.
-- Akcja niszcząca wymaga jawnego potwierdzenia. Usunięcie/wyłączenie obiektu z historią nie może sugerować usunięcia historii, jeśli backend jej nie usuwa.
+Karta lub panel odpowiada za jeden temat. Dane porównywalne prezentować w tabelach, osoby w kartach. Nie zagnieżdżać dekoracyjnych paneli bez potrzeby. Wykresy proste: line, area, bar, horizontal bar lub donut; bez 3D i dekoracyjnych animacji.
 
-### Copy i stany
+## Formularze, działania i dostępność
 
-Copy jest funkcjonalne, po polsku i bez sloganów lub tekstów motywacyjnych. Preferowane przykłady: „Pozostało do rozdysponowania”, „Najbliższa rata”, „Postęp celu”, „Pozostało do spłaty”.
+- Akcja główna: zielone tło i biały tekst. Drugorzędna: białe tło, obramowanie i ciemny tekst. Niebezpieczna: czerwony tekst i obramowanie, jawne potwierdzenie oraz zachowanie semantyki historii.
+- Pola mają widoczne etykiety, minimum 44 px wysokości i tekstowe błędy. Zachowywać niesekretne wartości po błędzie. Nie używać placeholdera zamiast etykiety.
+- Wyraźny fokus 3 px; dostosować kolor do jasnej powierzchni lub ciemnej nawigacji. Całość dostępna klawiaturą. Akcje ikonowe mają nazwę dostępną; ważne akcje otrzymują tekst.
+- Modal przenosi fokus do pierwszego pola, obsługuje Escape i przywraca fokus po zamknięciu. Ma lokalne Anuluj i nie gubi danych formularza nadrzędnego.
+- Przyciski mają standardowo minimum 44 px; kompaktowe akcje i przyciski ikonowe minimum 32 px, preferowane 36–40 px. Drag and drop ma alternatywę przyciskową lub klawiaturową.
+- Każdy widok uwzględnia ładowanie, brak danych, błąd i brak uprawnień. Komunikat wskazuje możliwy następny krok bez ujawniania szczegółów serwera ani danych obcego gospodarstwa.
+- Copy jest po polsku, krótkie i funkcjonalne. Nie deklarować bezpieczeństwa lub szyfrowania bez potwierdzenia implementacji.
 
-Każdy widok danych projektuje również stan ładowania, pusty, błąd i brak uprawnień. Komunikat ma wskazać następne możliwe działanie, ale nie ujawniać technicznych szczegółów serwera ani istnienia danych obcego gospodarstwa.
+## Odbiór
 
-## Reguły niezmienne i odbiór
+Sprawdzić spójność tokenów we wszystkich zmienionych ekranach, desktop i telefon, focus i tabulację, Enter/Escape, etykiety, tekstowe statusy, lokalne przewijanie tabel i czytelność kwot. UI jedynie odzwierciedla uprawnienia backendu. Budżet jest planem, nie saldem. Ocena wizualna nie stanowi pełnego audytu WCAG.
 
-Przed zakończeniem bolta agent sprawdza:
-
-- czy interfejs nie jest jedyną granicą uprawnień — UI jedynie odzwierciedla decyzję backendu;
-- czy komunikaty finansowe nie mylą planu budżetu z saldem lub faktycznym wydatkiem;
-- czy stan, status i błąd są zrozumiałe bez rozróżniania barw;
-- czy kolejność tabulacji, focus, etykiety i obsługa Enter/Escape są sprawdzone w rzeczywistym widoku;
-- czy tabelę można odczytać i obsłużyć na docelowej szerokości, a ważne kwoty i statusy nie są ucięte;
-- czy efekt wizualny poprawia orientację. Jeżeli pogarsza czytelność lub zwiększa gęstość bez wartości użytkowej, należy go usunąć.
-
-## Otwarte decyzje
-
-- Zatwierdzić jeden krój pisma oraz sposób jego lokalnego dostarczania.
-- Wybrać bibliotekę wykresów przed pierwszym modułem analityki; decyzję zapisać w ADR.
-- Zdefiniować docelowe komponenty bazowe i nazwy tokenów w kodzie przed rozszerzeniem pierwszego ekranu poza bootstrap.
+Po zmianie kodu obowiązują formatter i lint z [coding-standards.md](coding-standards.md), `scripts/quality.ps1` oraz kontrola zmienionych widoków. Przed pierwszym modułem analityki wybrać bibliotekę wykresów i zapisać decyzję w ADR.

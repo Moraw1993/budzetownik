@@ -2,20 +2,26 @@
 @import url("@fontsource-variable/geist");
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  --color-background: #08111f;
+  --color-background: #f5f6f2;
   --color-sidebar: #07101d;
-  --color-surface: #101c30;
-  --color-surface-elevated: #132039;
-  --color-primary: #4f8cff;
-  --color-success: #41d6a3;
-  --color-warning: #e9b35c;
-  --color-danger: #ff647c;
-  --color-text-primary: #f4f7fc;
-  --color-text-secondary: #a7b4c8;
-  --color-border: #65758e;
-  --color-divider: #354965;
+  --color-primary-hover: #0c5149;
+  --color-primary-soft: #edf6f2;
+  --color-focus: #126b61;
+  --color-sidebar-focus: #b9e5d9;
+  --color-sidebar-text: #f4f7fc;
+  --color-sidebar-muted: #a7b4c8;
+  --color-surface: #fff;
+  --color-surface-elevated: #f0f4f1;
+  --color-primary: #126b61;
+  --color-success: #126b61;
+  --color-warning: #865b14;
+  --color-danger: #b6374d;
+  --color-text-primary: #172536;
+  --color-text-secondary: #596879;
+  --color-border: #c8d2d6;
+  --color-divider: #e0e6e5;
 }
 
 * {
@@ -39,12 +45,12 @@ textarea {
 }
 
 a {
-  color: #9dbfff;
+  color: var(--color-primary);
   text-underline-offset: 4px;
 }
 
 a:hover {
-  color: #c8dbff;
+  color: var(--color-primary-hover);
 }
 
 button,
@@ -53,7 +59,7 @@ select {
 }
 
 :focus-visible {
-  outline: 3px solid #b6ceff;
+  outline: 3px solid var(--color-focus);
   outline-offset: 4px;
 }
 
@@ -65,7 +71,7 @@ p {
 
 h1 {
   margin-bottom: 12px;
-  font-size: clamp(28px, 3vw, 40px);
+  font-size: clamp(28px, 2.5vw, 40px);
   line-height: 1.2;
   letter-spacing: -0.04em;
   overflow-wrap: anywhere;
@@ -143,45 +149,32 @@ textarea {
 }
 
 .button-primary {
-  color: #08111f;
+  color: white;
   background: var(--color-primary);
 }
 
-.family-shell .button-primary {
-  color: white;
-}
-
 .button-primary:hover:not(:disabled) {
-  background: #79a7ff;
+  background: #0c5149;
 }
 
 .button-secondary {
-  background: var(--color-surface-elevated);
+  background: white;
   color: var(--color-text-primary);
   border-color: var(--color-border);
 }
 
-.family-shell .button-secondary {
-  background: white;
-}
-
 .button-secondary:hover:not(:disabled) {
-  background: #243859;
+  background: #eaf2ee;
 }
 
 .button-danger {
-  color: #ff9aaa;
+  color: var(--color-danger);
   background: transparent;
-  border-color: #9c4c5e;
-}
-
-.family-shell .button-danger {
-  color: #a72b42;
   border-color: #ddb9c0;
 }
 
 .button-danger:hover:not(:disabled) {
-  background: #542536;
+  background: #fbecef;
 }
 
 input:disabled,
@@ -202,7 +195,7 @@ textarea:disabled,
 }
 
 .eyebrow {
-  color: #9dbfff;
+  color: var(--color-primary);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -221,6 +214,10 @@ textarea:disabled,
   padding: 32px 20px;
   background: var(--color-sidebar);
   border-right: 1px solid #25334a;
+
+  --color-text-primary: var(--color-sidebar-text);
+  --color-text-secondary: var(--color-sidebar-muted);
+  --color-surface-elevated: #132039;
 }
 
 .brand {
@@ -239,8 +236,8 @@ textarea:disabled,
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: #1c355a;
-  color: #9dbfff;
+  background: #164a4c;
+  color: var(--color-primary);
 }
 
 .nav-current {
@@ -261,7 +258,7 @@ textarea:disabled,
 
 .nav-current.active {
   color: var(--color-text-primary);
-  background: #152949;
+  background: #164a4c;
 }
 
 .section-nav {
@@ -290,7 +287,7 @@ textarea:disabled,
 
 .section-link.active {
   color: var(--color-text-primary);
-  background: #152949;
+  background: #164a4c;
   border-color: #354965;
 }
 
@@ -319,6 +316,7 @@ textarea:disabled,
   border-bottom: 1px solid #25334a;
   color: var(--color-text-secondary);
   overflow-wrap: anywhere;
+  border-bottom-color: var(--color-divider);
 }
 
 .account-actions {
@@ -338,6 +336,7 @@ textarea:disabled,
   max-width: 1800px;
   margin: 0 auto;
   padding: 32px;
+  padding-top: 28px;
 }
 
 .page-heading {
@@ -359,9 +358,9 @@ textarea:disabled,
 
 .heading-title-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 8px 20px;
+  gap: 12px 24px;
   margin-bottom: 8px;
 }
 
@@ -375,6 +374,10 @@ textarea:disabled,
   align-items: center;
   max-width: 100%;
   margin-bottom: 0;
+  padding: 4px 12px;
+  background: white;
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
 }
 
 .household-switcher select {
@@ -385,12 +388,13 @@ textarea:disabled,
   appearance: none;
   background: transparent;
   border: 0;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .household-switcher svg {
   position: absolute;
-  right: 0;
+  right: 12px;
   pointer-events: none;
 }
 
@@ -438,7 +442,7 @@ textarea:disabled,
 
 .family-navigation-link:hover {
   color: var(--color-text-primary);
-  background: #132039;
+  background: var(--color-primary-soft);
 }
 
 .family-navigation-link.active {
@@ -506,7 +510,7 @@ textarea:disabled,
   background: var(--color-surface);
   border: 1px solid var(--color-divider);
   border-radius: 16px;
-  box-shadow: 0 16px 48px #00000014;
+  box-shadow: 0 6px 24px #19382d04;
 }
 
 .panel-heading {
@@ -605,7 +609,7 @@ textarea:disabled,
   padding: 28px;
   color: var(--color-text-primary);
   background: var(--color-surface);
-  border: 1px solid #526b90;
+  border: 1px solid var(--color-border);
   border-radius: 16px;
 }
 
@@ -667,7 +671,7 @@ textarea:disabled,
 
 .error,
 .field-error {
-  color: #ff94a5;
+  color: var(--color-danger);
 }
 
 .success {
@@ -687,15 +691,19 @@ textarea:disabled,
   display: inline-flex;
   white-space: nowrap;
   padding: 4px 12px;
-  color: #c2d8ff;
-  background: #203554;
-  border: 1px solid #526b90;
+  color: var(--color-primary);
+  background: #e8f3ee;
+  border: 1px solid #c9e2d9;
   border-radius: 20px;
   font-size: 12px;
 }
 
 .table-scroll {
   overflow-x: auto;
+  padding: 0 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 14px;
 }
 
 table {
@@ -765,7 +773,7 @@ details {
 
 summary {
   cursor: pointer;
-  color: #9dbfff;
+  color: var(--color-primary);
 }
 
 .pagination {
@@ -851,7 +859,7 @@ summary {
   gap: 12px;
   margin-top: 24px;
   padding: 20px;
-  border: 1px solid #65758e;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
 }
 
@@ -908,80 +916,18 @@ summary {
   border-top: 1px solid var(--color-divider);
 }
 
-.family-shell {
-  color-scheme: light;
-
-  --color-background: #f5f6f2;
-  --color-surface: #fff;
-  --color-surface-elevated: #f0f4f1;
-  --color-primary: #126b61;
-  --color-success: #126b61;
-  --color-warning: #865b14;
-  --color-danger: #b6374d;
-  --color-text-primary: #172536;
-  --color-text-secondary: #596879;
-  --color-border: #c8d2d6;
-  --color-divider: #e0e6e5;
-
-  background: var(--color-background);
-  color: var(--color-text-primary);
-}
-
-.family-shell .sidebar {
-  --color-text-primary: #f4f7fc;
-  --color-text-secondary: #a7b4c8;
-  --color-surface-elevated: #132039;
-}
-
-.family-shell .brand-mark,
-.family-shell .section-link.active {
+.shell .brand-mark,
+.shell .section-link.active {
   background: #164a4c;
   color: #edf9f5;
   border-color: #285a5c;
 }
 
-.family-shell .content {
-  padding-top: 28px;
+.sidebar .eyebrow {
+  color: var(--color-sidebar-muted);
 }
 
-.family-shell .topbar {
-  border-bottom-color: var(--color-divider);
-}
-
-.family-shell .eyebrow {
-  color: #126b61;
-}
-
-.family-shell .sidebar .eyebrow {
-  color: #a7b4c8;
-}
-
-.family-shell h1 {
-  font-size: clamp(28px, 2.5vw, 40px);
-}
-
-.family-shell .heading-title-row {
-  align-items: center;
-  gap: 12px 24px;
-}
-
-.family-shell .household-switcher {
-  padding: 4px 12px;
-  background: white;
-  border: 1px solid var(--color-divider);
-  border-radius: 10px;
-}
-
-.family-shell .household-switcher svg {
-  right: 12px;
-}
-
-.family-shell .household-switcher select {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.family-shell .family-navigation {
+.shell .family-navigation {
   gap: 8px;
   padding: 8px;
   background: var(--color-surface);
@@ -990,7 +936,7 @@ summary {
   box-shadow: 0 4px 16px #19382d05;
 }
 
-.family-shell .family-navigation-link {
+.shell .family-navigation-link {
   border-radius: 8px;
   padding: 10px 16px;
 }
@@ -999,18 +945,18 @@ summary {
   outline-offset: -3px;
 }
 
-.family-shell .family-navigation-link:hover,
-.family-shell .family-navigation-link.active {
+.shell .family-navigation-link:hover,
+.shell .family-navigation-link.active {
   color: var(--color-primary);
   background: #edf6f2;
 }
 
-.family-shell .family-navigation-link.active {
+.shell .family-navigation-link.active {
   font-weight: 650;
 }
 
-.family-shell :focus-visible {
-  outline-color: #126b61;
+.shell .sidebar :focus-visible {
+  outline-color: var(--color-sidebar-focus);
 }
 
 .tab-count {
@@ -1025,44 +971,8 @@ summary {
   font-variant-numeric: tabular-nums;
 }
 
-.family-shell .family-view {
+.shell .family-view {
   padding-top: 28px;
-}
-
-.family-shell .button-primary:hover:not(:disabled) {
-  background: #0c5149;
-}
-
-.family-shell .button-secondary:hover:not(:disabled) {
-  background: #eaf2ee;
-}
-
-.family-shell .button-danger:hover:not(:disabled) {
-  background: #fbecef;
-}
-
-.family-shell .error,
-.family-shell .field-error {
-  color: #a72b42;
-}
-
-.family-shell .badge {
-  color: #126b61;
-  background: #e8f3ee;
-  border-color: #c9e2d9;
-}
-
-.family-shell .table-scroll {
-  padding: 0 12px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-divider);
-  border-radius: 14px;
-}
-
-.family-shell tbody th {
-  color: var(--color-text-primary);
-  font-size: 14px;
-  font-weight: 650;
 }
 
 .member-grid {
@@ -1097,7 +1007,7 @@ summary {
   flex: 0 0 auto;
   width: 58px;
   height: 58px;
-  color: #126b61;
+  color: var(--color-primary);
   background: #e0f1eb;
   border-radius: 50%;
   font-size: 21px;
@@ -1115,7 +1025,7 @@ summary {
 }
 
 .member-status {
-  color: #126b61;
+  color: var(--color-primary);
   font-size: 12px;
   font-weight: 600;
 }
@@ -1308,105 +1218,111 @@ summary {
 }
 
 @media (width <= 480px) {
-  .family-shell .sidebar {
+  .sidebar {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 8px;
     padding: 12px;
   }
 
-  .family-shell .brand {
+  .shell .brand {
     gap: 8px;
     font-size: 13px;
   }
 
-  .family-shell .brand-mark {
+  .shell .brand-mark {
     width: 32px;
     height: 32px;
   }
 
-  .family-shell .nav-current {
+  .shell .nav-current {
     padding: 6px;
     font-size: 12px;
   }
 
-  .family-shell .section-nav {
+  .shell .section-nav {
     grid-column: 1 / -1;
   }
 
-  .family-shell .section-link {
+  .shell .section-link {
     gap: 6px;
     font-size: 12px;
   }
 
-  .family-shell .topbar {
+  .shell .topbar {
     justify-content: flex-end;
     padding: 8px 12px;
   }
 
-  .family-shell .topbar > span {
+  .shell .topbar > span {
     display: none;
   }
 
-  .family-shell .account-actions {
+  .shell .account-actions {
     gap: 12px;
     font-size: 12px;
   }
 
-  .family-shell .account-actions .button {
+  .shell .account-actions .button {
     min-height: 36px;
     padding: 6px 12px;
     font-size: 12px;
   }
 
-  .family-shell .content {
+  .shell .content {
     padding-top: 20px;
   }
 
-  .family-shell h1 {
+  .shell h1 {
     font-size: 26px;
   }
 
-  .family-shell .family-navigation {
+  .shell .family-navigation {
     gap: 2px;
     padding: 4px;
   }
 
-  .family-shell .family-navigation-link {
+  .shell .family-navigation-link {
     flex: 1 0 auto;
     gap: 4px;
     padding: 8px;
     font-size: 12px;
   }
 
-  .family-shell .family-navigation-link > svg {
+  .shell .family-navigation-link > svg {
     display: none;
   }
 
-  .family-shell .tab-count {
+  .shell .tab-count {
     min-width: 20px;
     height: 20px;
     padding: 0 4px;
     font-size: 10px;
   }
 
-  .family-shell .family-view {
+  .shell .family-view {
     padding-top: 20px;
   }
 
-  .family-shell .family-section-heading h2 {
+  .shell .family-section-heading h2 {
     font-size: 24px;
   }
 
-  .family-shell .family-heading-actions {
+  .shell .family-heading-actions {
     flex-direction: row;
     gap: 8px;
   }
 
-  .family-shell .family-heading-actions .button {
+  .shell .family-heading-actions .button {
     flex: 1;
     width: auto;
     padding-inline: 10px;
     font-size: 12px;
   }
+}
+
+tbody th {
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 650;
 }

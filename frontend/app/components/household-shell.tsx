@@ -53,7 +53,7 @@ export function HouseholdShell({
   }
 
   return (
-    <div className={!creating && section === "family" ? "shell family-shell" : "shell"}>
+    <div className="shell">
       <aside className="sidebar">
         <Link href="/" className="brand">
           <span className="brand-mark">
