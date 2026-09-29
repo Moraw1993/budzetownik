@@ -11,11 +11,14 @@ stories:
 created: 2026-09-23T08:28:54Z
 started: 2026-09-26T19:46:13Z
 completed: null
-current_stage: implement
+current_stage: test
 stages_completed:
   - name: plan
     completed: 2026-09-26T19:49:21Z
     artifact: implementation-plan.md
+  - name: implement
+    completed: 2026-09-29T20:37:58Z
+    artifact: implementation-walkthrough.md
 requires_bolts: ["010-family-income-api"]
 enables_bolts: ["012-family-income-acceptance"]
 requires_units: ["001-family-income-api", "003-household-foundation-ui"]
@@ -42,7 +45,7 @@ Zastąpić obecny podział „Członkowie” i „Dochody” działem „Zarząd
 ## Etapy
 
 - [x] Plan implementacji i przegląd ponownego użycia obecnych komponentów.
-- [ ] Implementacja ekranów, formularzy, typów API i responsywnych stylów.
+- [x] Implementacja ekranów, formularzy, typów API i responsywnych stylów.
 - [ ] Testy przepływów, ról, walidacji i dostępności klawiaturowej.
 
 ## Wyniki

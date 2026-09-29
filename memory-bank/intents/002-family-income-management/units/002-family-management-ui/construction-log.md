@@ -2,7 +2,7 @@
 unit: 002-family-management-ui
 intent: 002-family-income-management
 created: 2026-09-26T19:46:13Z
-last_updated: 2026-09-29T20:34:50Z
+last_updated: 2026-09-29T20:37:58Z
 ---
 
 # Dziennik konstrukcji: interfejs zarządzania rodziną
@@ -12,6 +12,8 @@ last_updated: 2026-09-29T20:34:50Z
 Jeden bolt `011-family-management-ui` obejmuje trzy historie: nawigację rodziny, formularze firmy i umowy oraz inne źródła z jawną konwersją. Zależne bolty 009 i 010 są ukończone.
 
 ## Przebieg
+
+- **2026-09-29T20:37:58Z**: użytkownik zatwierdził implementację z jasnym designem v3; zakończono etap implementacji i rozpoczęto etap testów bolta 011.
 
 - **2026-09-29T20:34:50Z**: wznowiono etap implementacji po przeczytaniu wątku „Zaproponuj 3 widoki zarządzania”. Użytkownik potwierdził jasny design v3; uzupełniono opis bolta i przegląd implementacji o wspólną paletę, zakładki, karty osób i formularze otwierane na żądanie. Wybrano branch `feat/bolt-011-family-management-ui` z bazy `chore/task-ai-dlc-git-workflow`; zachowano cztery zastane niezacommitowane pliki poza commitem dokumentacji. `scripts/quality.ps1` i produkcyjny build Next.js przeszły. Nie uruchamiano testów backendu ani zapisów w rzeczywistej bazie. Implementacja oczekuje na zatwierdzenie przed etapem testów UI.
 

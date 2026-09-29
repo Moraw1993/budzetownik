@@ -2,7 +2,7 @@
 stage: implement
 bolt: 011-family-management-ui
 created: 2026-09-26T20:05:44Z
-status: awaiting-validation
+status: approved
 ---
 
 # Przegląd implementacji: Zarządzanie rodziną
