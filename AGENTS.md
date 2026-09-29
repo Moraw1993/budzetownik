@@ -5,8 +5,10 @@ Przed implementacją przeczytaj memory-bank/standards/coding-standards.md oraz a
 ## Git i AI-DLC
 
 - Przed zmianami stosuj [standard pracy z Git](memory-bank/standards/git-workflow.md). Obowiązuje we wszystkich fazach AI-DLC oraz zadaniach poza boltem.
-- Nowe funkcje i zmiany wykonuj na branchu nazwanym według bolta lub taska, nigdy bezpośrednio na `main`.
+- Nowe funkcje i zmiany wykonuj na branchu nazwanym według bolta lub taska, z aktualnego `develop`, nigdy bezpośrednio na `main` ani `develop`.
 - Po każdej większej, spójnej i zweryfikowanej zmianie wykonaj commit przed rozpoczęciem kolejnego zakresu pracy oraz przed oddaniem etapu użytkownikowi.
+
+- Przed merge do `develop` pobierz aktualne referencje, porównaj obie wersje, sprawdź konflikty i zweryfikuj połączone zmiany zgodnie ze standardem Git. Stabilne wydania trafiają z `develop` do `main` z tagiem `vMAJOR.MINOR.PATCH`.
 
 ## Obowiązkowo po utworzeniu lub edycji pliku kodu
 - Uruchom właściwy formatter bezpośrednio po zmianie, a następnie sprawdź wynik.
