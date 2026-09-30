@@ -1,8 +1,8 @@
 ---
 intent: 002-family-income-management
 created: 2026-09-23T08:15:53Z
-completed: null
-status: in-progress
+completed: 2026-09-30T07:30:17Z
+status: complete
 ---
 
 # Inception Log: Zarządzanie rodziną, umowami i źródłami dochodu
@@ -15,12 +15,12 @@ Rozszerzenie działającego fundamentu o firmy, umowy członków i inne źródł
 
 | Artefakt | Status | Plik |
 | --- | --- | --- |
-| Wymagania | Szkic do przeglądu | requirements.md |
-| Kontekst | Do przeglądu | system-context.md |
-| Jednostki | Do przeglądu | units.md i unit-brief.md |
-| Stories | 9 do przeglądu | units/*/stories/*.md |
-| Bolty | 3 zaplanowane, nierozpoczęte | 010–012 w memory-bank/bolts |
-| Pokrycie i plan | Do przeglądu | traceability.md, review.md |
+| Wymagania | Zakres zrealizowany | requirements.md |
+| Kontekst | Podstawa zrealizowanego zakresu | system-context.md |
+| Jednostki | 3 ukończone | units.md i unit-brief.md |
+| Stories | 9 ukończonych | units/*/stories/*.md |
+| Bolty | 3 ukończone | 010–012 w memory-bank/bolts |
+| Pokrycie i plan | Zweryfikowane odbiorem 012 | traceability.md, review.md |
 
 ## Decyzje
 
@@ -38,4 +38,4 @@ Rozszerzenie działającego fundamentu o firmy, umowy członków i inne źródł
 
 ## Następny krok
 
-Przegląd zestawu artefaktów (checkpoint 3 procesu Inception). Po uwagach skorygować plan i dopiero wtedy oznaczyć Inception jako ukończone. Budowa nowego modelu pozostaje osobnym etapem.
+Construction zakończono po zatwierdzeniu raportu bolta 012 i uruchomieniu obowiązkowego skryptu zamknięcia. Integracja do develop i Operations są odrębnymi operacjami; ich stan opisuje [raport domknięcia](../../operations/post-bolt-012.md). Status complete nie oznacza opublikowanego wydania ani wdrożenia produkcyjnego.

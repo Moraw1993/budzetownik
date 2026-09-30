@@ -1,6 +1,6 @@
 # Lokalne wdrożenie MVP
 
-Status: wymagania wdrożenia; pliki Docker i aplikacja nie zostały jeszcze zaimplementowane.
+Status: lokalny runtime Docker i aplikacja są zaimplementowane; odbiór rodziny zakończono w bolcie 012. Formalny stan Operations opisuje [raport domknięcia](post-bolt-012.md).
 Źródło: decyzja użytkownika o lokalnym MVP przez Docker oraz wymagania PRD.
 
 ## Uruchamianie MVP
@@ -13,4 +13,4 @@ Załączniki MVP są przechowywane w filesystemie na trwałym wolumenie; metadan
 Docelowy sposób uruchomienia: docker compose up --build. Instrukcja wdrożenia musi obejmować konfigurację, migracje Django, utworzenie pierwszego użytkownika oraz wykonanie i odtworzenie kopii danych i załączników.
 Konfiguracja lokalna i sekrety są przekazywane przez zmienne środowiskowe; repozytorium zawiera jedynie przykładowe wartości.
 Hosting publiczny i dostęp z sieci domowej pozostają poza zakresem lokalnego MVP.
-Wymaganie HTTPS z PRD pozostaje aktualne; sposób obsługi lokalnego certyfikatu zostanie określony w projekcie wdrożenia.
+HTTPS obsługuje Caddy z lokalnym urzędem certyfikacji i trwałymi wolumenami. Instrukcja uruchomienia, pierwszego konta i świadomego dodania zaufania do certyfikatu znajduje się w [README](../../README.md). Procedura kopii i odtworzenia znajduje się w [backup-restore.md](backup-restore.md).
