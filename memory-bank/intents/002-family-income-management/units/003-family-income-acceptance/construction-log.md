@@ -4,3 +4,4 @@
 - **2026-09-29T21:09:03Z**: Plan przygotowany w implementation-plan.md; oczekuje na zatwierdzenie przed implementacją. Przegląd istniejącego odbioru, testu migracji i selektorów UI zakończony.
 - **2026-09-30T06:10:26Z**: Użytkownik zatwierdził plan poleceniem Kontynuuj. plan → implement. Zakres nie obejmuje nowych okien UI; nowa bramka projektowa nie wymaga ponownej oceny wdrożonych ekranów.
 - **2026-09-30T06:32:58Z**: Implementacja narzędzi gotowa do zatwierdzenia. Run 1e365076: migracja 3 źródeł/1 audytu, E2E 5/5, sekwencyjna kontrola ról i izolacji, checkpoint i restart przeszły; build i quality.ps1 OK. Poprzednią równoległą próbę HTTP odrzucono jako niewiarygodną. Pełny odbiór na świeżym runie i regresja pozostają etapem Test.
+- **2026-09-30T06:35:30Z**: Użytkownik zatwierdził implementację (Zgoda). implement → test. Rozpoczęto końcowy odbiór sekwencyjny na świeżym runie oraz pełną regresję.

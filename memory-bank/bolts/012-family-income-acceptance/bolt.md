@@ -10,11 +10,14 @@ stories:
 created: 2026-09-23T08:28:54Z
 started: 2026-09-29T21:07:18Z
 completed: null
-current_stage: implement
+current_stage: test
 stages_completed:
   - name: plan
     completed: 2026-09-30T06:10:26Z
     artifact: implementation-plan.md
+  - name: implement
+    completed: 2026-09-30T06:35:30Z
+    artifact: implementation-walkthrough.md
 requires_bolts: ["011-family-management-ui"]
 enables_bolts: []
 requires_units: ["001-family-income-api", "002-family-management-ui"]
@@ -58,4 +61,4 @@ Wszystkie kryteria obu stories są potwierdzone; brak utraty danych i regresji u
 
 ## Stan implementacji
 
-Przygotowano narzędzia izolowanej migracji, testy HTTPS i 5 scenariuszy E2E. Kontrolna migracja, E2E, role/izolacja API, checkpoint, restart, build oraz kontrola jakości przeszły. [Raport implementacji](implementation-walkthrough.md) oczekuje na zatwierdzenie przed pełną regresją i końcowym odbiorem na świeżym runie w etapie Test.
+Przygotowano narzędzia izolowanej migracji, testy HTTPS i 5 scenariuszy E2E. Kontrolna migracja, E2E, role/izolacja API, checkpoint, restart, build oraz kontrola jakości przeszły. [Raport implementacji](implementation-walkthrough.md) zatwierdzono; trwa pełna regresja i końcowy odbiór na świeżym runie w etapie Test.
