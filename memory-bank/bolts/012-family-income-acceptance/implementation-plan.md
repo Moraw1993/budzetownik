@@ -53,14 +53,14 @@ Model miesięcznych przychodów nie jest jeszcze zaimplementowany. Dowód braku 
 
 ## Acceptance Criteria
 
-- [ ] Migracja danych faktycznie utworzonych na schemacie 0003 zachowuje UUID, kwoty, powiązania, status i audyt aktywnego oraz archiwalnego źródła.
-- [ ] Stare „Wynagrodzenie” pozostaje innym źródłem do jawnej konwersji; migracja nie tworzy umów ani zdarzeń miesięcznych przychodów.
-- [ ] API odrzuca obce odczyty i powiązania oraz zapisy Member/Viewer bez zmian danych i audytu.
-- [ ] Restart usług z zachowaniem wolumenów zachowuje firmy, umowy i źródła.
-- [ ] Rzeczywisty UI pozwala dodać członka, firmę, dwie umowy członka i źródło gospodarstwa oraz pokazuje właściwych właścicieli.
-- [ ] Umowy pokazują brutto i różne podstawy kwoty; inne źródło może nie mieć kwoty domyślnej.
-- [ ] Edycja i archiwizacja nie zmieniają obcego gospodarstwa ani nie tworzą miesięcznych przychodów.
-- [ ] Scenariusz działa klawiaturą i na szerokim oraz mobilnym ekranie w jasnym designie; jakość, build i właściwe testy przechodzą.
+- [x] Migracja danych faktycznie utworzonych na schemacie 0003 zachowuje UUID, kwoty, powiązania, status i audyt aktywnego oraz archiwalnego źródła.
+- [x] Stare „Wynagrodzenie” pozostaje innym źródłem do jawnej konwersji; migracja nie tworzy umów ani zdarzeń miesięcznych przychodów.
+- [x] API odrzuca obce odczyty i powiązania oraz zapisy Member/Viewer bez zmian danych i audytu.
+- [x] Restart usług z zachowaniem wolumenów zachowuje firmy, umowy i źródła.
+- [x] Rzeczywisty UI pozwala dodać członka, firmę, dwie umowy członka i źródło gospodarstwa oraz pokazuje właściwych właścicieli.
+- [x] Umowy pokazują brutto i różne podstawy kwoty; inne źródło może nie mieć kwoty domyślnej.
+- [x] Edycja i archiwizacja nie zmieniają obcego gospodarstwa ani nie tworzą miesięcznych przychodów.
+- [x] Scenariusz działa klawiaturą i na szerokim oraz mobilnym ekranie w jasnym designie; jakość, build i właściwe testy przechodzą.
 
 ## Stage Checkpoints
 

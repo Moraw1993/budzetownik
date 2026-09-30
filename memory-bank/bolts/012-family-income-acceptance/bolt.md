@@ -44,7 +44,7 @@ Potwierdzić na lokalnej instalacji migrację starego źródła, konfigurację r
 
 - [x] Plan danych i scenariuszy odbioru.
 - [x] Przygotowanie izolowanej kopii syntetycznych danych i testów E2E.
-- [ ] Wykonanie testów, kontrola jakości i raport wyników.
+- [x] Wykonanie testów, kontrola jakości i raport wyników.
 
 ## Wyniki
 
@@ -61,4 +61,8 @@ Wszystkie kryteria obu stories są potwierdzone; brak utraty danych i regresji u
 
 ## Stan implementacji
 
-Przygotowano narzędzia izolowanej migracji, testy HTTPS i 5 scenariuszy E2E. Kontrolna migracja, E2E, role/izolacja API, checkpoint, restart, build oraz kontrola jakości przeszły. [Raport implementacji](implementation-walkthrough.md) zatwierdzono; trwa pełna regresja i końcowy odbiór na świeżym runie w etapie Test.
+Przygotowano narzędzia izolowanej migracji, testy HTTPS i 5 scenariuszy E2E. Kontrolna migracja, E2E, role/izolacja API, checkpoint, restart, build oraz kontrola jakości przeszły. [Raport implementacji](implementation-walkthrough.md) zatwierdzono; pełną regresję i końcowy odbiór na świeżym runie opisano w raporcie testów.
+
+## Stan odbioru
+
+[Raport testów](test-walkthrough.md) jest gotowy do zatwierdzenia: świeży run 17d4acaa, migracja, role/izolacja API, E2E 5/5, regresja UI 42/42, Django 83/83, checkpoint i restart, build oraz kontrola jakości przeszły. Formalne zakończenie wymaga zatwierdzenia raportu i obowiązkowego skryptu synchronizacji statusów.

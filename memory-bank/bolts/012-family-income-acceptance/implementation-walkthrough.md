@@ -59,4 +59,4 @@ W bieżącym modelu nie istnieje tabela miesięcznych przychodów. Snapshot doku
 - Checkpoint i restart — przeszły; stan API i wszystkie 9 tabel domeny households pozostały identyczne po restarcie usług bez usuwania wolumenów. Kontrolny checkpoint wykonano po próbie E2E i powtórzonej kontroli HTTP; dowód izolacji całego przepływu UI przed/po musi zostać powtórzony we właściwej kolejności na świeżym runie w etapie Test.
 - Zrzuty kontrolne są w ignorowanym katalogu `.runtime/acceptance/1e365076/ui/`. Sprawdzono desktopową i mobilną listę umów: jasne tło, dopasowany układ, tabela przewijana lokalnie.
 
-Pełna regresja i końcowy raport kryteriów stories należą do etapu Test po zatwierdzeniu implementacji.
+Implementacja została zatwierdzona przez użytkownika. Pełną regresję i odbiór na świeżym runie opisuje [raport testów](test-walkthrough.md).
