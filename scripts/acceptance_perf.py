@@ -24,11 +24,11 @@ THREAD_SESSION = threading.local()
 class PersistentApi:
     """Measure API responses over an authenticated reusable HTTPS connection."""
 
-    def __init__(self, run_id, auth):
+    def __init__(self, run_id, auth, role="source"):
         run_dir, manifest = load_run(run_id)
-        context = ssl.create_default_context(cafile=run_dir / "source-root.crt")
+        context = ssl.create_default_context(cafile=run_dir / f"{role}-root.crt")
         self.connection = http.client.HTTPSConnection(
-            "localhost", manifest["source"]["port"], context=context, timeout=30
+            "localhost", manifest[role]["port"], context=context, timeout=30
         )
         self.origin = auth.base
         self.cookie = "; ".join(f"{cookie.name}={cookie.value}" for cookie in auth.cookies)
@@ -114,10 +114,10 @@ def operation(client, name, household_id, index):
     raise ValueError(f"Unknown operation: {name}")
 
 
-def measure(run_id, auth, household_id, name, warmup, samples, concurrency):
+def measure(run_id, auth, household_id, name, warmup, samples, concurrency, client_factory=session):
     def one(index):
         try:
-            client = session(run_id, auth)
+            client = client_factory(run_id, auth)
             return {"ms": operation(client, name, household_id, index)}
         except (OSError, AssertionError, ValueError) as exc:
             return {"error": str(exc)}
