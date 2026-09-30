@@ -40,7 +40,7 @@ Potwierdzić na lokalnej instalacji migrację starego źródła, konfigurację r
 ## Etapy
 
 - [x] Plan danych i scenariuszy odbioru.
-- [ ] Przygotowanie izolowanej kopii syntetycznych danych i testów E2E.
+- [x] Przygotowanie izolowanej kopii syntetycznych danych i testów E2E.
 - [ ] Wykonanie testów, kontrola jakości i raport wyników.
 
 ## Wyniki
@@ -54,3 +54,8 @@ Wymaga ukończonego [011-family-management-ui](../011-family-management-ui/bolt.
 ## Warunki zakończenia
 
 Wszystkie kryteria obu stories są potwierdzone; brak utraty danych i regresji uprawnień. Ograniczenia środowiska i wyniki są jawnie zapisane.
+
+
+## Stan implementacji
+
+Przygotowano narzędzia izolowanej migracji, testy HTTPS i 5 scenariuszy E2E. Kontrolna migracja, E2E, role/izolacja API, checkpoint, restart, build oraz kontrola jakości przeszły. [Raport implementacji](implementation-walkthrough.md) oczekuje na zatwierdzenie przed pełną regresją i końcowym odbiorem na świeżym runie w etapie Test.
