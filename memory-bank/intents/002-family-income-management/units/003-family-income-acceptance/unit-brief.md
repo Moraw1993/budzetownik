@@ -4,9 +4,9 @@ intent: 002-family-income-management
 unit_type: infrastructure
 default_bolt_type: simple-construction-bolt
 phase: construction
-status: in-progress
-created: 2026-09-23T08:24:02Z
-updated: 2026-09-29T21:07:18Z
+status: complete
+created: '2026-09-23T08:24:02Z'
+updated: 2026-09-30T07:31:10Z
 ---
 
 # Odbiór modelu rodziny i źródeł

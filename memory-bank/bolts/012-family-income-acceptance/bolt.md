@@ -3,24 +3,30 @@ id: 012-family-income-acceptance
 unit: 003-family-income-acceptance
 intent: 002-family-income-management
 type: simple-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 001-migration-and-isolation
   - 002-family-user-journey
-created: 2026-09-23T08:28:54Z
-started: 2026-09-29T21:07:18Z
-completed: null
-current_stage: test
+created: '2026-09-23T08:28:54Z'
+started: '2026-09-29T21:07:18Z'
+completed: '2026-09-30T07:30:17Z'
+current_stage: null
 stages_completed:
   - name: plan
-    completed: 2026-09-30T06:10:26Z
+    completed: '2026-09-30T06:10:26Z'
     artifact: implementation-plan.md
   - name: implement
-    completed: 2026-09-30T06:35:30Z
+    completed: '2026-09-30T06:35:30Z'
     artifact: implementation-walkthrough.md
-requires_bolts: ["011-family-management-ui"]
+  - name: test
+    completed: '2026-09-30T07:30:17Z'
+    artifact: test-walkthrough.md
+requires_bolts:
+  - 011-family-management-ui
 enables_bolts: []
-requires_units: ["001-family-income-api", "002-family-management-ui"]
+requires_units:
+  - 001-family-income-api
+  - 002-family-management-ui
 blocks: true
 complexity:
   avg_complexity: 2
@@ -37,8 +43,8 @@ Potwierdzić na lokalnej instalacji migrację starego źródła, konfigurację r
 
 ## Stories
 
-- [ ] [001-migration-and-isolation](../../intents/002-family-income-management/units/003-family-income-acceptance/stories/001-migration-and-isolation.md): Odbiór migracji i izolacji.
-- [ ] [002-family-user-journey](../../intents/002-family-income-management/units/003-family-income-acceptance/stories/002-family-user-journey.md): Pełny scenariusz użytkownika.
+- [x] [001-migration-and-isolation](../../intents/002-family-income-management/units/003-family-income-acceptance/stories/001-migration-and-isolation.md): Odbiór migracji i izolacji.
+- [x] [002-family-user-journey](../../intents/002-family-income-management/units/003-family-income-acceptance/stories/002-family-user-journey.md): Pełny scenariusz użytkownika.
 
 ## Etapy
 
@@ -65,4 +71,4 @@ Przygotowano narzędzia izolowanej migracji, testy HTTPS i 5 scenariuszy E2E. Ko
 
 ## Stan odbioru
 
-[Raport testów](test-walkthrough.md) jest gotowy do zatwierdzenia: świeży run 17d4acaa, migracja, role/izolacja API, E2E 5/5, regresja UI 42/42, Django 83/83, checkpoint i restart, build oraz kontrola jakości przeszły. Formalne zakończenie wymaga zatwierdzenia raportu i obowiązkowego skryptu synchronizacji statusów.
+[Raport testów](test-walkthrough.md) został zatwierdzony przez użytkownika: świeży run 17d4acaa, migracja, role/izolacja API, E2E 5/5, regresja UI 42/42, Django 83/83, checkpoint i restart, build oraz kontrola jakości przeszły. Zatwierdzony wynik zamknięto obowiązkowym skryptem synchronizacji statusów.

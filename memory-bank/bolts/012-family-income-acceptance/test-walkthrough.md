@@ -2,7 +2,8 @@
 stage: test
 bolt: 012-family-income-acceptance
 created: 2026-09-30T06:45:15Z
-status: awaiting-approval
+status: approved
+approved: 2026-09-30T07:30:17Z
 ---
 
 # Test Report: 003-family-income-acceptance
@@ -19,7 +20,7 @@ Końcowy odbiór na świeżym syntetycznym runie `17d4acaa` przeszedł. Sekwencj
 - **Build i quality.ps1**: przeszły; Ruff 0.16.6, Prettier, ESLint, Stylelint, TypeScript.
 - **Kryteria stories**: 8/8 sprawdzonych w zakresie obecnego modelu. Pokrycia linii kodu nie mierzono.
 
-Raport oczekuje na zatwierdzenie. Bolt, stories i jednostka nie są jeszcze formalnie zakończone.
+Raport zatwierdzony przez użytkownika poleceniem Continue. Formalne zakończenie zapisano obowiązkowym skryptem synchronizacji statusów.
 
 ## Installation and Method
 
@@ -76,4 +77,4 @@ W bieżącej aplikacji nie istnieje model ani tabela miesięcznych przychodów. 
 
 Nie mierzono wydajności API ani pełnej zgodności WCAG. Zrzuty i testy klawiatury potwierdzają opisane przepływy, nie kompleksowy audyt dostępności. Dowody lokalne są ignorowane przez Git; repozytorium zawiera raport i powtarzalne scenariusze. Instalację testową zatrzymano z zachowaniem wolumenów i dowodów.
 
-Po zatwierdzeniu raportu należy wykonać obowiązkowy `bolt-complete.cjs`, zweryfikować kaskadę statusów i zapisać commit formalnego zamknięcia.
+Po zatwierdzeniu raportu wykonano obowiązkowy `bolt-complete.cjs` i zweryfikowano kaskadę statusów.

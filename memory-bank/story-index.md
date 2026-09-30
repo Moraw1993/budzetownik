@@ -195,11 +195,11 @@ Aktualizacja: 2026-09-23T08:28:13Z. Fundament ma 24 scenariusze (20 ukończonych
 **Tytuł**: Odbiór migracji i izolacji gospodarstw
 **Plik**: [001-migration-and-isolation](intents/002-family-income-management/units/003-family-income-acceptance/stories/001-migration-and-isolation.md)
 **Bolt**: [012-family-income-acceptance](bolts/012-family-income-acceptance/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 003-family-income-acceptance/002-family-user-journey.md ✅ GENERATED
 **Tytuł**: Odbiór przepływu rodziny i źródeł
 **Plik**: [002-family-user-journey](intents/002-family-income-management/units/003-family-income-acceptance/stories/002-family-user-journey.md)
 **Bolt**: [012-family-income-acceptance](bolts/012-family-income-acceptance/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 

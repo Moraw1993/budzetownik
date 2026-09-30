@@ -2,12 +2,14 @@
 id: 001-migration-and-isolation
 unit: 003-family-income-acceptance
 intent: 002-family-income-management
-status: draft
+status: complete
 priority: must
-created: 2026-09-23T08:26:40Z
+created: '2026-09-23T08:26:40Z'
 assigned_bolt: 012-family-income-acceptance
-implemented: false
-requirements: ["FR-06", "FR-07"]
+implemented: true
+requirements:
+  - FR-06
+  - FR-07
 ---
 
 # Odbiór migracji i izolacji gospodarstw

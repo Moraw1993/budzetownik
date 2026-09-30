@@ -2,12 +2,17 @@
 id: 002-family-user-journey
 unit: 003-family-income-acceptance
 intent: 002-family-income-management
-status: draft
+status: complete
 priority: must
-created: 2026-09-23T08:26:40Z
+created: '2026-09-23T08:26:40Z'
 assigned_bolt: 012-family-income-acceptance
-implemented: false
-requirements: ["FR-01", "FR-02", "FR-03", "FR-04", "FR-05"]
+implemented: true
+requirements:
+  - FR-01
+  - FR-02
+  - FR-03
+  - FR-04
+  - FR-05
 ---
 
 # Odbiór przepływu rodziny i źródeł

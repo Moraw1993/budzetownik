@@ -1,9 +1,9 @@
 ---
 intent: 002-family-income-management
-phase: inception
-status: construction
-created: 2026-09-23T08:15:53Z
-updated: 2026-09-23T21:12:14Z
+phase: construction
+status: complete
+created: '2026-09-23T08:15:53Z'
+updated: 2026-09-30T07:31:10Z
 ---
 
 # Wymagania: Zarządzanie rodziną, umowami i źródłami dochodu
