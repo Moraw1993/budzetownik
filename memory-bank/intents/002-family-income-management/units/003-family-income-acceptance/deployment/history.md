@@ -14,4 +14,4 @@ Kopia: ignorowane `.runtime/acceptance/17d4acaa/backup`, zawiera sekrety syntety
 
 Rollback danych stagingu: `python scripts/acceptance_stack.py restore 17d4acaa`. Nadpisuje wyłącznie target zgodny ze strzeżonym manifestem kopią sprzed testów. Ponowne odtworzenie zostało wykonane i zweryfikowane. Stop: `python scripts/acceptance_stack.py stop 17d4acaa --role target`. Start: `python scripts/acceptance_stack.py up 17d4acaa --role target`.
 
-Produkcja wymaga osobnego planu, identyfikacji aktualnych obrazów, kopii prywatnych danych, konkretnego rollbacku i checkpointu 3. Nie wykonano produkcji ani release; release wymaga `$realease_app`.
+Produkcję następnie zatwierdzono odpowiedzią „ok” i wdrożono po wykonaniu kopii prywatnych danych. [Raport produkcji](verification-d670985-prod.md) opisuje rzeczywiste wyniki i ograniczenia. Nie wykonano release; wymaga `$realease_app`. Monitoring pozostaje osobnym checkpointem.

@@ -27,4 +27,4 @@ Restart nowych obrazów potwierdził logowanie i dokładną zgodność snapshot�
 
 ## Kolejne bramki
 
-Staging następnie zatwierdzono i zweryfikowano: [raport stagingu](../intents/002-family-income-management/units/003-family-income-acceptance/deployment/verification-d670985-staging.md). Produkcja i monitoring pozostają otwarte, wymagają osobnych checkpointów Operations. Release wymaga jawnego `$realease_app`; branche pozostają zachowane do stabilnego wydania. Kopie prywatnych danych opisuje [procedura kopii](backup-restore.md).
+Staging następnie zatwierdzono i zweryfikowano: [raport stagingu](../intents/002-family-income-management/units/003-family-income-acceptance/deployment/verification-d670985-staging.md). Produkcję również zatwierdzono i wdrożono po kopii prywatnych danych: [raport produkcji](../intents/002-family-income-management/units/003-family-income-acceptance/deployment/verification-d670985-prod.md). Monitoring pozostaje otwarty i wymaga osobnego checkpointu Operations. Release wymaga jawnego `$realease_app`; branche pozostają zachowane do stabilnego wydania. Kopie prywatnych danych opisuje [procedura kopii](backup-restore.md).
