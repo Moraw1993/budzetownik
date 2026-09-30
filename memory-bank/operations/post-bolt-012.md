@@ -27,4 +27,4 @@ Restart nowych obrazów potwierdził logowanie i dokładną zgodność snapshot�
 
 ## Kolejne bramki
 
-Staging, produkcja i konfiguracja monitoringu nie są zakończone. Skill Operations wymaga osobnych checkpointów przed tymi etapami; lokalny odbiór nie jest deklarowany jako staging. Brak pomiaru SLA/p95 i długoterminowego monitoringu. Release wymaga jawnego `$realease_app`; branche pozostają zachowane do stabilnego wydania. Rollback prywatnej instalacji i kopie danych opisuje [procedura kopii](backup-restore.md).
+Staging następnie zatwierdzono i zweryfikowano: [raport stagingu](../intents/002-family-income-management/units/003-family-income-acceptance/deployment/verification-d670985-staging.md). Produkcja i monitoring pozostają otwarte, wymagają osobnych checkpointów Operations. Release wymaga jawnego `$realease_app`; branche pozostają zachowane do stabilnego wydania. Kopie prywatnych danych opisuje [procedura kopii](backup-restore.md).
