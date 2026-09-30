@@ -64,4 +64,4 @@ Model miesięcznych przychodów nie jest jeszcze zaimplementowany. Dowód braku 
 
 ## Stage Checkpoints
 
-Plan oczekuje na zatwierdzenie. Implementacja narzędzi i scenariuszy rozpoczyna się po zatwierdzeniu planu; wykonanie pełnego odbioru następuje po osobnym zatwierdzeniu implementacji. Zamknięcie bolta wymaga zatwierdzonego raportu i obowiązkowego skryptu `bolt-complete.cjs`.
+Plan zatwierdzony przez użytkownika: 2026-09-30T06:10:26Z. Implementacja narzędzi i scenariuszy rozpoczyna się po zatwierdzeniu planu; wykonanie pełnego odbioru następuje po osobnym zatwierdzeniu implementacji. Zamknięcie bolta wymaga zatwierdzonego raportu i obowiązkowego skryptu `bolt-complete.cjs`.

@@ -10,8 +10,11 @@ stories:
 created: 2026-09-23T08:28:54Z
 started: 2026-09-29T21:07:18Z
 completed: null
-current_stage: plan
-stages_completed: []
+current_stage: implement
+stages_completed:
+  - name: plan
+    completed: 2026-09-30T06:10:26Z
+    artifact: implementation-plan.md
 requires_bolts: ["011-family-management-ui"]
 enables_bolts: []
 requires_units: ["001-family-income-api", "002-family-management-ui"]
@@ -36,7 +39,7 @@ Potwierdzić na lokalnej instalacji migrację starego źródła, konfigurację r
 
 ## Etapy
 
-- [ ] Plan danych i scenariuszy odbioru.
+- [x] Plan danych i scenariuszy odbioru.
 - [ ] Przygotowanie izolowanej kopii syntetycznych danych i testów E2E.
 - [ ] Wykonanie testów, kontrola jakości i raport wyników.
 

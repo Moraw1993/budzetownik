@@ -2,3 +2,4 @@
 
 - **2026-09-29T21:07:18Z**: 012-family-income-acceptance started — Stage 1: plan. Branch feat/bolt-012-family-income-acceptance; baza: feat/bolt-011-family-management-ui (d9ff45d), wymagany wynik UI i testów nie jest jeszcze w origin/develop.
 - **2026-09-29T21:09:03Z**: Plan przygotowany w implementation-plan.md; oczekuje na zatwierdzenie przed implementacją. Przegląd istniejącego odbioru, testu migracji i selektorów UI zakończony.
+- **2026-09-30T06:10:26Z**: Użytkownik zatwierdził plan poleceniem Kontynuuj. plan → implement. Zakres nie obejmuje nowych okien UI; nowa bramka projektowa nie wymaga ponownej oceny wdrożonych ekranów.
