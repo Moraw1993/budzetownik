@@ -17,11 +17,11 @@ status: in-progress
 
 | Artifact | Status | File |
 | --- | --- | --- |
-| Requirements | Draft; checkpoint 2 pending | requirements.md |
-| System Context | Pending | system-context.md |
-| Units | Pending | units.md and units/*/unit-brief.md |
-| Stories | Pending | units/*/stories/*.md |
-| Bolt Plan | Pending | memory-bank/bolts/*/bolt.md |
+| Requirements | Checkpoint 2 approved; draft for checkpoint 3 | requirements.md |
+| System Context | Defined | system-context.md |
+| Units | In progress | units.md and units/*/unit-brief.md |
+| Stories | Pending generation | units/*/stories/*.md |
+| Bolt Plan | Pending generation | memory-bank/bolts/*/bolt.md |
 
 ## Summary
 
@@ -29,13 +29,13 @@ status: in-progress
 | --- | --- |
 | Functional Requirements | 8 draft |
 | Non-Functional Requirements | 3 draft groups |
-| Units | Pending approval |
-| Stories | Pending approval |
-| Bolts Planned | Pending approval |
+| Units | 4 planned |
+| Stories | Pending generation |
+| Bolts Planned | Pending generation |
 
 ## Units Breakdown
 
-To be determined after requirements approval.
+Four proposed units: periods API, monthly-income API, periods-and-income UI, and acceptance. Backend units own business rules; UI implements their user-facing flows; acceptance validates the integrated journey.
 
 ## Decision Log
 
@@ -45,7 +45,7 @@ To be determined after requirements approval.
 | 2026-10-06 | Intent covers periods and actual income only; each month can be explicitly reopened before edits after closure. | User checkpoint 1 response. | User input; requirements review pending |
 | 2026-10-06 | Income records identify a person or household, support multiple income items, and include amount, currency, receipt date and attachment. | User checkpoint 1 response. | User input; requirements review pending |
 | 2026-10-06 | Multiple months may be active at once and in any order; the received date can differ from the accounting month; income sources must be dictionary entries, with quick-add to the dictionary; each income may have multiple PNG/JPG/PDF attachments. | User checkpoint 1 follow-up. | User input; requirements review pending |
-| 2026-10-06 | Recommend preserving existing access roles: Owner/Administrator edit, Member/Viewer read-only. | Keeps financial writes consistent with established household access policy. | Pending user confirmation at Checkpoint 2 |
+| 2026-10-06 | Preserve existing access roles: Owner/Administrator edit, Member/Viewer read-only. | Keeps financial writes consistent with established household access policy. | Confirmed by user at Checkpoint 2 |
 
 ## Scope Changes
 
@@ -66,9 +66,9 @@ To be determined after requirements approval.
 ## Next Steps
 
 1. Resolve open questions and approve requirements at Checkpoint 2.
-2. Generate context, units, stories and bolt plan.
+2. Complete units, stories and bolt plan.
 3. Review all artifacts at Checkpoint 3 before Construction.
 
 ## Dependencies
 
-The intent extends existing household membership, roles, income sources and contracts. Construction dependencies and execution order remain to be defined after requirements approval.
+The intent extends existing household membership, roles, income sources and contracts. Proposed execution order: periods API → monthly-income API (with attachment stage) → UI → acceptance. The existing family-income API and family-management UI are prerequisites where their contracts are reused.

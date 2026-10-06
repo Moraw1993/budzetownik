@@ -1,9 +1,9 @@
 ---
 intent: 003-budget-periods-and-income
 phase: inception
-status: draft
+status: in-progress
 created: '2026-10-06T20:09:33Z'
-updated: '2026-10-06T20:09:33Z'
+updated: '2026-10-06T20:31:50Z'
 ---
 
 # Requirements: Okresy rozliczeniowe i rzeczywiste przychody
@@ -89,15 +89,15 @@ Umożliwić gospodarstwu tworzenie lat rozliczeniowych z dwunastoma miesiącami,
 
 | Assumption | Risk if Invalid | Mitigation |
 | --- | --- | --- |
-| „Osoba lub inny obiekt” oznacza członka rodziny albo całe gospodarstwo. | Wpisy mogą wymagać innych właścicieli, np. celu lub konta. | Potwierdzić granicę na przeglądzie wymagań przed dalszym planowaniem. |
-| Edycja jest dostępna dla ról z prawem edycji danych gospodarstwa według istniejącej polityki. | Zmiana ról może naruszyć uzgodnione zasady dostępu. | Nie rozszerzać uprawnień Member/Viewer bez jawnej decyzji. |
-| Źródła niezwiązane z umową są przygotowywane w słowniku `IncomeSource` przed użyciem w przychodzie lub dodawane tam bezpośrednio z okna wpisu. | Użytkownik może nie znaleźć pasującej kategorii albo pól źródła. | Zapewnić łatwe dodawanie do słownika z walidacją istniejącego formularza typu źródła. |
+| „Osoba lub inny obiekt” oznacza członka rodziny albo całe gospodarstwo. | Wpisy mogą wymagać innych właścicieli, np. celu lub konta. | Granica potwierdzona przez użytkownika; rozszerzenia właścicieli pozostają poza zakresem. |
+| Owner i Administrator mogą zapisywać; Member i Viewer mają tylko odczyt. | Zmiana ról może naruszyć uzgodnione zasady dostępu. | Zachować istniejącą politykę bez rozszerzania uprawnień. |
+| Każdy wpis wskazuje istniejące lub dodane z formularza źródło ze słownika `IncomeSource`. | Użytkownik może nie znaleźć pasującej kategorii albo pól źródła. | Szybkie dodawanie tworzy pełny, walidowany element słownika; pole swobodnego tekstu jest zabronione. |
 | Suma w różnych walutach nie jest przeliczana w tym zakresie. | Użytkownik może oczekiwać jednej sumy w walucie gospodarstwa. | Pokazywać sumy per waluta; przeliczenia zaplanować osobno. |
 
 ## Open Questions
 
 | Question | Owner | Due Date | Resolution |
 | --- | --- | --- | --- |
-| Czy „każdy z opcją edycji” oznacza istniejący model: Owner/Administrator zapisują, Member/Viewer tylko odczytują? | User | Checkpoint 2 | Pending |
+| Czy „każdy z opcją edycji” oznacza istniejący model: Owner/Administrator zapisują, Member/Viewer tylko odczytują? | User | Checkpoint 2 | Resolved: Owner/Administrator write; Member/Viewer read-only |
 | Jakie limity liczby i rozmiaru załączników są potrzebne? | User | Construction design | Pending; wiele plików na wpis; PNG, JPG/JPEG i PDF |
 | Które dane źródła i odbiorcy trzeba zachować przy przychodzie jako historyczny stan, jeśli słownik lub przypisanie zmieni się później? | User | Construction design | Pending |
