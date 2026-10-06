@@ -1,4 +1,4 @@
-# Monitoring projektu lokalnego — do akceptacji
+# Monitoring projektu lokalnego
 
 Status: lokalny monitoring MVP skonfigurowany i zweryfikowany 2026-10-06. Raporty: [staging](verification-monitoring-staging.md), [prywatna instalacja](verification-monitoring-prod.md).
 

@@ -1,4 +1,4 @@
-# Propozycja monitoringu lokalnego MVP
+# Monitoring lokalnego MVP
 
 Status: lokalny monitoring MVP skonfigurowany i zweryfikowany na stagingu oraz prywatnej instalacji. Szczegóły i runbooki: [monitoring lokalny](monitoring.md).
 

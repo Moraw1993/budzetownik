@@ -41,4 +41,4 @@ scope: logging-rotation
 
 Jedna próbka `docker stats` krótko po uruchomieniu: baza 0.00% CPU / 25.44 MiB, backend 27.15% / 105.4 MiB, frontend 0.00% / 38.7 MiB, proxy 0.01% / 14.45 MiB. To chwilowy odczyt po starcie, nie pomiar trendu, obciążenia ani SLO.
 
-Nie skonfigurowano dashboardów, alertów ani ciągłych metryk. Staging został odtworzony z istniejącymi wolumenami, bez build i pull. Przed zmianą prywatnej instalacji wymagana jest aktualna kopia oraz zapis obrazu i wolumenów do procedury rollbacku.
+Nie skonfigurowano dashboardów, alertów ani ciągłych metryk. Staging został odtworzony z istniejącymi wolumenami, bez build i pull. W chwili raportu wdrożenie prywatne oczekiwało na kopię; późniejszą konfigurację i jej odbiór opisuje [raport prywatnej instalacji](verification-monitoring-prod.md).

@@ -30,4 +30,4 @@ Lokalnie `.runtime/acceptance/17d4acaa/`: staging-verification.json, staging-con
 
 Narzędzie verify_family_staging.py wymaga czystego restore przed ponownym uruchomieniem: porównuje dane, potem celowo zapisuje testową firmę i audyt. Wstępna próba ujawniła złą nazwę roli w narzędziu; poprawiono i ponowiono od czystej kopii. Przeglądarkę i selektory dostosowano do Edge i faktycznych nazw zakładek; końcowy odbiór przeszedł. Produkt nie wymagał zmian.
 
-Pełne E2E zapisu umów 5/5 wykonano wcześniej w dev, nie ponawiano ich na target. Produkcja i monitoring pozostają otwarte.
+Pełne E2E zapisu umów 5/5 wykonano wcześniej w dev, nie ponawiano ich na target. W chwili raportu produkcja i monitoring były otwarte; kolejne wyniki zapisano w [raporcie produkcji](verification-d670985-prod.md) i [raporcie monitoringu](verification-monitoring-prod.md).

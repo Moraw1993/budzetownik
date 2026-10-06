@@ -30,7 +30,7 @@ Dowody: folder kopii (domain-before.txt/domain-after.txt, checksums.json, images
 
 ## Ograniczenia i utrzymanie
 
-Nie wykonano na prywatnych danych fikcyjnych zapisów ani pomiaru P95. Nie zadeklarowano pełnego monitoringu RED/SLO ani długoterminowej dostępności. Checkpoint 4 monitoringu pozostaje otwarty.
+W chwili tego odbioru nie wykonano na prywatnych danych fikcyjnych zapisów ani pomiaru P95. Pełny monitoring RED/SLO i długoterminowej dostępności pozostawał poza zakresem. Późniejszy checkpoint 4 zakończono w lokalnym zakresie MVP; aktualny wynik opisuje [raport monitoringu](verification-monitoring-prod.md).
 
 Rollback obrazów i warunki odtworzenia bazy opisuje [plan](production-plan.md). Zachować obrazy myhomebudget-backend/frontend:rollback-pre-family-20260930; backend rollbacku pochodzi z filesystemu wcześniejszego kontenera i przeszedł kontrolę runtime/migracji na stagingu. Nie odtwarzać bazy automatycznie przy zwykłej awarii kodu.
 

@@ -1,6 +1,6 @@
 # Plan aktualizacji prywatnej instalacji po bolcie 012
 
-Status: przygotowany do checkpointu 3 Operations, bez wdrożenia produkcji. Branch `docs/task-production-family-income-plan` ma bazę `ec2f9e3` z brancha stagingu: plan zależy od jego odbioru i dowodów. Nie uruchamia release.
+Status: plan wykonano 2026-09-30 po checkpointcie 3; szczegóły wdrożenia i ograniczenia zapisano w [raporcie produkcji](verification-d670985-prod.md). Późniejszy checkpoint monitoringu opisuje [raport monitoringu](verification-monitoring-prod.md). Ten dokument zachowuje zatwierdzony plan i rollback; nie uruchomiono release.
 
 ## Cel i stan zastany
 
