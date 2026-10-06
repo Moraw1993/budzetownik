@@ -38,7 +38,13 @@ Jednostka zależy od 001-periods-api oraz istniejącego 001-family-income-api (�
 
 ## Stories
 
-Do utworzenia: 001-record-income, 002-select-dictionary-source, 003-record-amount-currency-date, 004-period-totals-by-currency, 005-private-income-attachments.
+Łącznie 4 stories Must i 1 Should; story 005 należy do osobnego bolta 015.
+
+- [ ] **001-record-income** — Must — 014-monthly-income-api
+- [ ] **002-select-dictionary-source** — Must — 014-monthly-income-api
+- [ ] **003-record-amount-currency-date** — Must — 014-monthly-income-api
+- [ ] **004-period-totals-by-currency** — Must — 014-monthly-income-api
+- [ ] **005-private-income-attachments** — Should — 015-income-attachments-api
 
 ## Kryteria zakończenia
 

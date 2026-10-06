@@ -1,7 +1,7 @@
 ---
 unit: 004-periods-income-acceptance
 intent: 003-budget-periods-and-income
-unit_type: acceptance
+unit_type: infrastructure
 default_bolt_type: simple-construction-bolt
 phase: inception
 status: draft
@@ -29,7 +29,10 @@ Wymaga ukończenia 001-periods-api, 002-monthly-income-api, 003-periods-income-u
 
 ## Stories
 
-Do utworzenia: 001-period-role-lifecycle, 002-income-journey-attachments.
+Łącznie 2 stories Must; obie w planowanym bolcie 017.
+
+- [ ] **001-period-role-lifecycle** — Must — 017-periods-income-acceptance
+- [ ] **002-income-journey-attachments** — Must — 017-periods-income-acceptance
 
 ## Kryteria zakończenia
 

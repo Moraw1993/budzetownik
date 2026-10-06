@@ -34,7 +34,11 @@ API udostępnia listę/tworzenie lat, odczyt miesięcy oraz jawne operacje aktyw
 
 ## Stories
 
-Do utworzenia w jednostce: 001-create-year-months, 002-activate-month, 003-close-and-reopen-month.
+Łącznie 3 stories Must; przypisane do bolta 013.
+
+- [ ] **001-create-year-months** — Must — 013-periods-api
+- [ ] **002-activate-month** — Must — 013-periods-api
+- [ ] **003-close-and-reopen-month** — Must — 013-periods-api
 
 ## Bolt i kryteria zakończenia
 

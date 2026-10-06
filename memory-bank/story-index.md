@@ -1,7 +1,7 @@
 # Indeks scenariuszy
 
-Intenty: 001-household-foundation i 002-family-income-management. Utworzono: 33; ukończono i zweryfikowano: 20; w trakcie: 0; zaplanowano: 13.
-Aktualizacja: 2026-09-23T08:28:13Z. Fundament ma 24 scenariusze (20 ukończonych, 4 zaplanowane); nowy intent ma 9 scenariuszy do przeglądu. Bolt 009 jest w etapie testów, a nowe bolty czekają na odbiór 008.
+Intenty: 001-household-foundation, 002-family-income-management i 003-budget-periods-and-income. Utworzono: 48; ukończono i zweryfikowano: 20; w trakcie: 0; zaplanowano lub oczekuje na przegląd: 28.
+Aktualizacja: 2026-10-06. Fundament ma 24 scenariusze (20 ukończonych, 4 zaplanowane); intent 002 ma 9 scenariuszy (5 ukończonych, 4 draft); intent 003 ma 15 wygenerowanych scenariuszy draft. Plany intentu 003 oczekują na checkpoint 3.
 
 ### 001-local-runtime/001-compose-start.md ✅ GENERATED
 **Tytuł**: Uruchomienie przez Compose
@@ -202,4 +202,96 @@ Aktualizacja: 2026-09-23T08:28:13Z. Fundament ma 24 scenariusze (20 ukończonych
 **Plik**: [002-family-user-journey](intents/002-family-income-management/units/003-family-income-acceptance/stories/002-family-user-journey.md)
 **Bolt**: [012-family-income-acceptance](bolts/012-family-income-acceptance/bolt.md)
 **Status**: complete; implemented: true.
+
+## 003-budget-periods-and-income
+
+### 001-periods-api/001-create-year-months.md ✅ GENERATED
+**Tytuł**: Utworzenie roku i dwunastu nieaktywnych miesięcy
+**Plik**: [001-create-year-months](intents/003-budget-periods-and-income/units/001-periods-api/stories/001-create-year-months.md)
+**Bolt**: [013-periods-api](bolts/013-periods-api/bolt.md)
+**Status**: draft; implemented: false.
+
+### 001-periods-api/002-activate-month.md ✅ GENERATED
+**Tytuł**: Jawna, niezależna aktywacja miesiąca
+**Plik**: [002-activate-month](intents/003-budget-periods-and-income/units/001-periods-api/stories/002-activate-month.md)
+**Bolt**: [013-periods-api](bolts/013-periods-api/bolt.md)
+**Status**: draft; implemented: false.
+
+### 001-periods-api/003-close-and-reopen-month.md ✅ GENERATED
+**Tytuł**: Zamknięcie i jawne ponowne otwarcie miesiąca
+**Plik**: [003-close-and-reopen-month](intents/003-budget-periods-and-income/units/001-periods-api/stories/003-close-and-reopen-month.md)
+**Bolt**: [013-periods-api](bolts/013-periods-api/bolt.md)
+**Status**: draft; implemented: false.
+
+### 002-monthly-income-api/001-record-income.md ✅ GENERATED
+**Tytuł**: Zapis rzeczywistego przychodu
+**Plik**: [001-record-income](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/001-record-income.md)
+**Bolt**: [014-monthly-income-api](bolts/014-monthly-income-api/bolt.md)
+**Status**: draft; implemented: false.
+
+### 002-monthly-income-api/002-select-dictionary-source.md ✅ GENERATED
+**Tytuł**: Wybór lub szybkie dodanie źródła słownikowego
+**Plik**: [002-select-dictionary-source](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/002-select-dictionary-source.md)
+**Bolt**: [014-monthly-income-api](bolts/014-monthly-income-api/bolt.md)
+**Status**: draft; implemented: false.
+
+### 002-monthly-income-api/003-record-amount-currency-date.md ✅ GENERATED
+**Tytuł**: Kwota, waluta i rzeczywista data otrzymania
+**Plik**: [003-record-amount-currency-date](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/003-record-amount-currency-date.md)
+**Bolt**: [014-monthly-income-api](bolts/014-monthly-income-api/bolt.md)
+**Status**: draft; implemented: false.
+
+### 002-monthly-income-api/004-period-totals-by-currency.md ✅ GENERATED
+**Tytuł**: Podsumowania miesiąca i roku według waluty
+**Plik**: [004-period-totals-by-currency](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/004-period-totals-by-currency.md)
+**Bolt**: [014-monthly-income-api](bolts/014-monthly-income-api/bolt.md)
+**Status**: draft; implemented: false.
+
+### 002-monthly-income-api/005-private-income-attachments.md ✅ GENERATED
+**Tytuł**: Wiele prywatnych załączników do przychodu
+**Plik**: [005-private-income-attachments](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/005-private-income-attachments.md)
+**Bolt**: [015-income-attachments-api](bolts/015-income-attachments-api/bolt.md)
+**Status**: draft; implemented: false.
+
+### 003-periods-income-ui/001-navigate-periods.md ✅ GENERATED
+**Tytuł**: Nawigacja po latach i stanach miesięcy
+**Plik**: [001-navigate-periods](intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/001-navigate-periods.md)
+**Bolt**: [016-periods-income-ui](bolts/016-periods-income-ui/bolt.md)
+**Status**: draft; implemented: false.
+
+### 003-periods-income-ui/002-change-period-state.md ✅ GENERATED
+**Tytuł**: Jawne zmiany stanu okresu w UI
+**Plik**: [002-change-period-state](intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/002-change-period-state.md)
+**Bolt**: [016-periods-income-ui](bolts/016-periods-income-ui/bolt.md)
+**Status**: draft; implemented: false.
+
+### 003-periods-income-ui/003-add-income-recipient-source.md ✅ GENERATED
+**Tytuł**: Wybór odbiorcy i słownikowego źródła w formularzu
+**Plik**: [003-add-income-recipient-source](intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/003-add-income-recipient-source.md)
+**Bolt**: [016-periods-income-ui](bolts/016-periods-income-ui/bolt.md)
+**Status**: draft; implemented: false.
+
+### 003-periods-income-ui/004-enter-income-details.md ✅ GENERATED
+**Tytuł**: Wprowadzenie kwoty, waluty i daty otrzymania
+**Plik**: [004-enter-income-details](intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/004-enter-income-details.md)
+**Bolt**: [016-periods-income-ui](bolts/016-periods-income-ui/bolt.md)
+**Status**: draft; implemented: false.
+
+### 003-periods-income-ui/005-manage-attachments-and-totals.md ✅ GENERATED
+**Tytuł**: Załączniki i podsumowania według waluty
+**Plik**: [005-manage-attachments-and-totals](intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/005-manage-attachments-and-totals.md)
+**Bolt**: [016-periods-income-ui](bolts/016-periods-income-ui/bolt.md)
+**Status**: draft; implemented: false.
+
+### 004-periods-income-acceptance/001-period-role-lifecycle.md ✅ GENERATED
+**Tytuł**: Odbiór cyklu życia okresów i ról
+**Plik**: [001-period-role-lifecycle](intents/003-budget-periods-and-income/units/004-periods-income-acceptance/stories/001-period-role-lifecycle.md)
+**Bolt**: [017-periods-income-acceptance](bolts/017-periods-income-acceptance/bolt.md)
+**Status**: draft; implemented: false.
+
+### 004-periods-income-acceptance/002-income-journey-attachments.md ✅ GENERATED
+**Tytuł**: Odbiór przychodu, źródła, załączników i podsumowań
+**Plik**: [002-income-journey-attachments](intents/003-budget-periods-and-income/units/004-periods-income-acceptance/stories/002-income-journey-attachments.md)
+**Bolt**: [017-periods-income-acceptance](bolts/017-periods-income-acceptance/bolt.md)
+**Status**: draft; implemented: false.
 

@@ -33,7 +33,13 @@ Zależy od 001-periods-api i 002-monthly-income-api oraz istniejącego 002-famil
 
 ## Stories
 
-Do utworzenia: 001-navigate-periods, 002-change-period-state, 003-add-income-recipient-source, 004-enter-income-details, 005-manage-attachments-and-totals.
+Łącznie 4 stories Must i 1 Should; wszystkie w planowanym bolcie 016.
+
+- [ ] **001-navigate-periods** — Must — 016-periods-income-ui
+- [ ] **002-change-period-state** — Must — 016-periods-income-ui
+- [ ] **003-add-income-recipient-source** — Must — 016-periods-income-ui
+- [ ] **004-enter-income-details** — Must — 016-periods-income-ui
+- [ ] **005-manage-attachments-and-totals** — Should — 016-periods-income-ui
 
 ## Wyłączenia
 
