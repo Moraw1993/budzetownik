@@ -1,6 +1,6 @@
 # Propozycja monitoringu lokalnego MVP
 
-Status: staging zweryfikowany; konfiguracja prywatnej instalacji oczekuje na kopię i wdrożenie. Szczegóły i runbooki: [monitoring lokalny](monitoring.md).
+Status: lokalny monitoring MVP skonfigurowany i zweryfikowany na stagingu oraz prywatnej instalacji. Szczegóły i runbooki: [monitoring lokalny](monitoring.md).
 
 Zakres proponowany dla lokalnej instalacji: zachować aktualne healthchecki bazy/backendu/frontendu, ustawić ograniczoną rotację logów Docker (`json-file`, `max-size: 10m`, `max-file: "3"`) dla usług tego projektu oraz przygotować instrukcje reakcji na niedostępność, powtarzające się restarty i błędy migracji. Sprawdzać aktualne obrazy, health, restarty i chwilowe zużycie zasobów bez logowania sekretów lub prywatnych rekordów. Zmianę najpierw sprawdzić na stagingu; prywatną instalację aktualizować dopiero po pozytywnym wyniku stagingu i kopii danych.
 

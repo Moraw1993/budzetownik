@@ -1,6 +1,6 @@
 # Monitoring projektu lokalnego — do akceptacji
 
-Status: rotacja logów zastosowana i zweryfikowana na stagingu 2026-10-06; prywatna instalacja oczekuje na kopię i odtworzenie kontenerów. Wyniki: [raport stagingu](verification-monitoring-staging.md).
+Status: lokalny monitoring MVP skonfigurowany i zweryfikowany 2026-10-06. Raporty: [staging](verification-monitoring-staging.md), [prywatna instalacja](verification-monitoring-prod.md).
 
 ## Zakres proponowanej konfiguracji
 
@@ -12,9 +12,9 @@ Status: rotacja logów zastosowana i zweryfikowana na stagingu 2026-10-06; prywa
 ## Wdrożenie po akceptacji
 
 1. ✅ Zastosowano zmianę na stagingu d670985 i potwierdzono healthchecki oraz zachowanie danych syntetycznych.
-2. Przed zmianą prywatnej instalacji wykonać i zweryfikować kopię zgodnie z procedurą [kopii i odtworzenia](../../../../../operations/backup-restore.md). Zachować aktualne obrazy kontenerów jako rollback.
-3. Zastosować tę samą konfigurację do prywatnej instalacji `myhomebudget` przez odtworzenie kontenerów bez przebudowy i pobierania obrazów. Wolumeny, obrazy aplikacji, baza, sekrety, porty i certyfikaty pozostają bez zmian.
-4. Zweryfikować HTTPS, obrazy, healthchecki, restarty i trwałość danych, a wynik zapisać w historii wdrożeń.
+2. ✅ Przed zmianą prywatnej instalacji wykonano i zweryfikowano kopię. Zachowano aktualne obrazy kontenerów jako rollback.
+3. ✅ Zastosowano tę samą konfigurację do prywatnej instalacji `myhomebudget` bez przebudowy i pobierania obrazów. Wolumeny, obrazy aplikacji, baza, sekrety, porty i certyfikaty pozostały bez zmian.
+4. ✅ Zweryfikowano HTTPS, obrazy, healthchecki, restarty i liczebność danych; wyniki zapisano w historii wdrożeń.
 
 Odtworzenie kontenerów może spowodować krótką przerwę w lokalnym dostępie. Jeśli staging, kopia lub dowolna weryfikacja zawiedzie, nie kontynuować na prywatnej instalacji. W razie problemu po zastosowaniu konfiguracji przywrócić poprzednie obrazy i konfigurację Compose, nie odtwarzając automatycznie bazy.
 
@@ -24,4 +24,4 @@ Ta konfiguracja ogranicza rozmiar lokalnych plików logów i ułatwia ręczną d
 
 ## Checkpoint 4
 
-Checkpoint 4 został zatwierdzony. Staging przeszedł weryfikację. Prywatną instalację zmieniać dopiero po wykonaniu kopii, potwierdzeniu bieżących obrazów i sprawdzeniu rollbacku.
+Checkpoint 4 został zatwierdzony i wykonany. Jednostka przeszła monitorowanie MVP w zakresie opisanym powyżej.

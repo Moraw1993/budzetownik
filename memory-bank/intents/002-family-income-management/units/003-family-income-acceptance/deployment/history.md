@@ -18,4 +18,6 @@ Produkcję następnie zatwierdzono odpowiedzią „ok” i wdrożono po wykonani
 
 ## Monitoring
 
-2026-10-06: Zastosowano rotację logów na syntetycznym stagingu bez budowania lub pobierania obrazów. Backend i frontend pozostały na przypiętych obrazach d670985, migracje zakończyły się kodem 0, usługi healthy, HTTPS zwrócił 200, liczniki restartów wyniosły 0, a liczby rekordów tabel pozostały zgodne ze stanem sprzed zmiany. Szczegóły i ograniczenia pomiaru zasobów: [raport weryfikacji](verification-monitoring-staging.md). Prywatna instalacja oczekuje na osobną kopię przed odtworzeniem kontenerów.
+2026-10-06: Zastosowano rotację logów na stagingu bez budowania lub pobierania obrazów. Backend i frontend pozostały na przypiętych obrazach d670985, migracje zakończyły się kodem 0, usługi healthy, HTTPS zwrócił 200, liczniki restartów wyniosły 0, a liczby rekordów tabel pozostały zgodne ze stanem sprzed zmiany. [Raport stagingu](verification-monitoring-staging.md).
+
+2026-10-06: Po zweryfikowanej kopii i zachowaniu tagów rollback zastosowano tę samą konfigurację na prywatnej instalacji, bez zmiany obrazów aplikacji i wolumenów. Migracje zakończyły się kodem 0, backend/frontend były healthy, API i strona główna zwróciły 200, liczniki restartów wyniosły 0, liczebność wszystkich 19 tabel i zawartość pustego katalogu media pozostały bez zmian. [Raport produkcyjny](verification-monitoring-prod.md). Lokalny monitoring MVP zakończony; pełne metryki, dashboardy i alerty pozostają poza jego zakresem.
