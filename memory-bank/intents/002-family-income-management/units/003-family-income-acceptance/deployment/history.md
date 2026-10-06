@@ -14,4 +14,8 @@ Kopia: ignorowane `.runtime/acceptance/17d4acaa/backup`, zawiera sekrety syntety
 
 Rollback danych stagingu: `python scripts/acceptance_stack.py restore 17d4acaa`. Nadpisuje wyłącznie target zgodny ze strzeżonym manifestem kopią sprzed testów. Ponowne odtworzenie zostało wykonane i zweryfikowane. Stop: `python scripts/acceptance_stack.py stop 17d4acaa --role target`. Start: `python scripts/acceptance_stack.py up 17d4acaa --role target`.
 
-Produkcję następnie zatwierdzono odpowiedzią „ok” i wdrożono po wykonaniu kopii prywatnych danych. [Raport produkcji](verification-d670985-prod.md) opisuje rzeczywiste wyniki i ograniczenia. Nie wykonano release; wymaga `$realease_app`. Monitoring pozostaje osobnym checkpointem.
+Produkcję następnie zatwierdzono odpowiedzią „ok” i wdrożono po wykonaniu kopii prywatnych danych. [Raport produkcji](verification-d670985-prod.md) opisuje rzeczywiste wyniki i ograniczenia. Nie wykonano release; wymaga `$realease_app`. Monitoring pozostał osobnym checkpointem.
+
+## Monitoring
+
+2026-10-06: Zastosowano rotację logów na syntetycznym stagingu bez budowania lub pobierania obrazów. Backend i frontend pozostały na przypiętych obrazach d670985, migracje zakończyły się kodem 0, usługi healthy, HTTPS zwrócił 200, liczniki restartów wyniosły 0, a liczby rekordów tabel pozostały zgodne ze stanem sprzed zmiany. Szczegóły i ograniczenia pomiaru zasobów: [raport weryfikacji](verification-monitoring-staging.md). Prywatna instalacja oczekuje na osobną kopię przed odtworzeniem kontenerów.
