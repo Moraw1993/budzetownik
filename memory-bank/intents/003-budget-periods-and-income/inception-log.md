@@ -28,7 +28,7 @@ status: in-progress
 | Metric | Count |
 | --- | --- |
 | Functional Requirements | 8 draft |
-| Non-Functional Requirements | 3 draft groups |
+| Non-Functional Requirements | 2 draft groups |
 | Units | 4 |
 | Stories | 15 draft |
 | Bolts Planned | 5 |
