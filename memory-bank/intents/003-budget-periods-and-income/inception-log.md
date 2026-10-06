@@ -44,12 +44,14 @@ To be determined after requirements approval.
 | 2026-10-06 | A year contains exactly 12 calendar months; each month starts inactive and must be explicitly activated. | User checkpoint 1 response. | User input; requirements review pending |
 | 2026-10-06 | Intent covers periods and actual income only; each month can be explicitly reopened before edits after closure. | User checkpoint 1 response. | User input; requirements review pending |
 | 2026-10-06 | Income records identify a person or household, support multiple income items, and include amount, currency, receipt date and attachment. | User checkpoint 1 response. | User input; requirements review pending |
+| 2026-10-06 | Multiple months may be active at once and in any order; the received date can differ from the accounting month; income sources must be dictionary entries, with quick-add to the dictionary; each income may have multiple PNG/JPG/PDF attachments. | User checkpoint 1 follow-up. | User input; requirements review pending |
+| 2026-10-06 | Recommend preserving existing access roles: Owner/Administrator edit, Member/Viewer read-only. | Keeps financial writes consistent with established household access policy. | Pending user confirmation at Checkpoint 2 |
 
 ## Scope Changes
 
 | Date | Change | Reason | Impact |
 | --- | --- | --- | --- |
-| 2026-10-06 | Started new intent after completion of family-income management intent. | User invoked Inception for the next planned feature. | Requirements and design artifacts only; no application code. |
+| 2026-10-06 | Started new intent after completion of family-income management intent and refined requirements from user answers. | User invoked Inception for the next planned feature. | Requirements and design artifacts only; no application code. |
 
 ## Ready for Construction
 

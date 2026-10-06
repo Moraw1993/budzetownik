@@ -29,7 +29,7 @@ Umożliwić gospodarstwu tworzenie lat rozliczeniowych z dwunastoma miesiącami,
 
 ### FR-02: Jawne uruchamianie miesięcy
 - **Description**: Każdy miesiąc zaczyna jako nieaktywny i wymaga jawnej aktywacji przez użytkownika rozpoczynającego jego prowadzenie.
-- **Acceptance Criteria**: Utworzenie roku nie aktywuje żadnego miesiąca; miesiąc nieaktywny nie przyjmuje wpisów przychodu; użytkownik z uprawnieniem do edycji może jawnie aktywować wybrany miesiąc; status miesiąca jest widoczny.
+- **Acceptance Criteria**: Utworzenie roku nie aktywuje żadnego miesiąca; miesiąc nieaktywny nie przyjmuje wpisów przychodu; użytkownik z uprawnieniem do edycji może jawnie aktywować wybrany miesiąc; wiele miesięcy może być aktywnych jednocześnie; można aktywować miesiące w dowolnej kolejności; status miesiąca jest widoczny.
 - **Priority**: Must
 
 ### FR-03: Wpisy rzeczywistego przychodu
@@ -37,19 +37,19 @@ Umożliwić gospodarstwu tworzenie lat rozliczeniowych z dwunastoma miesiącami,
 - **Acceptance Criteria**: Jeden miesiąc może zawierać wiele przychodów tej samej osoby, gospodarstwa oraz źródła; kwota wpisu opisuje rzeczywiście uzyskany przychód i nie jest automatycznie kopiowana z kwoty brutto umowy ani podpowiedzi źródła; odbiorca wpisu należy do aktywnego gospodarstwa.
 - **Priority**: Must
 
-### FR-04: Źródło lub sposób uzyskania przychodu
-- **Description**: Przy wyborze osoby system udostępnia jej umowy i źródła aktywne w wybranym okresie. Dla przychodu niezwiązanego z umową użytkownik może określić sposób jego uzyskania. Wpis gospodarstwa może wskazać źródło należące do gospodarstwa.
-- **Acceptance Criteria**: Lista umów uwzględnia daty obowiązywania w danym okresie; źródło przypisane do innej osoby lub gospodarstwa nie może zostać wybrane; można odróżnić przychód związany z umową/pracą od pozostałych, takich jak lokaty, odsetki, świadczenia lub 800+; informacja o źródle pozostaje dostępna przy późniejszym odczycie wpisu.
+### FR-04: Słownik źródeł przychodu
+- **Description**: Każdy wpis wskazuje pozycję ze słownika `IncomeSource`; dowolny tekst wpisany bezpośrednio jako źródło przychodu jest niedozwolony. W oknie dodawania przychodu użytkownik może w prosty sposób dodać nowe źródło do słownika i następnie użyć go we wpisie.
+- **Acceptance Criteria**: Po wyborze członka dostępne są jego umowy aktywne w wybranym okresie oraz przypisane do niego pozostałe źródła; wpis gospodarstwa może wskazać źródło należące do gospodarstwa; nowe źródło jest tworzone z użyciem walidacji i pól właściwych dla jego typu, nie jako luźny tekst; źródła innych osób/gospodarstw nie mogą być wybrane; rozróżnialne są umowy/praca i pozostałe źródła, takie jak lokaty, odsetki, świadczenia lub 800+; powiązanie źródła jest dostępne przy późniejszym odczycie wpisu.
 - **Priority**: Must
 
 ### FR-05: Kwota, waluta i data uzyskania
 - **Description**: Każdy wpis zawiera rzeczywistą kwotę, walutę i datę uzyskania przychodu.
-- **Acceptance Criteria**: Kwota zachowuje precyzję dziesiętną; waluta jest zapisana dla wpisu; data jest zapisana jako data uzyskania przychodu; sumy okresu i roku są prezentowane osobno dla każdej waluty, bez niejawnego przeliczania.
+- **Acceptance Criteria**: Kwota zachowuje precyzję dziesiętną; waluta jest zapisana dla wpisu; data jest zapisana jako data faktycznego uzyskania przychodu; data uzyskania nie musi należeć do miesiąca rozliczeniowego, np. wypłata otrzymana 30 września może zostać ujęta w rozliczeniu października; sumy okresu i roku są prezentowane osobno dla każdej waluty, bez niejawnego przeliczania.
 - **Priority**: Must
 
 ### FR-06: Załączniki do przychodu
-- **Description**: Użytkownik może dołączyć dokument potwierdzający wpis przychodu.
-- **Acceptance Criteria**: Załącznik pozostaje powiązany z właściwym wpisem i gospodarstwem; dostęp do niego podlega uprawnieniom tego wpisu; nie jest publicznie dostępny bez autoryzacji.
+- **Description**: Użytkownik może dołączyć wiele dokumentów potwierdzających jeden wpis przychodu.
+- **Acceptance Criteria**: Załączniki pozostają powiązane z właściwym wpisem i gospodarstwem; obsługiwane są pliki PNG, JPG/JPEG i PDF; dostęp do nich podlega uprawnieniom tego wpisu; nie są publicznie dostępne bez autoryzacji.
 - **Priority**: Should
 
 ### FR-07: Zamknięcie i ponowne otwarcie miesiąca
@@ -91,15 +91,13 @@ Umożliwić gospodarstwu tworzenie lat rozliczeniowych z dwunastoma miesiącami,
 | --- | --- | --- |
 | „Osoba lub inny obiekt” oznacza członka rodziny albo całe gospodarstwo. | Wpisy mogą wymagać innych właścicieli, np. celu lub konta. | Potwierdzić granicę na przeglądzie wymagań przed dalszym planowaniem. |
 | Edycja jest dostępna dla ról z prawem edycji danych gospodarstwa według istniejącej polityki. | Zmiana ról może naruszyć uzgodnione zasady dostępu. | Nie rozszerzać uprawnień Member/Viewer bez jawnej decyzji. |
-| Aktywne źródła „other” mogą reprezentować przychody niebędące umowami, a wpis zachowuje historyczny opis źródła. | Samo wskazanie źródła może nie wystarczyć do opisania nietypowego wpływu. | Doprecyzować czy potrzebne jest dodatkowe pole metody lub swobodny opis. |
+| Źródła niezwiązane z umową są przygotowywane w słowniku `IncomeSource` przed użyciem w przychodzie lub dodawane tam bezpośrednio z okna wpisu. | Użytkownik może nie znaleźć pasującej kategorii albo pól źródła. | Zapewnić łatwe dodawanie do słownika z walidacją istniejącego formularza typu źródła. |
 | Suma w różnych walutach nie jest przeliczana w tym zakresie. | Użytkownik może oczekiwać jednej sumy w walucie gospodarstwa. | Pokazywać sumy per waluta; przeliczenia zaplanować osobno. |
 
 ## Open Questions
 
 | Question | Owner | Due Date | Resolution |
 | --- | --- | --- | --- |
-| Czy każdy użytkownik gospodarstwa z rolą Member może edytować/aktywować/zamykać miesiąc, czy obowiązuje istniejący podział ról? | User | Checkpoint 2 | Pending |
-| Czy źródło przychodu wybieramy z istniejących `IncomeSource` (umowa/other), czy wpis ma pozwalać na jednorazową nazwę/metodę bez uprzedniego konfigurowania źródła? | User | Checkpoint 2 | Pending |
-| Czy data uzyskania musi przypadać w obrębie wybranego miesiąca rozliczeniowego? | User | Checkpoint 2 | Pending |
-| Czy wiele miesięcy może być aktywnych równocześnie i czy można aktywować miesiące w dowolnej kolejności? | User | Checkpoint 2 | Pending |
-| Czy jeden wpis może mieć wiele załączników i jakie typy/limity plików są potrzebne? | User | Construction design | Pending |
+| Czy „każdy z opcją edycji” oznacza istniejący model: Owner/Administrator zapisują, Member/Viewer tylko odczytują? | User | Checkpoint 2 | Pending |
+| Jakie limity liczby i rozmiaru załączników są potrzebne? | User | Construction design | Pending; wiele plików na wpis; PNG, JPG/JPEG i PDF |
+| Które dane źródła i odbiorcy trzeba zachować przy przychodzie jako historyczny stan, jeśli słownik lub przypisanie zmieni się później? | User | Construction design | Pending |
