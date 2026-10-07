@@ -85,7 +85,7 @@ W schema audytu jawnie opisać obecne object ID miesiąca i lookup roku; propozy
 Idempotencja stanu nie chroni przed starym close po nowym reopen; rozstrzygnięcie w D4.
 Done B: brak cyklu kryteriów odbioru, spójne statusy i końcowy kontrakt potwierdzony testami.
 
-**Wykonanie 2026-10-07:** Kontrakt 013 zaktualizowano do tras, schematów odpowiedzi, kodów błędów, autoryzacji, blokad, timestampów i audytu faktycznej implementacji. Kryterium close–income przypisano do 014, a benchmark P95 okresów do 017 jako warunek końcowego odbioru. Test macierzy 3×3 i audytu jest w commicie `f536b88`; pełny backend 92/92 PASS. Replanning i Stage 5 nadal oczekują na checkpoint użytkownika; 013 pozostaje `in-progress`. `scripts/quality.ps1` zatrzymuje się na 34 istniejących plikach Prettiera; pozostałe linters/typecheck oraz Ruff 0.16.6 PASS.
+**Wykonanie 2026-10-07:** Kontrakt 013 zaktualizowano do tras, schematów odpowiedzi, kodów błędów, autoryzacji, blokad, timestampów i audytu faktycznej implementacji. Kryterium close–income przypisano do 014, a benchmark P95 okresów do 017 jako warunek końcowego odbioru. Test macierzy 3×3 i audytu jest w commicie `f536b88`; pełny backend 92/92 PASS. Użytkownik zaakceptował replanning i raport Stage 5. Bolt 013 pozostaje `in-progress`, ponieważ `scripts/quality.ps1` nadal zatrzymuje się na 34 istniejących plikach Prettiera, a dowody close–write i P95 są przypisane odpowiednio do 014 i 017. Pozostałe linters/typecheck oraz Ruff 0.16.6 PASS.
 
 ## 5. Etap C — decyzje domenowe i kontrakty 014
 

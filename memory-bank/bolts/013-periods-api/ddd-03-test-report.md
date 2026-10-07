@@ -2,8 +2,8 @@
 unit: 001-periods-api
 bolt: 013-periods-api
 stage: test
-status: awaiting-validation
-updated: '2026-10-07T11:21:40Z'
+status: in-progress
+updated: '2026-10-07T11:28:03Z'
 ---
 
 # Raport testów: API okresów rozliczeniowych
@@ -71,7 +71,7 @@ Nie znaleziono błędów krytycznych. Zgodnie z zakresem następny bolt 014 ma w
 
 ## Checkpoint
 
-Raport Stage 5 i proponowany podział zakresu są gotowe do wspólnego checkpointu. Bolt 013 pozostaje `in-progress`; nie zamykam go na podstawie wcześniejszej prośby o odbiór. Pozostają: jawna akceptacja replanningu i raportu 013, dowód close–write w 014 oraz pomiar P95 w 017. Pełna kontrola jakości również pozostaje zablokowana na zastanym formatowaniu 34 plików.
+Użytkownik zaakceptował raport Stage 5 i podział zakresu. Bolt 013 pozostaje `in-progress`: pełna kontrola jakości zatrzymuje się na zastanym formatowaniu 34 plików, a dowód close–write i pomiar P95 należą odpowiednio do 014 i 017. Akceptacja raportu nie oznacza zamknięcia bolta.
 
 ## Ready for Operations
 
