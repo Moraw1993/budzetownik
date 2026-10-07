@@ -2,15 +2,16 @@
 id: ISS-2026-001
 title: "Nierówne wyrównanie pól formularza dodawania umowy"
 type: bug
-status: reported
+status: resolved
 reported_at: "2026-10-07T12:10:51Z"
+resolved_at: "2026-10-07T12:37:00Z"
 reporting_path: "Codex chat → Master Agent → Issue Agent"
 affected_version: "frontend 0.1.0, snapshot from develop"
 affected_commit: "202a8c5f19be6b27ca8965de4c1309511d9bb0d1"
-environment: unknown
+environment: "Microsoft Edge via Playwright, local Next.js, mocked API"
 module: "Frontend → Rodzina → Umowy → ContractPanel / ContractForm"
-severity: unassessed
-reproducibility: unknown
+severity: low
+reproducibility: confirmed
 related_issues: []
 ---
 
@@ -18,68 +19,69 @@ related_issues: []
 
 ## Summary
 
-Pola w górnym rzędzie formularza „Dodaj umowę” nie są wyrównane pionowo. Selektor firmy znajduje się wyżej niż pola osoby umowy i nazwy umowy.
+W górnym rzędzie formularza „Dodaj umowę” kontrolki „Osoba umowy” i „Nazwa umowy” zaczynały się około 27 px niżej niż selektor „Firma” i były nienaturalnie rozciągnięte.
 
 ## Exact description
 
-Na zrzucie ekranu selektor „Firma” zaczyna się wyżej niż sąsiadujące pola „Osoba umowy” i „Nazwa umowy” (różnica wynosi około 30 px). Przycisk „+ Nowa firma” jest umieszczony pod selektorem firmy i znajduje się w tym samym obszarze formularza. Nie ustalono jeszcze, co powoduje różnicę w położeniu kontrolek.
+Komórka „Firma” zawiera selektor i przycisk „+ Nowa firma”, dlatego wyznacza wyższy wiersz siatki. Sąsiednie elementy `.field` rozciągały się do wysokości całego wiersza. Etykiety były zasadniczo wyrównane; różnica dotyczyła położenia i wysokości kontrolek. Nowy test regresyjny odtwarza różnicę 27 px przy szerokości 1440 px przed poprawką.
 
 ## Where it happened
 
-- **Product path / screen / URL / API:** Rodzina → Umowy → Dodaj umowę; dokładny URL nieustalony.
+- **Product path / screen / URL / API:** Rodzina → Umowy → Dodaj umowę.
 - **Reporting path:** Zgłoszenie w rozmowie Codex do Master Agenta.
-- **Affected module:** Frontend, `family-panel.tsx` → `contract-panel.tsx` / `contract-form.tsx`.
+- **Affected module:** Frontend, `contract-panel.tsx` → `contract-form.tsx`.
 - **First observed:** Nieustalone.
-- **Frequency:** Nieustalone.
-- **Affected users/data/workflow:** Widoczna wada układu formularza; wpływ na możliwość uzupełnienia formularza nie został zgłoszony.
+- **Frequency:** Odtworzono powtarzalnie w teście Playwright przed poprawką.
+- **Affected users/data/workflow:** Wada układu wizualnego; brak zgłoszonego blokowania wprowadzania danych.
 
 ## Steps to reproduce
 
-Wstępne kroki odtworzenia na podstawie zrzutu ekranu; nie zostały niezależnie potwierdzone:
-
-1. Otworzyć aplikację i przejść do sekcji „Rodzina”.
+1. Otworzyć aplikację i przejść do sekcji „Zarządzanie rodziną”.
 2. Wybrać zakładkę „Umowy”.
 3. Kliknąć „Dodaj umowę”.
-4. Porównać pionowe położenie selektora „Firma” z polami „Osoba umowy” i „Nazwa umowy”.
-
-Szczegóły konta, danych i przeglądarki są nieznane.
+4. Przy szerokości ekranu powyżej 1200 px porównać górne krawędzie i wysokości kontrolek „Osoba umowy”, „Firma” i „Nazwa umowy”.
 
 ## Expected behavior
 
-Pola w tym samym rzędzie formularza powinny być wyrównane pionowo. Dodatkowy przycisk „+ Nowa firma” nie powinien powodować, że selektor firmy znajduje się wyżej niż sąsiednie pola.
+Kontrolki pierwszego rzędu są wyrównane u góry i mają jednakową wysokość, a przycisk „+ Nowa firma” pozostaje pod selektorem bez nachodzenia na sąsiednie pola ani kolejny rząd. Węższy układ przy 1024 px zachowuje kolejność i nie powoduje przepełnienia.
 
 ## Actual behavior
 
-Selektor firmy jest widocznie wyżej niż sąsiednie kontrolki „Osoba umowy” i „Nazwa umowy”. Dowód: `evidence/contract-form-layout.png`.
+Przed poprawką kontrolki osoby i nazwy były przesunięte w dół o 27 px względem firmy; input nazwy był dodatkowo o 2 px wyższy od selecta. Dowód: [zrzut bazowy 1440 px](evidence/contract-form-baseline-1440.png).
 
 ## Environment
 
-- **Application version/build:** Frontend `0.1.0`, snapshot gałęzi `develop`.
-- **Commit/release identifier:** `202a8c5f19be6b27ca8965de4c1309511d9bb0d1` (`origin/develop` w chwili sporządzenia zgłoszenia).
-- **Environment:** Nieustalone; zgłaszający wskazał aktualną wersję `develop`.
-- **OS/device/browser/client:** Nieustalone.
-- **Relevant configuration:** Nieustalone.
+- **Application version/build:** Frontend `0.1.0`, źródła brancha `fix/task-issue-2026-001-contract-form-layout`.
+- **Base commit:** `202a8c5f19be6b27ca8965de4c1309511d9bb0d1`.
+- **Verification environment:** Microsoft Edge via Playwright, lokalny Next.js uruchomiony z izolowanego worktree; odpowiedzi API były mockowane.
+- **Viewports:** 1440, 1024 i 390 px.
 
 ## Severity and workaround
 
-- **Severity:** Nieoceniona; zgłoszono problem z układem wizualnym, bez informacji o blokadzie funkcjonalnej.
-- **Workaround:** Nieustalony.
+- **Severity:** Low — wada wizualna formularza, bez wykazanego wpływu na zapis danych.
+- **Workaround:** Brak potrzeby po wdrożeniu poprawki.
 
 ## Evidence
 
 | File | Type | Description | Captured at (UTC) |
 |------|------|-------------|------------------|
-| `evidence/contract-form-layout.png` | image | Zrzut ekranu formularza pokazujący różne pionowe położenie selektora firmy i sąsiednich pól. | unknown |
+| `evidence/contract-form-layout.png` | image | Zrzut zgłoszony przez testera, pokazujący rozjechane kontrolki. | unknown |
+| `evidence/contract-form-baseline-1440.png` | image | Odtworzenie układu sprzed poprawki przy 1440 px; test mierzy różnicę położenia 27 px. | 2026-10-07 |
+| `evidence/contract-form-fixed-1440.png` | image | Formularz otwarty przy 1440 px po poprawce. | 2026-10-07 |
+| `evidence/contract-form-fixed-long-company-1440.png` | image | Formularz po poprawce z długą nazwą firmy. | 2026-10-07 |
+| `evidence/contract-form-validation-1440.png` | image | Formularz po błędzie walidacji pola w pierwszym rzędzie. | 2026-10-07 |
+| `evidence/contract-form-fixed-1024.png` | image | Układ dwóch kolumn przy 1024 px. | 2026-10-07 |
+| `evidence/contract-form-fixed-390.png` | image | Formularz w układzie mobilnym przy 390 px. | 2026-10-07 |
 
 ## Triage and resolution
 
-- **Owner:** unassigned
-- **Related bolt/task:** pending
-- **Resolution:** pending
-- **Resolved in version/commit:** pending
-- **Verification:** pending
-- **Closed at:** pending
+- **Owner:** Codex
+- **Related bolt/task:** [Plan naprawy](../../tasks/ISS-2026-001-contract-form-layout/implementation-plan.md), branch `fix/task-issue-2026-001-contract-form-layout`.
+- **Resolution:** CSS zawęża wyrównanie górnej krawędzi do pól siatki formularza umowy i ujednolica wysokość input/select do 46 px. Logika i globalne style pól bez zmian.
+- **Resolved in version/commit:** pending commit.
+- **Verification:** `frontend/tests/family.spec.ts` 17/17; test ukierunkowany potwierdził przed poprawką 27 px różnicy i przeszedł po poprawce; responsywność 1440/1024/390 px 3/3. Prettier dla zmienionego TSX/CSS, ESLint, Stylelint i TypeScript przeszły. `scripts/quality.ps1` zatrzymał się na Prettierze dla 32 niezmienionych plików repozytorium; nie formatowano niepowiązanego zakresu. `git diff --check` przeszedł.
+- **Closed at:** "2026-10-07T12:37:00Z"
 
 ## Reporter notes
 
-Zgłoszenie dotyczy aktualnej wersji gałęzi `develop`.
+Zgłoszenie dotyczy snapshotu gałęzi `develop`; naprawa została wykonana na branchu taska fix zgodnie ze standardem Git.
