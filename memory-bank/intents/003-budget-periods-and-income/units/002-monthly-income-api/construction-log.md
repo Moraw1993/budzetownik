@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T12:16:28Z'
+last_updated: '2026-10-07T13:31:28Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -46,4 +46,7 @@ last_updated: '2026-10-07T12:16:28Z'
 
 ## Notes
 
-Stage 2 is accepted and documentation-only. The next tracked stage is optional ADR analysis. Bolt 013 is still `in-progress`; income implementation must account for that dependency and must not claim the close–write gate is proven until PostgreSQL tests exist.
+Stages 1–3 are accepted, including ADR-007 and ADR-008. Stage 4 implementation is active. Bolt 013 remains `in-progress`; 014 must build on its period contract and cannot claim the close–write gate is proven until PostgreSQL tests pass.
+
+- **2026-10-07T13:31:28Z**: 014-monthly-income-api stage-start - Stage 4 Implement approved by the user's explicit instruction to continue implementation. Resolved pre-implementation follow-ups in implementation-plan.md; implementation is based on current develop plus the in-progress 013 dependency.
+
