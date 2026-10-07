@@ -2,9 +2,9 @@
 unit: 001-periods-api
 bolt: 013-periods-api
 stage: technical-design
-status: draft
+status: complete
 created: '2026-10-07T10:11:57Z'
-updated: '2026-10-07T10:11:57Z'
+updated: '2026-10-07T10:14:45Z'
 ---
 
 # Technical Design — 013-periods-api
