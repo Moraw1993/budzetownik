@@ -771,6 +771,15 @@ details {
   scroll-margin-top: 24px;
 }
 
+#contract-form .form-grid > .field {
+  align-self: start;
+}
+
+#contract-form .form-grid .field > input,
+#contract-form .form-grid .field > select {
+  height: 46px;
+}
+
 summary {
   cursor: pointer;
   color: var(--color-primary);
