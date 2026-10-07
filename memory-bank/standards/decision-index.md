@@ -1,6 +1,6 @@
 ---
-total_decisions: 5
-last_updated: 2026-09-23T21:30:14Z
+total_decisions: 6
+last_updated: 2026-10-07T10:16:53Z
 ---
 # Decyzje architektoniczne
 
@@ -38,3 +38,10 @@ last_updated: 2026-09-23T21:30:14Z
 - Dokument: [ADR](../bolts/010-family-income-api/adr-005-shared-income-source-identity.md).
 - Czytać przy zmianach modeli źródeł i umów, migracjach dawnych źródeł, projekcie przychodów miesięcznych oraz liście wyboru źródła.
 - Decyzja: `IncomeSource` zachowuje wspólny UUID; `Contract` zawiera szczegóły 1:1, a migracja nie tworzy umów ani przychodów miesięcznych.
+
+## ADR-006: Wspólna blokada roku dla zapisów finansowych
+- Status: proposed.
+- Bolt: 013-periods-api.
+- Dokument: [ADR](../bolts/013-periods-api/adr-006-accounting-year-lock-for-financial-writes.md).
+- Czytać przy implementacji zmian stanu okresu lub zapisów finansowych zależnych od aktywności miesiąca.
+- Decyzja: operacje stanu miesiąca i zapisu przychodu synchronizują się blokadą tego samego agregatu roku w jednej transakcji.
