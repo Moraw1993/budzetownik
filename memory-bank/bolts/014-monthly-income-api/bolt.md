@@ -12,7 +12,7 @@ stories:
 created: '2026-10-06T20:32:37Z'
 started: '2026-10-07T11:31:16Z'
 completed: null
-current_stage: implement
+current_stage: test
 stages_completed:
   - name: domain-model
     completed: '2026-10-07T11:31:16Z'
@@ -23,6 +23,9 @@ stages_completed:
   - name: adr-analysis
     completed: '2026-10-07T12:16:28Z'
     artifact: adr-007-idempotent-income-creation.md, adr-008-income-history-snapshots-and-soft-delete.md
+  - name: implement
+    completed: '2026-10-07T13:51:15Z'
+    artifact: income models, migration, API serializers/services/views, tests
 requires_bolts:
   - 013-periods-api
   - 010-family-income-api
@@ -64,7 +67,7 @@ Spełnić FR-03, FR-04, FR-05 i FR-08 oraz wesprzeć egzekwowanie FR-07 przez CR
 - [x] 1. Domain Model → `ddd-01-domain-model.md`
 - [x] 2. Technical Design → `ddd-02-technical-design.md`
 - [x] 3. ADR Analysis (optional) → `adr-*.md`
-- [ ] 4. Implement → source code and migrations
+- [x] 4. Implement → source code and migrations
 - [ ] 5. Test → `ddd-03-test-report.md`
 
 Each DDD stage requires its human checkpoint under the bolt type instructions.

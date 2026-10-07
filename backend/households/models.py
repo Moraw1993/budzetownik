@@ -392,3 +392,103 @@ class AccountingMonth(models.Model):
         year = self.accounting_year.calendar_year
         last_day = calendar.monthrange(year, self.month_number)[1]
         return date(year, self.month_number, last_day)
+
+
+class IncomeRecord(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    household = models.ForeignKey(
+        Household, on_delete=models.PROTECT, related_name="income_records"
+    )
+    accounting_month = models.ForeignKey(
+        AccountingMonth, on_delete=models.PROTECT, related_name="income_records"
+    )
+    member = models.ForeignKey(
+        HouseholdMember,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="income_records",
+    )
+    income_source = models.ForeignKey(
+        IncomeSource, on_delete=models.PROTECT, related_name="income_records"
+    )
+    amount = models.DecimalField(max_digits=18, decimal_places=2)
+    currency = models.CharField(max_length=3, validators=[RegexValidator(r"^[A-Z]{3}$")])
+    receipt_date = models.DateField()
+    recipient_snapshot = models.JSONField()
+    source_snapshot = models.JSONField()
+    version = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="deleted_income_records",
+    )
+
+    class Meta:
+        ordering = ["receipt_date", "created_at", "id"]
+        indexes = [
+            models.Index(
+                fields=["household", "accounting_month", "receipt_date", "created_at", "id"],
+                name="income_record_list_idx",
+            ),
+            models.Index(
+                fields=["household", "accounting_month", "currency"],
+                name="income_record_total_idx",
+            ),
+            models.Index(fields=["household", "member"], name="income_record_member_idx"),
+            models.Index(fields=["household", "income_source"], name="income_record_source_idx"),
+        ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(amount__gt=0), name="income_record_amount_positive"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(version__gte=1), name="income_record_version_positive"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(currency__regex=r"^[A-Z]{3}$"),
+                name="income_record_currency_uppercase",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(deleted_at__isnull=True, deleted_by__isnull=True)
+                    | models.Q(deleted_at__isnull=False, deleted_by__isnull=False)
+                ),
+                name="income_record_delete_fields_match",
+            ),
+        ]
+
+
+class IncomeCreateIdempotency(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    household = models.ForeignKey(Household, on_delete=models.PROTECT)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    operation = models.CharField(max_length=32, default="income.create")
+    client_key = models.UUIDField()
+    fingerprint = models.CharField(max_length=64)
+    income_record = models.ForeignKey(IncomeRecord, on_delete=models.PROTECT)
+    response_status = models.PositiveSmallIntegerField(default=201)
+    response_body = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["household", "actor", "operation", "client_key"],
+                name="income_create_idempotency_uniq",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(operation="income.create"),
+                name="income_idempotency_operation_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(response_status=201),
+                name="income_idempotency_status_created",
+            ),
+        ]
+        indexes = [models.Index(fields=["household", "actor"], name="income_idem_scope_idx")]
