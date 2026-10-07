@@ -2,12 +2,13 @@
 id: 002-select-dictionary-source
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: must
 created: '2026-10-06T20:32:37Z'
 assigned_bolt: 014-monthly-income-api
-implemented: false
-requirements: [FR-04]
+implemented: true
+requirements:
+  - FR-04
 ---
 
 # Story: 002-select-dictionary-source
@@ -20,12 +21,12 @@ requirements: [FR-04]
 
 ## Acceptance Criteria
 
-- [ ] **Given** a person recipient and selected accounting month, **when** I request available sources, **then** I can choose that person's contracts active during the period and their other eligible sources.
-- [ ] **Given** a household recipient, **when** I request available sources, **then** I can choose eligible household-level sources.
-- [ ] **Given** a source owned by another person or household, **when** I try to use it for this recipient, **then** the API rejects it.
-- [ ] **Given** a new source is needed, **when** I use quick-add, **then** it creates a regular `IncomeSource` dictionary record with type-specific validation before the income references it.
-- [ ] **Given** an arbitrary string not represented by an `IncomeSource`, **when** I submit it as the income source, **then** the API rejects it.
-- [ ] **Given** a saved income, **when** it is read later, **then** its source relationship remains available and is not inferred only from a mutable display name.
+- [x] **Given** a person recipient and selected accounting month, **when** I request available sources, **then** I can choose that person's contracts active during the period and their other eligible sources.
+- [x] **Given** a household recipient, **when** I request available sources, **then** I can choose eligible household-level sources.
+- [x] **Given** a source owned by another person or household, **when** I try to use it for this recipient, **then** the API rejects it.
+- [x] **Given** a new source is needed, **when** I use quick-add, **then** it creates a regular `IncomeSource` dictionary record with type-specific validation before the income references it.
+- [x] **Given** an arbitrary string not represented by an `IncomeSource`, **when** I submit it as the income source, **then** the API rejects it.
+- [x] **Given** a saved income, **when** it is read later, **then** its source relationship remains available and is not inferred only from a mutable display name.
 
 ## Technical Notes
 

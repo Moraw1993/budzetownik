@@ -4,9 +4,9 @@ intent: 003-budget-periods-and-income
 unit_type: backend
 default_bolt_type: ddd-construction-bolt
 phase: inception
-status: draft
+status: in-progress
 created: '2026-10-06T20:32:37Z'
-updated: '2026-10-06T20:32:37Z'
+updated: '2026-10-07T18:04:00Z'
 ---
 
 # API rzeczywistych przychodów
@@ -21,7 +21,7 @@ Właściciel reguł: FR-03, FR-04, FR-05, FR-06 i FR-08. Wpis wskazuje dokładni
 
 ## Zakres zachowania
 
-- Wpisy można dodawać tylko do aktywnego, niezamkniętego miesiąca; zapis/edit/delete egzekwuje rolę Owner/Administrator, gospodarstwo, odbiorcę i źródło po stronie API.
+- Create/edit/delete wpisów jest dozwolone wyłącznie w `active` miesiącu; API stosuje `locked_access` (`Household`), następnie blokuje `AccountingYear`, sprawdza stan i wykonuje zapis wraz z audytem w jednej krótkiej transakcji. Bolt 014 testuje wszystkie trzy mutacje przeciwko równoległemu close na PostgreSQL.
 - Odbiorca to członek gospodarstwa albo całe gospodarstwo. Dla członka dostępne są jego umowy aktywne w okresie oraz pozostałe przypisane mu źródła; źródła gospodarstwa dostępne są dla wpisu gospodarstwa.
 - Szybkie dodanie tworzy walidowany element `IncomeSource` zgodny z jego typem, po czym wybiera ten element w przychodzie.
 - Kwota jest wartością dziesiętną, waluta należy do wpisu, a data oznacza faktyczne otrzymanie i może leżeć poza miesiącem rozliczeniowym.
@@ -40,10 +40,10 @@ Jednostka zależy od 001-periods-api oraz istniejącego 001-family-income-api (�
 
 Łącznie 4 stories Must i 1 Should; story 005 należy do osobnego bolta 015.
 
-- [ ] **001-record-income** — Must — 014-monthly-income-api
-- [ ] **002-select-dictionary-source** — Must — 014-monthly-income-api
-- [ ] **003-record-amount-currency-date** — Must — 014-monthly-income-api
-- [ ] **004-period-totals-by-currency** — Must — 014-monthly-income-api
+- [x] **001-record-income** — Must — 014-monthly-income-api
+- [x] **002-select-dictionary-source** — Must — 014-monthly-income-api
+- [x] **003-record-amount-currency-date** — Must — 014-monthly-income-api
+- [x] **004-period-totals-by-currency** — Must — 014-monthly-income-api
 - [ ] **005-private-income-attachments** — Should — 015-income-attachments-api
 
 ## Kryteria zakończenia

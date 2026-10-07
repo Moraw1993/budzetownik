@@ -1,6 +1,6 @@
 ---
-total_decisions: 6
-last_updated: 2026-10-07T10:20:11Z
+total_decisions: 8
+last_updated: 2026-10-07T12:16:28Z
 ---
 # Decyzje architektoniczne
 
@@ -45,3 +45,19 @@ last_updated: 2026-10-07T10:20:11Z
 - Dokument: [ADR](../bolts/013-periods-api/adr-006-accounting-year-lock-for-financial-writes.md).
 - Czytać przy implementacji zmian stanu okresu lub zapisów finansowych zależnych od aktywności miesiąca.
 - Decyzja: operacje stanu miesiąca i zapisu przychodu synchronizują się blokadą tego samego agregatu roku w jednej transakcji.
+
+## ADR-007: Trwała idempotencja tworzenia przychodu
+- **Status**: accepted.
+- **Date**: 2026-10-07.
+- **Bolt**: 014-monthly-income-api (002-monthly-income-api).
+- **Path**: `bolts/014-monthly-income-api/adr-007-idempotent-income-creation.md`.
+- **Summary**: Klient może ponowić żądanie utworzenia przychodu po utracie odpowiedzi, mimo że pierwsza transakcja została zatwierdzona. Każde żądanie `POST` tworzące przychód wymaga UUID w nagłówku `Idempotency-Key`.
+- **Read when**: Implementing income creation, retries, request fingerprinting, idempotency persistence, or transaction rollback behavior.
+
+## ADR-008: Snapshoty historii przychodu i miękkie usuwanie
+- **Status**: accepted.
+- **Date**: 2026-10-07.
+- **Bolt**: 014-monthly-income-api (002-monthly-income-api).
+- **Path**: `bolts/014-monthly-income-api/adr-008-income-history-snapshots-and-soft-delete.md`.
+- **Summary**: Przychód jest historycznym faktem przypisanym do konkretnego odbiorcy i źródła. `IncomeRecord` przechowuje bieżące identyfikatory gospodarstwa, okresu, odbiorcy i źródła jako klucze obce oraz osobne snapshoty do historycznego odczytu.
+- **Read when**: Implementing income history, dictionary changes or archival, recipient/source reassignment, deletion, audit, or income totals.

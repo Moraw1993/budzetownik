@@ -3,17 +3,32 @@ id: 014-monthly-income-api
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 type: ddd-construction-bolt
-status: planned
+status: complete
 stories:
   - 001-record-income
   - 002-select-dictionary-source
   - 003-record-amount-currency-date
   - 004-period-totals-by-currency
 created: '2026-10-06T20:32:37Z'
-started: null
-completed: null
+started: '2026-10-07T11:31:16Z'
+completed: '2026-10-07T17:49:42Z'
 current_stage: null
-stages_completed: []
+stages_completed:
+  - name: domain-model
+    completed: '2026-10-07T11:31:16Z'
+    artifact: ddd-01-domain-model.md
+  - name: technical-design
+    completed: '2026-10-07T11:55:46Z'
+    artifact: ddd-02-technical-design.md
+  - name: adr-analysis
+    completed: '2026-10-07T12:16:28Z'
+    artifact: adr-007-idempotent-income-creation.md, adr-008-income-history-snapshots-and-soft-delete.md
+  - name: implement
+    completed: '2026-10-07T13:51:15Z'
+    artifact: income models, migration, API serializers/services/views, tests
+  - name: test
+    completed: '2026-10-07T17:49:42Z'
+    artifact: ddd-03-test-report.md
 requires_bolts:
   - 013-periods-api
   - 010-family-income-api
@@ -39,24 +54,24 @@ Wprowadzić zapis faktycznych przychodów ze słownikowym źródłem, odbiorcą,
 
 ## Objective
 
-Spełnić FR-03, FR-04, FR-05 i FR-08 oraz cztery stories rdzenia API.
+Spełnić FR-03, FR-04, FR-05 i FR-08 oraz wesprzeć egzekwowanie FR-07 przez CRUD przychodów i jego kontrakt współbieżności.
 
 ## Stories Included
 
-- [ ] [001-record-income](../../intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/001-record-income.md): oddzielny wpis rzeczywistego przychodu — Must.
-- [ ] [002-select-dictionary-source](../../intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/002-select-dictionary-source.md): źródło `IncomeSource` i szybkie dodanie — Must.
-- [ ] [003-record-amount-currency-date](../../intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/003-record-amount-currency-date.md): kwota, waluta i data otrzymania — Must.
-- [ ] [004-period-totals-by-currency](../../intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/004-period-totals-by-currency.md): sumy okresu i roku — Must.
+- [x] [001-record-income](../../intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/001-record-income.md): oddzielny wpis rzeczywistego przychodu — Must.
+- [x] [002-select-dictionary-source](../../intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/002-select-dictionary-source.md): źródło `IncomeSource` i szybkie dodanie — Must.
+- [x] [003-record-amount-currency-date](../../intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/003-record-amount-currency-date.md): kwota, waluta i data otrzymania — Must.
+- [x] [004-period-totals-by-currency](../../intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/004-period-totals-by-currency.md): sumy okresu i roku — Must.
 
 ## Bolt Type and Stages
 
 **Type**: DDD Construction Bolt (`ddd-construction-bolt`).
 
-- [ ] 1. Domain Model → `ddd-01-domain-model.md`
-- [ ] 2. Technical Design → `ddd-02-technical-design.md`
-- [ ] 3. ADR Analysis (optional) → `adr-*.md`
-- [ ] 4. Implement → source code and migrations
-- [ ] 5. Test → `ddd-03-test-report.md`
+- [x] 1. Domain Model → `ddd-01-domain-model.md`
+- [x] 2. Technical Design → `ddd-02-technical-design.md`
+- [x] 3. ADR Analysis (optional) → `adr-*.md`
+- [x] 4. Implement → source code and migrations
+- [x] 5. Test → `ddd-03-test-report.md`
 
 Each DDD stage requires its human checkpoint under the bolt type instructions.
 
@@ -72,11 +87,11 @@ Each DDD stage requires its human checkpoint under the bolt type instructions.
 
 ## Success Criteria
 
-- [ ] Writes are allowed only for authorized households and active, open periods.
-- [ ] Actual records remain distinct from contract gross/default amounts.
-- [ ] Sources are validated dictionary entries; dates may be outside the accounting period.
-- [ ] Month/year totals use exact amounts grouped by currency, without conversion.
-- [ ] Validation, audit, tenant isolation, role, and concurrency tests pass.
+- [x] Create/edit/delete writes are allowed only for authorized households and active periods. PostgreSQL tests force both close–write orders and prove that a mutation cannot commit after close based on a stale active-state read.
+- [x] Actual records remain distinct from contract gross/default amounts.
+- [x] Sources are validated dictionary entries; dates may be outside the accounting period.
+- [x] Month/year totals use exact amounts grouped by currency, without conversion.
+- [x] Validation, audit, tenant isolation, role, and concurrency tests pass.
 
 ## Notes
 

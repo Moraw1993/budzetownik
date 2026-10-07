@@ -16,8 +16,7 @@ requires_bolts:
 enables_bolts:
   - 016-periods-income-ui
   - 017-periods-income-acceptance
-requires_units:
-  - 002-monthly-income-api
+requires_units: []
 blocks: true
 complexity:
   avg_complexity: 3

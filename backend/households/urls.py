@@ -9,6 +9,13 @@ from .family_income_views import (
     ContractListView,
     SourceConversionView,
 )
+from .income_views import (
+    IncomeDetailView,
+    IncomeListView,
+    IncomeSourceOptionsView,
+    MonthIncomeTotalsView,
+    YearIncomeTotalsView,
+)
 from .period_views import (
     AccountingMonthListView,
     AccountingMonthTransitionView,
@@ -32,6 +39,31 @@ from .views import (
 )
 
 urlpatterns = [
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/incomes/",
+        IncomeListView.as_view(),
+        name="income-list",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/incomes/<uuid:income_id>/",
+        IncomeDetailView.as_view(),
+        name="income-detail",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/income-source-options/",
+        IncomeSourceOptionsView.as_view(),
+        name="income-source-options",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/income-totals/",
+        MonthIncomeTotalsView.as_view(),
+        name="month-income-totals",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/income-totals/",
+        YearIncomeTotalsView.as_view(),
+        name="year-income-totals",
+    ),
     path(
         "<uuid:household_id>/accounting-years/",
         AccountingYearListView.as_view(),
