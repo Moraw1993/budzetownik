@@ -39,7 +39,7 @@ Wprowadzić zapis faktycznych przychodów ze słownikowym źródłem, odbiorcą,
 
 ## Objective
 
-Spełnić FR-03, FR-04, FR-05 i FR-08 oraz cztery stories rdzenia API.
+Spełnić FR-03, FR-04, FR-05 i FR-08 oraz wesprzeć egzekwowanie FR-07 przez CRUD przychodów i jego kontrakt współbieżności.
 
 ## Stories Included
 
@@ -72,7 +72,7 @@ Each DDD stage requires its human checkpoint under the bolt type instructions.
 
 ## Success Criteria
 
-- [ ] Writes are allowed only for authorized households and active, open periods.
+- [ ] Create/edit/delete writes are allowed only for authorized households and active periods. PostgreSQL tests force both close–write orders and prove that a mutation cannot commit after close based on a stale active-state read.
 - [ ] Actual records remain distinct from contract gross/default amounts.
 - [ ] Sources are validated dictionary entries; dates may be outside the accounting period.
 - [ ] Month/year totals use exact amounts grouped by currency, without conversion.

@@ -22,6 +22,7 @@ Zweryfikować zintegrowany przepływ przez przeglądarkę i API na danych syntet
 - Zapis wielu rzeczywistych przychodów dla osoby i gospodarstwa ze słownikowymi źródłami, datą wypłaty poza miesiącem, kwotami różnych walut oraz podsumowaniem per waluta.
 - Dodanie wielu dopuszczonych załączników, odmowa niedozwolonego typu/rozmiaru i kontrola autoryzowanego pobrania.
 - Zachowanie wpisów po restarcie aplikacji w środowisku odbioru.
+- Pomiar P95 obejmuje jawnie endpointy lat/miesięcy i lifecycle z 013 oraz endpointy przychodów/sum; raport podaje fixture, warm-up, liczbę prób, współbieżność, percentyl i środowisko. Cel okresów <500 ms pozostaje niespełniony do czasu pomiaru lub jawnie zgłoszonej blokady.
 
 ## Zależności
 

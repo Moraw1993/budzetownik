@@ -80,7 +80,7 @@ Each DDD stage requires its human checkpoint under the bolt type instructions.
 
 - [ ] Exactly twelve unique months are created atomically, all inactive.
 - [ ] Months activate independently and in any order; multiple may be active.
-- [ ] Closed month writes are blocked until explicit reopening.
+- [ ] The complete 3×3 lifecycle matrix, timestamps, no-op behavior and audit outcomes match the API contract. Bolt 014 separately verifies closed/inactive write rejection and close–write concurrency for income CRUD.
 - [ ] Role, tenant isolation, concurrency, and audit checks pass.
 
 ## Notes
