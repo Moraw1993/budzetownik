@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T20:18:58Z'
+last_updated: '2026-10-07T20:26:04Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -49,6 +49,8 @@ last_updated: '2026-10-07T20:18:58Z'
 | 2026-10-07T20:13:37Z | 015-income-attachments-api | domain-model-accepted | Reviewer accepted model at 8.7/10. Incorporated both non-blocking P3 clarifications; Stage 1 complete. |
 | 2026-10-07T20:13:37Z | 015-income-attachments-api | stage-start | Started Stage 2 Technical Design after Stage 1 acceptance. Inspected existing 014 API/models, ADR-006 lock order, private media volume, Caddy routes and backup/restore. |
 | 2026-10-07T20:18:58Z | 015-income-attachments-api | technical-design-ready | Defined API, limits, private filesystem, transaction/lock order, cleanup/retention, audit, failure behavior and test plan. scripts/quality.ps1 and git diff --check passed; awaiting independent Stage 2 review. |
+
+| 2026-10-07T20:25:05Z | 015-income-attachments-api | technical-design-revised | Reviewer returned 7.0/10 CHANGES REQUIRED (S2-1–S2-5); documented pre-parser byte limits, claim lock/fencing, 404 ordering, post-commit cleanup retries and bounded format contract. Resubmitted for review. |
 
 ## Execution Summary
 

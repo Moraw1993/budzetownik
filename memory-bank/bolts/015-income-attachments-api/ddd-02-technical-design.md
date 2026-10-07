@@ -3,128 +3,164 @@ unit: 002-monthly-income-api
 bolt: 015-income-attachments-api
 stage: design
 status: awaiting-review
-updated: '2026-10-07T20:18:58Z'
+updated: '2026-10-07T20:26:04Z'
 ---
 
 # Stage 2 — projekt techniczny prywatnych załączników przychodu
 
 ## Zakres i zaakceptowane wejścia
 
-Projekt realizuje zaakceptowany model z [ddd-01-domain-model.md](ddd-01-domain-model.md): IncomeRecord pozostaje jedynym korzeniem agregatu, mutacje wymagają aktywnego miesiąca, odczyt pozostaje możliwy w dowolnym stanie okresu, a cała partia metadanych i jej audyt są widoczne atomowo.
+Projekt realizuje zaakceptowany model z [ddd-01-domain-model.md](ddd-01-domain-model.md): IncomeRecord jest jedynym korzeniem agregatu; mutacje użytkownika wymagają aktywnego miesiąca i nieusuniętego rodzica; odczyt pozostaje dozwolony w każdym stanie okresu; widoczność metadata i business audit jest atomowa.
 
-Bolt 015 dodaje metadane, prywatny storage, upload wieloplikowy, listę, autoryzowany download, logiczne usunięcie oraz reconciliation. Nie zmienia reguł kwoty i źródła z bolta 014, nie dodaje UI ani zewnętrznych usług. Obowiązują istniejące: Django/DRF, PostgreSQL, sesje/CSRF, locked_access, immutable AuditLog i trwały wolumen media_data.
+Bolt dodaje metadata, prywatny storage, upload wieloplikowy, listę, autoryzowany download, logiczne usunięcie i reconciliation. Nie zmienia reguł finansowych z 014 i nie dodaje UI ani usług zewnętrznych. Obowiązują Django/DRF, PostgreSQL, sesje/CSRF, locked_access, AuditLog i trwały wolumen media_data.
 
 ## Architektura
 
-Przepływ HTTP: DRF route/view → strict multipart serializer i polityka dostępu → use-case uploadu → prywatny staging i finalizacja filesystemu → krótka transakcja Household → AccountingYear → IncomeRecord → metadane i AuditLog. Pobranie zwraca autoryzowany strumień FileResponse.
-
-View mapuje HTTP, serializer waliduje wejście, serwis stosuje reguły domenowe/transakcyjne, model zapisuje metadane, a wąski adapter filesystemu ukrywa ścieżki. Nie dodawać ogólnego frameworka storage, sygnałów Django ani publicznego MEDIA_URL.
+DRF view mapuje HTTP, strict serializer sprawdza wejście, custom upload handler od pierwszych bajtów zapisuje do claimowanego stagingu, use-case zatwierdza filesystem przed krótką transakcją Household → AccountingYear → IncomeRecord, a model zapisuje metadata. Download używa autoryzowanego FileResponse. Wąski adapter ukrywa ścieżki. Nie dodajemy generycznego storage frameworka, sygnałów Django ani publicznego MEDIA_URL.
 
 ## Kontrakt API
 
-Wszystkie trasy są pod /api/households/{household_id}/accounting-years/{year_id}/months/{month_id}/incomes/{income_id}/. POST nie wymaga klucza idempotencji; po utracie odpowiedzi klient najpierw pobiera listę i sprawdza, czy załączniki już istnieją, zanim ponowi wysyłkę. Każdy identyfikator jest rozwiązywany w zakresie gospodarstwa, roku, miesiąca i wpisu. Brak, obcy tenant, usunięty wpis albo nieaktywny załącznik dają ten sam 404.
+Wszystkie ścieżki są pod /api/households/{household_id}/accounting-years/{year_id}/months/{month_id}/incomes/{income_id}/. Identyfikatory zawsze rozwiązuje się w zakresie household/year/month/income.
 
 | Metoda i trasa | Dostęp | Kontrakt |
 | --- | --- | --- |
-| GET .../attachments/ | Każdy członek z read access | 200 z results aktywnych załączników, kolejność created_at,id; najwyżej 20. |
-| POST .../attachments/ | Owner/Administrator, aktywny miesiąc | multipart/form-data, powtarzane pole files, 1–5 plików; 201 z results. |
-| GET .../attachments/{attachment_id}/download/ | Każdy członek z read access | Autoryzowany wymuszony download aktywnego pliku. |
-| DELETE .../attachments/{attachment_id}/ | Owner/Administrator, aktywny miesiąc | 204 po logicznym odebraniu dostępu i atomowym zapisie business audit. |
+| GET .../attachments/ | Household read access | 200 z results aktywnych załączników, sortowanie created_at,id; maksymalnie 20. |
+| POST .../attachments/ | Owner/Administrator, active month | multipart/form-data, powtarzane pole files, 1–5 plików; 201 z results. |
+| GET .../attachments/{attachment_id}/download/ | Household read access | Autoryzowany download aktywnego pliku. |
+| DELETE .../attachments/{attachment_id}/ | Owner/Administrator, active month | 204 po logicznym usunięciu i atomowym audycie. |
 
-Odpowiedź metadanych zawiera tylko id, bezpieczną nazwę name, rozpoznany media_type, size_bytes i created_at. Nie zwraca storage_key, ścieżki, URL-a, skrótu ani stanu cleanup. Opis nie należy do MVP, bo nie jest wymagany przez story ani obecny formularz. Multipart akceptuje tylko pole files; obce pola, pusty upload, JSON i URL-e są odrzucane.
+Metadata odpowiedzi zawierają tylko id, bezpieczną nazwę, media_type, size_bytes i created_at. Nie ujawniają storage_key, ścieżki, URL-a, SHA, batch ID ani stanu cleanup. Opis nie jest częścią MVP. Multipart akceptuje tylko files; obce pola i pusty upload są odrzucane.
 
-## Limity i walidacja
+POST jest jawnie nieidempotentny: nie wymaga Idempotency-Key i klient nie może automatycznie ponawiać uploadu po timeout/utracie odpowiedzi. Wynik takiego żądania jest nieznany; odświeżenie listy może pokazać nowe pozycje, ale nie dowodzi, która partia je utworzyła. Jawne ponowne wysłanie jest nową operacją i może utworzyć duplikaty.
+
+Brak/obcy household, year, month, income lub attachment, usunięty parent i logical-removed attachment mapują się na 404. Przy mutacji istniejący, nieusunięty parent i attachment dla DELETE rozstrzyga się przed błędem inactive/closed month; po ich potwierdzeniu stan okresu daje 409 income_period_not_active.
+
+## Limity i ochrona parsera
 
 | Ograniczenie | Limit MVP |
 | --- | --- |
 | Pojedynczy plik | 10 MiB |
 | Cała partia | 25 MiB |
 | Pliki na żądanie | 1–5 |
-| Aktywne pliki na IncomeRecord | Maksymalnie 20 |
-| Aktywna suma na IncomeRecord | Maksymalnie 50 MiB |
-| Nazwa display | Maksymalnie 255 znaków po normalizacji |
+| Multipart non-file fields | Tylko files, maksymalnie 1 pole |
+| Aktywne załączniki na income | Maksymalnie 20 |
+| Aktywna suma na income | Maksymalnie 50 MiB |
+| Display name | Maksymalnie 255 znaków po normalizacji |
+| Pamięć handlera | Maksymalnie jeden chunk 64 KiB plus ograniczony stan parsera |
+| Czas żądania uploadu | Maksymalnie 10 min; Caddy idle/min-rate guard i monotoniczny deadline handlera |
 
-Aplikacja liczy rzeczywiste bajty podczas strumieniowego zapisu. Content-Length, MIME i rozszerzenie klienta są niezaufane. Przekroczenie limitu pola/partii/rekordu zwraca walidacyjny 400; limit request body Caddy wynosi 26 MiB i daje 413. Django multipart temp files trafiają wyłącznie do prywatnego MEDIA_ROOT/.incoming, a nie do ogólnego /tmp. Caddy request_body jest dostępne od 2.10.0 i oznaczone jako experimental; implementacja ustawi obraz co najmniej na caddy:2.10-alpine i sprawdzi konfigurację poleceniem caddy validate. Dokumentacja: https://caddyserver.com/docs/caddyfile/directives/request_body. Aplikacja niezależnie egzekwuje per-file i łączny limit również wtedy, gdy request przejdzie inną ścieżką.
+Django DATA_UPLOAD_MAX_MEMORY_SIZE=1 MiB dotyczy danych formularza bez bajtów plików. Nie jest limitem plików ani ochroną przed ich zapisaniem do temp. Dlatego pierwsza granica musi działać przed parserem i CSRF:
 
-Serwer rozpoznaje PNG, JPEG i PDF po sygnaturze oraz podstawowej walidacji strukturalnej. Wynik zapisuje jako kanoniczne image/png, image/jpeg albo application/pdf; sprzeczna nazwa rozszerzenia, pusta lub uszkodzona zawartość jest odrzucana. Projekt nie wprowadza nieobecnej biblioteki ani usługi skanowania. Lokalne malware scanning nie jest obecnie dostępne, więc pliki są niezaufane i nigdy nie są serwowane inline: download wymusza Content-Disposition attachment oraz X-Content-Type-Options: nosniff.
+1. AttachmentUploadLimitMiddleware jest umieszczony po AuthenticationMiddleware, ale przed CsrfViewMiddleware. W process_view dla dokładnej trasy POST najpierw odrzuca nieautoryzowaną sesję lub rolę bez dostępu do write; nie pozwala CSRF uruchomić parsera dla takiego żądania.
+2. Dla uprawnionego requestu tworzy unikalny batch claim i OS advisory lock przed jakimkolwiek odczytem request.POST/request.FILES, a następnie instaluje jako jedyny FILE_UPLOAD_HANDLER ClaimedAttachmentUploadHandler. W ten sposób także CSRF, które parsuje request.POST, trafia już do ograniczonego handlera.
+3. Handler zapisuje każdy multipart chunk bezpośrednio do pliku wewnątrz claim directory. Nie uruchamia MemoryFileUploadHandler ani TemporaryFileUploadHandler i nie tworzy kopii parsera w /tmp. Liczy rzeczywiste bajty per file i batch, liczbę plików i elapsed monotonic time przed zapisem kolejnego chunku. Brak/fałszywy Content-Length nie zmienia limitu.
+4. Chunk wynosi najwyżej 64 KiB; przekroczenie per-file, total, file count, pola albo czasu przerywa upload natychmiast. Przy abort/CSRF failure/rozłączeniu request middleware zamyka partial files pod lockiem i usuwa claim; jeżeli cleanup zawiedzie, trwały claim zostaje do reconciliation.
+5. Ustawienia Django DATA_UPLOAD_MAX_NUMBER_FIELDS=10 i DATA_UPLOAD_MAX_NUMBER_FILES=5 ograniczają liczbę pól/plików parsera. Django non-file fields nadal mają DATA_UPLOAD_MAX_MEMORY_SIZE; w attachment payload nie ma metadanych przekazywanych w luźnych polach.
+6. Caddy ogranicza request body do 26 MiB i ustawia read_timeout 10 min z minimalną szybkością 45 KiB/s dla uploadu. request_body oraz timeouts są oznaczone jako experimental od Caddy 2.10.0; compose musi używać co najmniej caddy:2.10-alpine, a implementacja uruchomi caddy validate i test realnego requestu >26 MiB. Caddy body cap jest drugą linią, handler aplikacyjny chroni również przy pominięciu proxy.
+7. Limit na IncomeRecord (20 files/50 MiB) zależy od DB i jest sprawdzany ponownie w transakcji po serializacji. Nie zastępuje limitów na etapie parsera.
 
-Nazwa pliku jest Unicode-normalizowana, oczyszczona z separatorów, znaków sterujących i ścieżek; pusta po normalizacji jest odrzucana. Klucz storage jest losowym UUID, nigdy nazwą użytkownika. SHA-256 liczony podczas zapisu kontroluje integralność obiektu; nie jest dowodem autentyczności i nie trafia do odpowiedzi ani audytu.
+Kroki 1–5 obowiązują zgodnie z dokumentacją Django dla upload handlers i DATA_UPLOAD_MAX_MEMORY_SIZE: https://docs.djangoproject.com/en/5.2/topics/http/file-uploads/#upload-handlers oraz https://docs.djangoproject.com/en/5.2/ref/settings/#data-upload-max-memory-size. Caddy max_size zwraca 413: https://caddyserver.com/docs/caddyfile/directives/request_body.
+
+## Walidacja formatu i zasoby
+
+Brak nowych bibliotek: requirements.txt nie zawiera parsera obrazów/PDF, a ten bolt nie wprowadza kosztu zależności. Kontrakt MVP to bounded structural recognition, nie pełne dekodowanie ani sanitization. Plik jest niezaufany; wymuszony download i nosniff ograniczają ryzyko osadzenia aktywnej treści w originie aplikacji, ale nie obiecują wykrycia malware ani wszystkich uszkodzeń.
+
+- PNG: sprawdź 8-bajtowy signature, kolejność/zakres chunków, IHDR długości 13, CRC chunków, co najmniej jeden IDAT, IEND długości zero dokładnie na końcu; sprawdź width/height > 0, każdy wymiar do 12 000 px i product do 40 megapikseli. Nie dekompresuj IDAT; uszkodzenie skompresowanego strumienia z poprawnym opakowaniem może przejść.
+- JPEG: bounded marker scan z kontrolą długości segmentów, SOI, SOS, EOI na końcu, znaleziony SOF i wymiary do 12 000 px/40 MP; odrzucaj ucięty segment, brak EOI i bajty po EOI. Nie dekoduj entropy stream, więc nie stwierdzamy pełnej poprawności obrazu.
+- PDF: maksymalnie 10 MiB; header %PDF-1.x na początku oraz %%EOF w końcowym oknie z samym whitespace po nim; brak parsera xref/object/page i brak gwarancji, że dokument jest w pełni poprawny lub wolny od polyglotów.
+- Dla wszystkich formatów czas scan jest liniowy do 10 MiB; bufor odczytu ≤64 KiB; metadata format/extension mismatch jest rejected. Sygnatura i basic structure nie są AV scanningiem.
+- Nazwa jest Unicode-normalizowana, bez separatorów, znaków sterujących i ścieżek; pusta po normalizacji jest odrzucana. Storage key pochodzi z UUID, nie z nazwy. SHA-256 liczony przy zapisie służy integrity check, nie jest dowodem autentyczności i nie trafia do API/audytu.
+
+Testy muszą sprawdzić poprawne sygnatury z uciętym/uszkodzonym końcem, uszkodzone chunk CRC/marker lengths, brak końcowego znacznika, ekstremalne wymiary i skompresowany stream przekraczający limity bez alokowania/dekodowania jego wymiarów.
 
 ## Model danych
 
-Dodaj IncomeAttachment jako child IncomeRecord z FK PROTECT do household, income record i aktorów. Gospodarstwo, miesiąc rodzica i wpis są zgodne z URL i niezmienne po utworzeniu.
+IncomeAttachment jest child IncomeRecord; household, parent i miesiąc odpowiadają URL i nie zmieniają się. FK do Household, IncomeRecord, created_by i removed_by używają PROTECT.
 
 | Pole | Kontrakt |
 | --- | --- |
 | id | UUID PK. |
-| household, income_record | Właścicielstwo i parent bez możliwości przepięcia. |
-| original_name | CharField(255), bezpieczna nazwa display. |
-| media_type | Wyłącznie kanoniczne MIME PNG/JPEG/PDF. |
-| size_bytes | Rzeczywisty dodatni rozmiar do 10 MiB. |
-| storage_key | Unikalny klucz względny i losowy; nigdy w API/audycie. |
+| household, income_record | Niezmienne właścicielstwo. |
+| upload_batch_id | Losowy UUID operacji, wspólny dla maksymalnie pięciu załączników; koreluje metadata z filesystem claim, nie tworzy agregatu ani publicznego batch resource. |
+| original_name | CharField(255), bezpieczna nazwa prezentowana. |
+| media_type | Kanoniczne image/png, image/jpeg lub application/pdf. |
+| size_bytes | Rzeczywisty dodatni rozmiar, maksymalnie 10 MiB. |
+| storage_key | Unikalny losowy klucz względem MEDIA_ROOT, nigdy w odpowiedzi/audycie. |
 | content_sha256 | 64 małe znaki hex. |
-| availability_state | Jawne available albo removed; niezależne od kwarantanny. |
+| availability_state | available albo removed; jawny stan logicznego dostępu, niezależny od kwarantanny. |
 | created_at, created_by | Czas i aktor utworzenia. |
 | removed_at, removed_by | Null razem dla available; wymagane dla removed. |
-| storage_deleted_at | Null dla pliku dostępnego lub oczekującego sprzątania; ustawiany po potwierdzonym fizycznym usunięciu. |
+| storage_deleted_at | Null dla available i oczekującego cleanup; timestamp po potwierdzonym unlink. |
 
-Constraints parują availability_state z removed_at/by. Indeksy: household + income_record + state + created_at + id oraz storage_deleted_at do kolejki cleanup. Nie dodawać FileField ani public URL.
+Constraints parują state z removed_at/by oraz storage_deleted_at. Indeksy: household + income_record + availability_state + created_at + id, storage_deleted_at dla cleanup, upload_batch_id do reconciliation. Nie używać FileField/public URL.
 
-AuditLog używa object_type income_attachment i akcji created/deleted. Snapshot zawiera household, income, attachment ID, bezpieczną nazwę, typ, rozmiar i stan logiczny. Nie zawiera bajtów, SHA, storage_key ani ścieżki. Rekord metadata i jego audit są zapisywane w tej samej transakcji DB.
+AuditLog używa object_type income_attachment, actions created/deleted. Snapshot zawiera household, income, attachment ID, bezpieczną nazwę, typ, size i stan logiczny; bez bajtów, SHA, storage key, ścieżki i batch ID. Metadata i audit są atomowo w PostgreSQL. Audit failure rollbackuje całą partię.
 
-## Prywatny storage i upload
+## Prywatne storage, ownership i upload transaction
 
-Wolumen media_data przetrwa restart i jest uwzględniony w obecnej procedurze kopii/odtworzenia. Caddy kieruje tylko /api/* do backendu; żaden serwer statyczny nie wystawia media. Obiekty trafiają do MEDIA_ROOT/income-attachments/{household_uuid}/{random_attachment_uuid}; staging i multipartowe pliki tymczasowe do MEDIA_ROOT/.incoming.
+Wolumen media_data jest trwały po restarcie i jest objęty procedurą backup/restore, która zatrzymuje zapisy przed spójną kopią PostgreSQL + volume. Caddy obsługuje wyłącznie API i frontend; żadna statyczna ścieżka nie serwuje storage. Final key: income-attachments/{household_uuid}/{upload_batch_uuid}/{attachment_uuid}; staged files i manifest: MEDIA_ROOT/.incoming/{upload_batch_uuid}/; stabilny lock file dla batcha: MEDIA_ROOT/.incoming/locks/{upload_batch_uuid}.lock. Lock file powstaje i jest fsync przed pierwszym bajtem; nigdy nie jest usuwany razem z manifestem.
 
-1. Uwierzytelnij sesję/CSRF, sprawdź household i Owner/Administrator, potem waliduj multipart.
-2. Zapisuj strumieniowo do prywatnego stagingu z manifestem batch ID, timestampem i odświeżanym heartbeat. W trakcie kopiowania egzekwuj limity, waliduj nazwę/typ/strukturę i oblicz SHA-256. Jeden błędny plik odrzuca całą partię.
-3. Po walidacji wszystkich plików przenieś je do finalnych losowych kluczy na tym samym wolumenie. Flush i fsync plików oraz katalogu docelowego potwierdzają trwałość; całe filesystem I/O kończy się przed transakcją, a bajty muszą być pobieralne, zanim metadata stanie się widoczna.
-4. Otwórz krótką transakcję: locked_access blokuje Household i ponownie sprawdza rolę; zablokuj AccountingYear przez select_for_update; sprawdź active state; zablokuj IncomeRecord. Zweryfikuj household/month, deleted_at IS NULL i bieżące limity liczby/rozmiaru po równoległych uploadach.
-5. Utwórz wszystkie wiersze IncomeAttachment i audyty w jednej transakcji. Commit ujawnia całą partię atomowo. Zamknięcie miesiąca, usunięcie rodzica i upload używają tej samej kolejności blokad Household → AccountingYear → IncomeRecord.
-6. Przy każdym błędzie nie publikuj metadata i sprzątnij staging/promowane obiekty best-effort. Awaria kompensacji pozostawia niedostępne bajty do kontrolowanego reconciliation.
+1. Middleware tworzy manifest z losowym upload_batch_id i otwiera per-claim advisory lock przed parserem. Trzyma ten sam lock file descriptor przez odbiór bajtów, walidację, promotion oraz finalizację DB albo kompensację. Nie stosuje lease expiration ani takeoveru aktywnego locka.
+2. Handler zapisuje chunks bezpośrednio w claim directory, odświeża heartbeat, actual byte counters i nazwy plików. Claim chroni także parser temporary files, bo handler nie używa globalnych handlerów Django. Nawet jeśli operacja jest starsza niż 24h, cleaner pomija claim, jeżeli nie może zdobyć exclusive lock.
+3. Po przejściu walidacji atomowo promuj pliki na tym samym wolumenie. Flush/fsync pliku przed rename, potem fsync każdego katalogu zawierającego nowy entry oraz kolejno wszystkich utworzonych ancestor directories aż do MEDIA_ROOT. Manifest zapisuje kompletną listę final keys i jest fsync przed DB. Dopiero po zakończeniu tych operacji rozpoczyna się transakcja.
+4. W krótkiej transakcji locked_access blokuje Household i ponownie sprawdza rolę. Następnie zablokuj AccountingYear (select_for_update) i rozwiąż month w jego zakresie. Zablokuj nieusunięty IncomeRecord w household/month; missing, foreign lub deleted parent zwraca 404 przed sprawdzeniem stanu. Dla DELETE attachment rozwiąż także dostępny child scoped do parent przed sprawdzeniem okresu. Dopiero potem wymagaj active month (409) i sprawdź bieżące limity count/bytes; ta kolejność zachowuje kontrakt 014 i rozstrzyga close/delete wyścigi.
+5. Wstaw wszystkie rows IncomeAttachment z upload_batch_id i audyty w jednej transakcji. Ten sam lock year stosują close/reopen; household/year/parent lock serializuje upload z zamknięciem i soft-delete income. Parent delete oznacza wszystkie child rows jako removed i zapisuje audyty w tej samej transakcji.
+6. Commit DB jest transferem claimu: wszystkie storage keys mają już trwałe bajty i rows, zanim claim lock zostanie zwolniony. Każdy skaner finalnych obiektów wyprowadza upload_batch_id z klucza i zdobywa ten sam stabilny lock przed DB lookup/unlink; brak manifestu nie omija blokady. Następnie odczytuje DB i nie kasuje available ani cleanup-pending row.
+7. Błąd przed commit wycofuje całą partię metadata+audit i próbuje skasować wszystkie staging/promoted keys pod utrzymanym claim lockiem. Jeżeli cleanup zawiedzie, manifest i claim pozostają. Odrzucona partia nie emituje successful business audit.
 
-Nie wykonuj długiego I/O, walidacji, rename ani kasowania pod blokadami DB. Kolejność Household → AccountingYear odpowiada zaakceptowanemu [ADR-006](../013-periods-api/adr-006-accounting-year-lock-for-financial-writes.md). Proces reconciliation nie usuwa aktywnego staging claim z heartbeat. Obiekt finalny bez właściciela po crashu przed commit można usunąć dopiero po 24-godzinnym grace period.
+Zapewnienie fencing wynika z nieprzekazywanego lock descriptor i losowego upload_batch_id: tylko proces, który utrzymuje claim lock, może zatwierdzić jego rows; każda nowa próba otrzymuje nowy ID. Proces żywy, w tym zapauzowany, zatrzymuje cleaner bez względu na heartbeat/grace. Po śmierci procesu system operacyjny zwalnia lock, więc stary request nie może wznowić pracy z tym ID.
 
-## Odczyt, usunięcie i retencja
+## Odczyt, logiczne usunięcie i reconciliation
 
-List/download wymaga aktualnej roli read oraz household/year/month/income scope; działa również przy inactive/closed miesiącu. Download dodatkowo wymaga nieusuniętego rodzica i available attachment. Zwracaj kanoniczny MIME, FileResponse jako attachment, bezpieczną nazwę RFC 5987, nosniff i Cache-Control: private, no-store. Nie przekierowuj do storage.
+GET/list wymaga read access, scoped household/year/month/income i nieusuniętego parenta; działa także przy inactive/closed miesiącu. Download wymaga również available attachment. Zwracaj canonical MIME, FileResponse jako attachment, RFC 5987 safe filename, X-Content-Type-Options: nosniff i Cache-Control: private, no-store. Odpowiedź nie zawiera URL-a ani redirect do storage.
 
-DELETE załącznika wymaga active month. Pod lockami ustaw availability_state=removed, removed_at/by oraz zapisz audit w tej samej krótkiej transakcji. Po commit callback wykonuje idempotentne usunięcie, po czym w osobnej krótkiej transakcji ustawia storage_deleted_at. Awaria pozostawia plik logicznie niedostępny i oczekujący; sprzątanie może działać także po zamknięciu okresu.
+DELETE attachment wymaga active month po wcześniejszym potwierdzeniu istniejącego parenta i child. W transakcji ustaw availability_state=removed, removed_at/by oraz zapisz audit atomowo; storage_deleted_at pozostaje null. Po commit best-effort callback zdobywa ten sam per-object lock co reconciler, re-checkuje pending state, próbuje unlink, a następnie w nowej krótkiej transakcji ustawia storage_deleted_at. Wyjątki callbacka są przechwytywane i logowane bez danych prywatnych; nigdy nie zmieniają 204 już zatwierdzonego DELETE. Awaria unlink albo update storage_deleted_at pozostawia trwały cleanup-pending row i nie przywraca dostępu.
 
-Soft-delete IncomeRecord przez istniejący use case 014 w tej samej transakcji logicznie usuwa jego dostępne załączniki i zapisuje audyty; po commit zleca usunięcie bajtów. Pliki nie są zachowywane po usunięciu przychodu, ale historyczne metadata i audyt pozostają. Hard purge jest poza zakresem. Backup media może zachować usunięte bajty do rotacji kopii.
+Use-case DELETE IncomeRecord w bolt 014 musi w tej samej transakcji logicznie usunąć wszystkie available attachments i zapisać ich audyty. Po commit best-effort usuwa bajty; callback izoluje każdą awarię i nie zmienia sukcesu DELETE parenta. Pliki nie są zachowane po soft-delete przychodu; metadata/audit history pozostaje. Hard purge nie jest w zakresie. Backup może zawierać usunięte bajty do rotacji.
 
-Management command reconcile_income_attachment_storage jest idempotentny i ma dry-run. Oznacza completed rekordy removed po potwierdzonym/idempotentnym usunięciu; usuwa stale staging i finalne obiekty bez aktywnego/oczekującego właściciela dopiero po 24 h; nigdy nie usuwa aktywnego claim, available object ani pliku objętego cleanup. Brak bajtów pod aktywnym metadata jest błędem integralności, a nie zwykłym orphanem. Command działa porcjami i bez dodatkowego kontenera; powinien być cyklicznie uruchamiany przez operatora.
+Management command reconcile_income_attachment_storage ma dry-run i działa porcjami:
+1. Dla removed rows z storage_deleted_at=null zdobądź per-object OS lock, ponownie sprawdź pending state, wykonaj unlink idempotentnie (brak pliku oznacza już skasowany), a następnie ustaw storage_deleted_at. Błąd unlink albo DB update pozostawia pending row do kolejnej próby; nie twórz ponownie business audit.
+2. Dla batch claims zdobądź exclusive claim lock non-blocking; zajęty lock pomiń bez względu na wiek. Jeżeli DB wskazuje dostępne lub pending cleanup rows, zachowaj final keys i odtwórz/utrzymaj claim state. Jeśli rows nie istnieją, usuń zawartość starego, osieroconego claimu dopiero po 24h. Po każdym DB lookup/odczycie claim trzymaj lock przez decyzję i unlink.
+3. Obiekt bez manifestu nadal mapuje upload_batch_id ze ścieżki i wymaga tego stabilnego batch lock; jeśli key nie pozwala na mapowanie, wymagany jest per-object lock. Po locku wykonaj DB lookup. Zachowaj każdy key z available/pending row; zgłoś brakujące bajty pod aktywnym metadata jako integrity error. Usuwaj tylko nieowned object starszy niż 24h. 24h jest grace policy dla procesu już nieżyjącego, nigdy metodą przejęcia aktywnego locka.
+
+Dla obiektów z opublikowanym metadata cleanup callback i command są procesami unlink; pre-commit compensation wykonuje uploader pod jego aktywnym batch lockiem. Callback i command używają per-object locka oraz rechecku DB. Command należy uruchamiać cyklicznie jako zadanie operatora; MVP nie dodaje nowego kontenera/workera. Wyjątek after_commit callback jest bezpiecznie konsumowany; retry usuwa brakujący już plik jako sukces i może uzupełnić storage_deleted_at.
 
 ## Błędy HTTP i bezpieczeństwo
 
-- 400: błędne pola/formularz, puste lub nadmierne pliki, nieobsługiwany/uszkodzony format, przekroczone limity lub obce pola.
-- 403: rola Member/Viewer próbuje mutacji albo CSRF nie przechodzi.
-- 404: obcy/brakujący household, year, month, income lub attachment; soft-delete parenta albo logiczne usunięcie attachment.
-- 409 income_period_not_active: upload/delete przy inactive/closed month, po końcowym sprawdzeniu pod blokadą roku.
-- 413: body większe niż limit reverse proxy; klient obsługuje kod bez zależności od Caddy response envelope.
-- 405: metoda poza kontraktem.
-- Błąd storage albo audytu nie zwraca sukcesu. Audit i metadata wycofują się razem; prywatne bajty są kompensowane albo zostawione do reconciliation.
-- Odrzucony upload nie tworzy successful business audit. Log bezpieczeństwa może zawierać household/user/request ID i kod przyczyny, ale bez nazw, MIME klienta, ścieżek i bajtów.
+- 400: niepoprawny multipart, pusty/uszkodzony envelope, filename, typ/rozmiar/liczba ponad limit.
+- 403: Member/Viewer próbuje mutacji, brak uwierzytelnienia lub nieprzejście CSRF.
+- 404: brak/obcy year, month, income lub attachment, soft-delete parenta, logical removal; ten wynik ma pierwszeństwo przed konfliktem inactive/closed dla missing/deleted resources.
+- 409 income_period_not_active: parent/attachment istnieją w podanym scope, ale miesiąc nie jest active.
+- 413: Caddy body cap; klient rozpoznaje status niezależnie od response envelope proxy.
+- 500: błąd metadata/business audit przed commit; cała transakcja jest rollback.
+- 503: storage niedostępne przed publikacją; metadata/audit brak, claim pozostaje do cleanup/retry.
+- Błędy unlink/post-commit DB timestamp nie zmieniają zakończonego 204/parent-delete; pozostawiają pending row.
+- Odrzucony upload nie tworzy successful business audit. Log może zawierać household/user/request ID i reason code, nigdy nazwę, MIME klienta, path ani bytes.
 
 ## Strategia testów
 
-1. Multipart PNG/JPG/JPEG/PDF tworzy powiązane child metadata, kanoniczny MIME i poprawny SHA.
-2. Typ nieobsługiwany, fałszywe MIME/rozszerzenie, puste/uszkodzone sygnatury, path traversal oraz każda granica limitów; jedna porażka nie pozostawia metadata ani final bytes.
-3. Role, tenant isolation, dostęp przez obce income/month, parent soft-delete i usunięty attachment; lista/download w inactive/closed, write odmówione.
-4. PostgreSQL race close kontra końcowy upload, upload kontra income delete i równoległe uploady ograniczeń. Rzeczywiste filesystem I/O nie może zachodzić w transakcji.
-5. Wymuszone audit failure wycofuje całą partię; awaria po promotion kompensuje pliki lub zostawia cleanup claim; nie ma części widocznych rows.
-6. Delete rodzica logicznie odbiera dostęp do wszystkich plików i audytuje; cleanup retry nie przywraca dostępu.
-7. Reconciliation dry-run/execution chroni aktywny heartbeat, retained/pending cleanup, rozpoznaje brakujące bajty, usuwa orphan dopiero po grace period; restart i odtworzenie media_data.
-8. Migration check, focused Django tests, PostgreSQL concurrency tests, Ruff i scripts/quality.ps1. Przed zamknięciem Stage 5 także pełny zestaw testów oraz sprawdzenie zmienionych plików.
+1. Multipart PNG/JPG/JPEG/PDF, właściwy parent i household, canonical MIME, size, batch ID i SHA.
+2. Handler bez Caddy i z brakującym/fałszywym Content-Length: limity per-file/batch/file-count/time interrupt zanim przekroczone bajty zostaną zapisane; max chunk/memory, CSRF failure cleanup, niepowstające /tmp copies i unauthorized requests odrzucone przed parserem.
+3. Format tests: valid envelope; truncated file; uszkodzone CRC/segment length/brak IEND/EOI/EOF; bytes after EOF; 0/over-limit dimensions, 40MP edge i przekroczenie limitu parsera bez dekompresji obrazów.
+4. Role/tenant isolation, cross-parent UUID, parent deleted, child removed; GET/download w inactive/closed; upload/delete write rejection. Missing/foreign/deleted parent × inactive/closed musi zwracać 404; istniejący parent/child × inactive/closed zwraca 409.
+5. Deterministyczne PostgreSQL concurrency tests: close vs final upload, income delete vs final upload, równoległe uploady limitu; filesystem I/O nie dzieje się pod DB locks.
+6. Claim tests z osobnymi procesami: cleaner pomija aktywny/paused upload nawet po 24h; uploader wznowiony z utrzymanym lockiem może zatwierdzić; cleaner zdobywający lock po crashu usuwa tylko po grace i uploader nie może wznowić starego batch ID; cleaner między promotion a commit nie usuwa kluczy.
+7. Audit failure rollbackuje całą partię. Fail unlink po commit, fail DB update po udanym unlink, restart + retry zachowują odpowiedź mutation, pending row i dokładnie jeden business audit.
+8. Soft-delete parent logicznie odcina wszystkie dzieci atomowo; cleanup powtarzalny. Reconciliation dry-run/execution chroni available/pending objects, raportuje missing bytes, usuwa tylko nieowned po 24h; backup/restore zachowuje bajty i metadata.
+9. Caddy validate oraz integracyjny test request body >26 MiB zwracający 413; migration check, focused tests, PostgreSQL races, Ruff i scripts/quality.ps1; pełne testy i zmienione pliki przed Stage 5.
 
 ## Kolejność implementacji
 
-1. Model, constraints, indeksy, migracja, prywatny adapter storage i testy jego ograniczeń.
-2. Konfiguracja limitów/temp dir/Caddy body cap oraz strict multipart serializer i schema odpowiedzi.
-3. Endpoint uploadu z walidacją/staging/finalizacją i atomowym metadata+audit.
-4. Lista, download, logiczne delete i integracja soft-delete IncomeRecord z lifecycle załączników.
-5. Idempotentny management command reconciliation, testy API/storage/race/failure i weryfikacja quality.
+1. Model, constraints, indeksy, migracja i custom bounded upload handler/claim; testy pierwszej granicy parsera przed API.
+2. Private storage adapter, fsync/promotion/fencing i reconciliation command; testy multi-process paused uploader/cleaner.
+3. API serializers, response schemas, tenant-scoped routes, upload/list/download/remove i transakcyjny audit.
+4. Integracja soft-delete IncomeRecord z attachment lifecycle oraz izolowane on_commit cleanup callbacks.
+5. Caddy version/min-size/timeouts config i realny >limit test, testy rollback/race/retention, quality i pełny Stage 5 report.
+
+## Uzasadnienie decyzji ADR
+
+Zachowujemy ADR-002/004/006: synchronizacja z Households/AccountingYear, recheck roli i atomowy audit. Przejście lokalnego filesystemu przez claim lock oraz prywatne API jest konsekwencją istniejącej infrastruktury media_data. Nie wprowadzamy nowego zewnętrznego bounded context, workera ani usługi skanowania; dlatego Stage 3 ADR analysis może zostać pominięty, jeśli reviewer nie wskaże nowej decyzji wymagającej osobnego ADR.
 
 ## Zgodność ze story 005
 
-Każdy zaakceptowany plik ma jednego rodzica i household; wieloplikowa partia nie tworzy częściowo widocznych metadata; limity i typy są wyraźne; storage jest prywatny i trwały; download wymaga aktualnej autoryzacji; tenant/rola/okres sprawdzane są ponownie przy finalnym zapisie; cleanup nie przywraca dostępu i nie usuwa aktywnych claims.
+Wiele plików należy do jednego income/household; batch rows i audyty są all-or-nothing; limity są egzekwowane przed parserem, podczas walidacji oraz pod lockiem dla łącznych limitów; odczyt jest wyłącznie autoryzowany; pliki są prywatne i trwałe; failure cleanup jest retryable, a cleaner nie może usunąć aktywnego claim ani owned object.
