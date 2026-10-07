@@ -189,7 +189,10 @@ class AuditOutput(serializers.ModelSerializer):
 
 class AuditFilters(StrictSerializer):
     object_id = serializers.UUIDField(required=False)
-    object_type = serializers.ChoiceField(choices=["income_source", "company"], required=False)
+    object_type = serializers.ChoiceField(
+        choices=["income_source", "company", "accounting_year", "accounting_month"],
+        required=False,
+    )
     since = serializers.DateTimeField(required=False)
     until = serializers.DateTimeField(required=False)
 

@@ -9,6 +9,11 @@ from .family_income_views import (
     ContractListView,
     SourceConversionView,
 )
+from .period_views import (
+    AccountingMonthListView,
+    AccountingMonthTransitionView,
+    AccountingYearListView,
+)
 from .record_views import (
     RECORD_RESOURCES,
     AuditListView,
@@ -27,6 +32,31 @@ from .views import (
 )
 
 urlpatterns = [
+    path(
+        "<uuid:household_id>/accounting-years/",
+        AccountingYearListView.as_view(),
+        name="accounting-year-list",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/",
+        AccountingMonthListView.as_view(),
+        name="accounting-month-list",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/activate/",
+        AccountingMonthTransitionView.as_view(operation="activate"),
+        name="accounting-month-activate",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/close/",
+        AccountingMonthTransitionView.as_view(operation="close"),
+        name="accounting-month-close",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/reopen/",
+        AccountingMonthTransitionView.as_view(operation="reopen"),
+        name="accounting-month-reopen",
+    ),
     path("<uuid:household_id>/audit-logs/", AuditListView.as_view(), name="audit-list"),
     path("<uuid:household_id>/companies/", CompanyListView.as_view(), name="company-list"),
     path(

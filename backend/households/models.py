@@ -1,4 +1,6 @@
+import calendar
 import uuid
+from datetime import date
 from decimal import Decimal
 
 from django.conf import settings
@@ -306,3 +308,87 @@ class AuditLog(models.Model):
             models.Index(fields=["household", "occurred_at"], name="audit_household_time"),
             models.Index(fields=["household", "object_id"], name="audit_household_object"),
         ]
+
+
+class AccountingMonthState(models.TextChoices):
+    INACTIVE = "inactive", "Nieaktywny"
+    ACTIVE = "active", "Aktywny"
+    CLOSED = "closed", "Zamknięty"
+
+
+class AccountingYear(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    household = models.ForeignKey(
+        Household, on_delete=models.PROTECT, related_name="accounting_years"
+    )
+    calendar_year = models.PositiveSmallIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-calendar_year", "id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["household", "calendar_year"], name="acct_year_household_year_uniq"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(calendar_year__gte=1, calendar_year__lte=9999),
+                name="acct_year_calendar_year_range",
+            ),
+        ]
+
+
+class AccountingMonth(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    accounting_year = models.ForeignKey(
+        AccountingYear, on_delete=models.PROTECT, related_name="months"
+    )
+    month_number = models.PositiveSmallIntegerField()
+    state = models.CharField(
+        max_length=10, choices=AccountingMonthState.choices, default=AccountingMonthState.INACTIVE
+    )
+    activated_at = models.DateTimeField(null=True, blank=True)
+    closed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["month_number", "id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["accounting_year", "month_number"], name="acct_month_year_number_uniq"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(month_number__gte=1, month_number__lte=12),
+                name="acct_month_number_range",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(state__in=AccountingMonthState.values),
+                name="acct_month_valid_state",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        state=AccountingMonthState.INACTIVE,
+                        activated_at__isnull=True,
+                        closed_at__isnull=True,
+                    )
+                    | models.Q(state=AccountingMonthState.ACTIVE, activated_at__isnull=False)
+                    | models.Q(
+                        state=AccountingMonthState.CLOSED,
+                        activated_at__isnull=False,
+                        closed_at__isnull=False,
+                    )
+                ),
+                name="acct_month_state_timestamps_valid",
+            ),
+        ]
+
+    @property
+    def month_start(self):
+        return date(self.accounting_year.calendar_year, self.month_number, 1)
+
+    @property
+    def month_end(self):
+        year = self.accounting_year.calendar_year
+        last_day = calendar.monthrange(year, self.month_number)[1]
+        return date(year, self.month_number, last_day)
