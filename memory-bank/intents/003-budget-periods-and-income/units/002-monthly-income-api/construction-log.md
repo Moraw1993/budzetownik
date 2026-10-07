@@ -34,8 +34,7 @@ last_updated: '2026-10-07T13:51:15Z'
 | 2026-10-07T11:55:46Z | 014-monthly-income-api | technical-design-accepted | Second independent review of commit `7fa75b6`: R1–R5 resolved, no Stage 2 blocker, score 8.5/10. User's conditional acceptance applies after revisions. Stage 2 complete; review suggestions are recorded as pre-implementation follow-ups. |
 | 2026-10-07T12:16:28Z | 014-monthly-income-api | adr-analysis-complete | User selected both proposed decisions. Created accepted ADR-007 for durable create idempotency and ADR-008 for historical snapshots and soft delete; updated the decision index. Stage 3 is complete; Stage 4 awaits human checkpoint approval. |
 
-- **2026-10-07T13:31:28Z**: 014-monthly-income-api stage-start - Stage 4 Implement approved by the user's explicit instruction to continue implementation. Resolved pre-implementation follow-ups in implementation-plan.md; implementation is based on current develop plus the in-progress 013 dependency.
-
+| 2026-10-07T13:31:28Z | 014-monthly-income-api | stage-start | Stage 4 Implement approved by the user's explicit instruction to continue. Resolved pre-implementation follow-ups in implementation-plan.md; based on current develop plus the in-progress 013 dependency. |
 | 2026-10-07T13:51:15Z | 014-monthly-income-api | implement-complete | Added IncomeRecord and durable create idempotency, scoped income CRUD/options/totals API, migration and focused tests. 82 households tests pass and migration state matches models. scripts/quality.ps1 reaches format:check but reports 34 existing unformatted files outside this backend-only diff; full script is not green. Stage 5 awaits user checkpoint. |
 
 ## Execution Summary
@@ -50,4 +49,4 @@ last_updated: '2026-10-07T13:51:15Z'
 
 ## Notes
 
-Stages 1–3 are accepted, including ADR-007 and ADR-008. Stage 4 implementation is active. Bolt 013 remains `in-progress`; 014 must build on its period contract and cannot claim the close–write gate is proven until PostgreSQL tests pass.
+Stages 1–4 are complete, including ADR-007 and ADR-008. Stage 5 awaits the user checkpoint. Bolt 013 remains `in-progress`; 014 must build on its period contract and cannot claim the close–write gate is proven until PostgreSQL tests pass.
