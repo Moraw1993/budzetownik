@@ -3,7 +3,7 @@ intent: 003-budget-periods-and-income
 phase: inception
 status: inception-complete
 created: '2026-10-06T20:09:33Z'
-updated: '2026-10-07T09:54:15Z'
+updated: '2026-10-07T11:21:40Z'
 ---
 
 # Requirements: Okresy rozliczeniowe i rzeczywiste przychody
@@ -53,8 +53,8 @@ Umożliwić gospodarstwu tworzenie lat rozliczeniowych z dwunastoma miesiącami,
 - **Priority**: Should
 
 ### FR-07: Zamknięcie i ponowne otwarcie miesiąca
-- **Description**: Uprawniony użytkownik może zamknąć miesiąc; przed edycją zamkniętego miesiąca musi jawnie go ponownie otworzyć.
-- **Acceptance Criteria**: Zamknięcie blokuje dodawanie, edycję i usuwanie wpisów miesiąca; ponowne otwarcie przywraca te operacje; status miesiąca jest widoczny; zmiana statusu i istotne zmiany wpisów podlegają audytowi zgodnie ze standardami projektu.
+- **Description**: Uprawniony użytkownik może zamknąć miesiąc; przed zmianą przychodów w zamkniętym miesiącu musi jawnie go ponownie otworzyć. Unit `001-periods-api` jest właścicielem stanu i audytowanych przejść; `002-monthly-income-api` egzekwuje ten stan przy zapisach wpisów.
+- **Acceptance Criteria**: Zamknięcie zapisuje stan i audyt; aktywny miesiąc można ponownie otworzyć jawną operacją. API przychodów odrzuca create, edit i delete w miesiącu nieaktywnym lub zamkniętym i szereguje konkurencyjne zapisy względem zamknięcia przez wspólną blokadę roku. Po ponownym otwarciu zapisy są dostępne dla uprawnionych ról. Stan miesiąca jest widoczny; istotne zmiany wpisów podlegają audytowi zgodnie ze standardami projektu.
 - **Priority**: Must
 
 ### FR-08: Podsumowania okresów

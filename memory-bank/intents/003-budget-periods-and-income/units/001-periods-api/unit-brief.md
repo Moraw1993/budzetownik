@@ -6,7 +6,7 @@ default_bolt_type: ddd-construction-bolt
 phase: inception
 status: draft
 created: '2026-10-06T20:32:37Z'
-updated: '2026-10-06T20:32:37Z'
+updated: '2026-10-07T11:21:40Z'
 ---
 
 # API okresów rozliczeniowych
@@ -24,7 +24,7 @@ Właściciel reguł: FR-01, FR-02 i FR-07. Inne jednostki wywołują te operacje
 - Rok gospodarstwa zawiera dokładnie 12 miesięcy kalendarzowych od stycznia do grudnia; duplikat roku jest odrzucany także przy współbieżnych żądaniach.
 - Wszystkie miesiące rozpoczynają jako `inactive`; utworzenie roku nie aktywuje okresu.
 - Uprawniony Owner lub Administrator jawnie aktywuje wybrany miesiąc. Aktywacja nie zależy od poprzedniego miesiąca; wiele miesięcy może być aktywnych równocześnie.
-- Aktywny miesiąc można zamknąć. Zamknięty okres wymaga jawnego ponownego otwarcia przed modyfikacją wpisów. Okres nieaktywny nie przyjmuje wpisów.
+- API przychodów odrzuca zapisy w miesiącu nieaktywnym lub zamkniętym i współdzieli z lifecycle kolejność blokad `Household → AccountingYear`. Ta jednostka dostarcza stany i przejścia; CRUD oraz wyścigi close–write weryfikuje bolt 014.
 - Member i Viewer odczytują zgodnie z istniejącą polityką, lecz nie zapisują ani nie zmieniają stanu.
 - Zmiany stanu i wykonawca są audytowani według istniejących standardów.
 
@@ -42,7 +42,7 @@ API udostępnia listę/tworzenie lat, odczyt miesięcy oraz jawne operacje aktyw
 
 ## Bolt i kryteria zakończenia
 
-Bolt 013-periods-api. Testy modelu/API obejmują granice lat, brak duplikatów, dokładnie 12 miesięcy, stany początkowe, równoległe/nieuporządkowane aktywacje, role, przejścia zamknięcia i audyt.
+Bolt 013-periods-api. Testy modelu/API obejmują granice lat, brak duplikatów, dokładnie 12 miesięcy, stany początkowe, równoległe/nieuporządkowane aktywacje, role, pełną macierz 3×3 przejść, timestampy oraz audyt. Testy blokowania CRUD przychodów przy close należą do bolta 014.
 
 ## Wyłączenia
 

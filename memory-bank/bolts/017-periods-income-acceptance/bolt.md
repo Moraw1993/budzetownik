@@ -66,6 +66,7 @@ Sprawdzić na danych syntetycznych role, izolację, niezależne stany miesięcy,
 - [ ] Both stories pass on a clean runtime with synthetic records.
 - [ ] Owner/Admin write and Member/Viewer read-only behavior is checked at UI and API layers.
 - [ ] Cross-household access, inactive/closed period writes, attachment privacy, totals, and restart persistence pass.
+- [ ] P95 for period lifecycle and income/summary endpoints is measured against the <500 ms target with documented fixtures, warm-up, sample count, concurrency, percentile method, and environment; if not measured, intent acceptance remains incomplete.
 - [ ] Results, limits, and any unverified behavior are documented without using production financial data.
 
 ## Notes

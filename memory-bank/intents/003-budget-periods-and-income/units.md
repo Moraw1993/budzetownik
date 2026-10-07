@@ -21,7 +21,7 @@ Każdy FR ma dokładnie jednego właściciela reguły. UI dostarcza zachowania w
 | FR-04 Słownik źródeł przychodu | 002-monthly-income-api | UI wyboru i szybkiego dodania; używa istniejących `IncomeSource` i `Contract`. |
 | FR-05 Kwota, waluta i data | 002-monthly-income-api | UI formularza; acceptance sprawdza datę poza miesiącem i grupowanie walut. |
 | FR-06 Załączniki | 002-monthly-income-api | UI wyboru i pobierania; acceptance sprawdza prywatny dostęp. |
-| FR-07 Zamknięcie i ponowne otwarcie | 001-periods-api | API przychodów egzekwuje blokadę; UI pokazuje stan i akcję. |
+| FR-07 Zamknięcie i ponowne otwarcie | 001-periods-api | 013 jest właścicielem stanów, przejść i blokady roku; 014 egzekwuje aktywny stan przy CRUD przychodów; 017 dowodzi współbieżności end-to-end. UI pokazuje stan i akcję. |
 | FR-08 Podsumowania | 002-monthly-income-api | UI prezentuje sumy; acceptance porównuje je z wpisami. |
 
 ## Jednostki
@@ -49,6 +49,7 @@ flowchart LR
 
 - 014 rejestruje wpisy bez wyliczania kwoty z brutto umowy ani domyślnej kwoty źródła.
 - 014 korzysta ze stabilnego identyfikatora `IncomeSource`; szczegóły zachowania historycznego obrazu źródła/odbiorcy rozstrzyga Construction przed implementacją.
+- 014 dla create/edit/delete przychodu stosuje kolejność blokad `Household → AccountingYear`, sprawdza miesiąc jako `active` i zapisuje zmianę oraz audyt w tej samej transakcji. Wyścigi close–write są dowodzone na PostgreSQL.
 - 015 ustala limity liczby i rozmiaru plików w projekcie technicznym; przyjmuje wiele PNG, JPG/JPEG i PDF oraz wymaga autoryzowanego pobrania.
 - 016 podlega bramce projektowania z `memory-bank/standards/ui-design-review.md`: plan, wizualizacja, niezależna ocena ze Score > 7,5/10 i jawna akceptacja przed kodem.
 - 017 używa danych syntetycznych i weryfikuje izolację gospodarstw; nie używa danych finansowych użytkownika.
