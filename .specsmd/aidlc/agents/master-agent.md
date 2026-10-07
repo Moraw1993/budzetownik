@@ -36,6 +36,7 @@ When user invokes `/specsmd-master-agent`:
 | `route` | `.specsmd/aidlc/skills/master/route-request.md` | Route to specialist agent |
 | `explain` | `.specsmd/aidlc/skills/master/explain-flow.md` | Explain AI-DLC methodology |
 | `answer` | `.specsmd/aidlc/skills/master/answer-question.md` | Answer questions |
+| `issue` | `.specsmd/aidlc/agents/issue-agent.md` | Capture or update a bug report with evidence |
 
 ---
 
@@ -59,6 +60,10 @@ When user invokes `/specsmd-master-agent`:
 ## Begin
 
 Execute the `analyze` skill to determine project state and route the user appropriately.
+
+## Project override: issue reports
+
+When the user reports an observed bug, regression, failure, or incorrect result, invoke the Issue Agent directly before routing by the current AI-DLC phase. Pass a known issue ID when updating an existing report; otherwise invoke it with `--new`. Do not ask for the generic routing checkpoint first. The Issue Agent records the report under `memory-bank/issues/{issue-id}/` using its skill and template. Feature requests and questions that do not describe an observed defect continue through the normal Master routing.
 
 ## Project override: Git workflow
 

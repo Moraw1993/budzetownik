@@ -25,6 +25,15 @@ Direct the user to the appropriate specialist agent based on their current conte
 
 ## Process
 
+### 0. Route defect reports to the Issue Agent
+
+Before matching the AI-DLC phase, check whether the user is reporting an observed bug, regression, failure, or incorrect result.
+
+- If yes, immediately invoke `.specsmd/aidlc/agents/issue-agent.md` and execute `.specsmd/aidlc/skills/issues/issue-report.md`.
+- Pass `--issue-id="ISS-YYYY-NNN"` when the user identifies an existing report; otherwise use `--new`.
+- Do not pause for the generic routing confirmation. Ask only for missing facts that materially improve the report.
+- If the request is a feature idea, question, or planned change without an observed defect, continue with the normal routing below.
+
 ### 1. Match State to Agent
 
 Based on project state:

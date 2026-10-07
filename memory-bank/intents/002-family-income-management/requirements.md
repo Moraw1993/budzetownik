@@ -83,3 +83,7 @@ Uporządkować członków gospodarstwa, firmy, umowy oraz inne źródła dochodu
 ## Otwarte decyzje
 
 1. Plan zakłada istniejący, nieusuwalny audyt zmian umowy i firmy bez osobnego wersjonowania umów. Przyszły projekt przychodów miesięcznych musi określić, jakie dane źródła utrwala przy zapisie miesiąca.
+
+## Przyszłe rozszerzenie — profil członka rodziny
+
+Koncepcję osobnej podstrony członka z umowami, źródłami, rzeczywistymi przychodami i historią zapisano w [backlogu przyszłych intentów](../../planning-backlog.md). Realizacja ma nastąpić w osobnym intencie po module miesięcznych przychodów; nie zmienia zakończonego zakresu tego intentu. Przy planowaniu przychodów należy od razu uwzględnić stabilne przypisanie do osoby i zachowanie historycznych danych opisane w backlogu.

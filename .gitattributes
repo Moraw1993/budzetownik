@@ -1,3 +1,8 @@
 * text=auto
 *.sh text eol=lf
 Dockerfile text eol=lf
+
+# Keep Prettier-managed text stable across Windows checkouts.
+frontend/** text=auto eol=lf
+.prettierrc.json text eol=lf
+compose.yaml text eol=lf

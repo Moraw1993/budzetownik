@@ -128,6 +128,7 @@ These are the primary entry points defined in `.cursor/commands` (or your agenti
 - `/specsmd-inception-agent` - Start Inception phase
 - `/specsmd-construction-agent` - Start Construction phase
 - `/specsmd-operations-agent` - Start Operations phase
+- `/specsmd-issue-agent` - Record or update a bug report with evidence
 
 ### Agent Skills (Internal)
 
@@ -317,7 +318,7 @@ Here's a complete workflow for building a feature:
 
 ## Agents
 
-Three specialized agents guide you through AI-DLC:
+Four specialized agents guide you through AI-DLC:
 
 1. **Master Orchestrator** (`agents/master-agent.md`)
    - Central entry point
@@ -343,6 +344,11 @@ Three specialized agents guide you through AI-DLC:
    - Deployment
    - Verification
    - Monitoring
+
+5. **Issue Agent** (`agents/issue-agent.md`)
+   - Record observed defects using a stable issue ID
+   - Store each report and its evidence in a dedicated folder
+   - Cross-link duplicates and preserve report status
 
 ## Learn More
 
