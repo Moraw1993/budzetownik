@@ -2,9 +2,9 @@
 unit: 002-monthly-income-api
 bolt: 014-monthly-income-api
 stage: design
-status: awaiting-validation
+status: complete
 created: '2026-10-07T11:31:16Z'
-updated: '2026-10-07T11:47:50Z'
+updated: '2026-10-07T11:55:46Z'
 ---
 
 # Technical Design — 014-monthly-income-api
@@ -143,7 +143,7 @@ PATCH/DELETE sequence: household access lock and role recheck → resolve househ
 
 For PATCH, calculate `effective_member_id` and `effective_source_id` from stored values plus supplied fields, then compare IDs to the stored pair. If neither ID changes, retain both historical relations and snapshots without revalidating archived or subsequently reassigned dictionary rows. If either ID changes, validate the resulting pair as a new assignment: the resulting member (when present) is active and in the URL household; the resulting source is active, in the same household, assigned to the resulting recipient, and its date range overlaps the accounting month. A member-only change fails if the retained source still belongs to the old recipient. Refresh only the snapshot whose relation ID actually changed. Re-sending the same UUID does not refresh a snapshot or bypass this pair validation when the other relation changes.
 
-Close versus income write is serialized by the same year lock. The result is either an income mutation committed before close, or a rejected mutation after close commits; no mutation may commit using a stale `active` read. Eligibility changes are serialized by the existing household access lock; every final write repeats the eligibility predicate after that lock. Concurrency tests for these guarantees must run against PostgreSQL.
+Close versus income write is serialized by the same year lock. The result is either an income mutation committed before close, or a rejected mutation after close commits; no mutation may commit using a stale `active` read. Eligibility changes are serialized by the existing household access lock. Create and actual relationship reassignment evaluate eligibility after that lock; unchanged historical relations follow the preservation rule above. Concurrency tests for these guarantees must run against PostgreSQL.
 
 Totals are read-only exact aggregates. Month totals filter by household/month and `deleted_at IS NULL`, group by currency, and use `SUM(amount)`. Year totals join through the year's months and apply the same filter. Closed months remain included. Neither query reads `Contract.gross_amount` or source defaults.
 
@@ -202,11 +202,11 @@ The later implementation/test stages must include migrations and prove: all four
 
 ## Stage 2 checkpoint
 
-The user has accepted the domain rules and route family. The first independent review scored the technical design 7/10 and requested R1–R5. This revision incorporates those five changes in the fingerprint/URL sequence, resulting-pair PATCH rule, full-transaction rollback behavior, 404 precedence, and exact conflict envelope/handler mapping. The revised document is awaiting independent re-review before the Stage 2 user checkpoint; this paragraph is not an approval or implementation authorization.
+The user conditionally accepted Stage 2 after the requested corrections were applied. The independent reviewer confirmed R1–R5 are resolved, found no remaining Stage 2 blocker, and rated this revision 8.5/10. Stage 2 is accepted. The review is for design only; no income implementation or close–write proof exists yet, and bolt 013 remains `in-progress`.
 
 ## Independent review — required changes before Stage 2 acceptance
 
-The independent reviewer rated the prior revision **7/10**. The five required changes and their verification requirements are retained below as a traceable checklist; their design resolutions are recorded above. Stage 2 remains awaiting validation until a second review confirms the resolutions.
+The independent reviewer rated the prior revision **7/10**. The five required changes and their verification requirements are retained below as a traceable checklist; the design resolutions are recorded above and were confirmed in the second review (**8.5/10**).
 
 ### R1 — Bind an idempotency fingerprint to the URL operation
 
@@ -248,4 +248,12 @@ The independent reviewer rated the prior revision **7/10**. The five required ch
 
 **Required tests:** Assert exact status and JSON for inactive/closed period, stale version, and idempotency conflict; assert that existing period conflicts retain their current response shape.
 
-The reviewer's additional suggestions (tenant-consistency rules for every FK, strict JSON types/no-op PATCH behavior, snapshot schema/action length, option endpoint edge cases, and additional overlap/aggregation fixtures) are advisory follow-ups. Include them in technical criteria where they close an ambiguity, but they are distinct from required changes R1–R5.
+## Before-implementation follow-ups from the second review
+
+These items do not block Stage 2 acceptance, but must be settled in the implementation/test plan before Stage 4:
+
+- **Tenant consistency:** application services verify that the household, accounting month/year, member, source, contract company and idempotency result all belong to the URL household. `PROTECT` does not enforce cross-FK tenant equality. Do not add a permanent `source.member_id = income.member_id` constraint: the source can later change owner while the income retains its historical relationship.
+- **Strict JSON and no-op behavior:** require `expected_version >= 1` as a JSON integer and reject booleans/strings; require `amount` to be a JSON string and settle whether whitespace or exponent notation is rejected. PATCH with only `expected_version` is `400` because at least one mutable field is required. Decide whether a PATCH with identical values returns `200` without version/audit changes (recommended) or records a no-op.
+- **Snapshot and audit details:** clarify that `source_snapshot.version` is the dictionary's `IncomeSource.version`; the snapshot has no separate schema-version field, and its shape evolves with the API contract/migrations. Normalize `other_type_name` to `null` in snapshots. Use `AuditLog.object_type = "income_record"` and actions `created`, `updated`, `deleted`, not dotted action names.
+- **Source options:** finalize and test responses for inactive/archived/unknown `member_id` and inactive month, including empty eligible results. Keep source-options paginated with `count`, `next`, `previous`, `results`.
+- **Edge fixtures:** test inclusive overlap at both boundaries, `end_date = null`, leap February, two intentional `one_off` receipts, independent receipt/source currency, receipt date in another year, and grouped totals larger than one record's maximum while retaining two decimal places.

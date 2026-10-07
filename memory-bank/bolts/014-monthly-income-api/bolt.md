@@ -12,11 +12,14 @@ stories:
 created: '2026-10-06T20:32:37Z'
 started: '2026-10-07T11:31:16Z'
 completed: null
-current_stage: technical-design
+current_stage: adr-analysis
 stages_completed:
   - name: domain-model
     completed: '2026-10-07T11:31:16Z'
     artifact: ddd-01-domain-model.md
+  - name: technical-design
+    completed: '2026-10-07T11:55:46Z'
+    artifact: ddd-02-technical-design.md
 requires_bolts:
   - 013-periods-api
   - 010-family-income-api
@@ -56,7 +59,7 @@ Spełnić FR-03, FR-04, FR-05 i FR-08 oraz wesprzeć egzekwowanie FR-07 przez CR
 **Type**: DDD Construction Bolt (`ddd-construction-bolt`).
 
 - [x] 1. Domain Model → `ddd-01-domain-model.md`
-- [ ] 2. Technical Design → `ddd-02-technical-design.md`
+- [x] 2. Technical Design → `ddd-02-technical-design.md`
 - [ ] 3. ADR Analysis (optional) → `adr-*.md`
 - [ ] 4. Implement → source code and migrations
 - [ ] 5. Test → `ddd-03-test-report.md`
