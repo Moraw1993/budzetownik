@@ -9,9 +9,10 @@ stories:
 created: '2026-10-06T20:32:37Z'
 started: '2026-10-07T18:03:48Z'
 completed: null
-current_stage: technical-design
+current_stage: implement
 stages_completed:
   - domain-model
+  - technical-design
 requires_bolts:
   - 014-monthly-income-api
 enables_bolts:

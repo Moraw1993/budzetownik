@@ -2,8 +2,8 @@
 unit: 002-monthly-income-api
 bolt: 015-income-attachments-api
 stage: design
-status: awaiting-review
-updated: '2026-10-07T20:32:09Z'
+status: complete
+updated: '2026-10-07T20:34:47Z'
 ---
 
 # Stage 2 — projekt techniczny prywatnych załączników przychodu
