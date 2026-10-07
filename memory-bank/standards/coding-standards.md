@@ -34,6 +34,7 @@ Logowanie zdarzeń bezpieczeństwa wymagane; format błędów, narzędzia logowa
 ## Obowiązkowe formatowanie po każdej zmianie kodu
 Wymaganie użytkownika: każdy nowy lub edytowany plik musi być poprawnie sformatowany dla danego języka bezpośrednio po zmianie, przed kolejnym etapem i oddaniem pracy.
 Python: Ruff format + Ruff check. TS/TSX/JS/JSON/YAML/CSS: Prettier; TS/JS: ESLint; CSS: Stylelint.
+Git enforces LF for frontend text and root Prettier configuration in .gitattributes; local core.autocrlf settings do not replace this repository policy.
 Źródłowy CSS nie może być minifikowany: osobna linia dla deklaracji, wielowierszowe bloki, puste linie między selektorami.
 Wspólny kod współdzielić, wyszukiwać istniejące implementacje przed dodawaniem nowych. Usuwać niezamierzone powtórzenia funkcji, klas, komponentów, selektorów i właściwości.
 Funkcje i klasy powinny mieć jedną odpowiedzialność; rozdzielać widoki HTTP, logikę domenową, prezentację i style. Formatter nie zastępuje przeglądu architektury ani wykrywania powielonej logiki.
