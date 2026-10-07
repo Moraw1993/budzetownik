@@ -11,8 +11,11 @@ stories:
 created: '2026-10-06T20:32:37Z'
 started: '2026-10-07T09:57:34Z'
 completed: null
-current_stage: domain-model
-stages_completed: []
+current_stage: technical-design
+stages_completed:
+  - name: domain-model
+    completed: '2026-10-07T10:07:25Z'
+    artifact: ddd-01-domain-model.md
 requires_bolts: []
 enables_bolts:
   - 014-monthly-income-api
