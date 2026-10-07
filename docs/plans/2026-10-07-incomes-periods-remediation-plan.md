@@ -51,6 +51,8 @@ Testy obowiązkowe:
 
 Done A: regresja przechodzi, frontend nadal wysyła prawidłowy payload, Ruff i quality PASS, commit obejmuje wyłącznie poprawkę i potrzebne testy.
 
+**Wykonanie 2026-10-07:** R01 naprawiono w commicie `1eb5aaa` na osobnym branchu `fix/task-incomes-periods-r01`, opartym na `origin/develop` `202a8c5`. Test odtwarzający błąd najpierw zwrócił 400 zamiast oczekiwanego 200. Po zmianie przeszło 86/86 testów backendu; Ruff 0.16.6, ESLint, Stylelint i TypeScript przechodzą. Pełny `scripts/quality.ps1` zatrzymuje się na Prettierze w 34 niezmienionych plikach istniejącego `origin/develop`, więc bramka jakości A nie jest w pełni zaliczona. Nie formatowano obcego zakresu. UI już wysyła niezmieniony `member_id` w pełnym formularzu; nie wymagało zmiany.
+
 ## 4. Etap B — replanning i końcowy kontrakt 013
 
 Pokrycie: R02, R15, R16 oraz przeniesienie dowodów R17.
