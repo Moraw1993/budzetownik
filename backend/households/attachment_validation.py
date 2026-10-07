@@ -133,12 +133,14 @@ def _validate_jpeg(path):
                 "unsupported_file_type", "Obsługiwane są pliki PNG, JPG i PDF."
             )
         has_frame = False
+        has_scan = False
+        frame_components = set()
         pending_marker = None
         while True:
             marker = pending_marker if pending_marker is not None else _read_marker(stream)
             pending_marker = None
             if marker == 0xD9:
-                if not has_frame or stream.read(1):
+                if not has_frame or not has_scan or stream.read(1):
                     raise AttachmentValidationError("invalid_file", "Plik JPEG jest niekompletny.")
                 return "image/jpeg"
             if marker in {0xD8, 0x01, *range(0xD0, 0xD8)}:
@@ -169,13 +171,68 @@ def _validate_jpeg(path):
                 0xCE,
                 0xCF,
             }:
-                if len(segment) < 5:
+                if has_frame or len(segment) < 6:
                     raise AttachmentValidationError(
                         "invalid_file", "Nagłówek JPEG jest niepoprawny."
                     )
-                height, width = struct.unpack(">HH", segment[1:5])
+                precision, height, width, component_count = struct.unpack(">BHHB", segment[:6])
+                if (
+                    precision not in {8, 12}
+                    or component_count < 1
+                    or len(segment) != 6 + component_count * 3
+                ):
+                    raise AttachmentValidationError(
+                        "invalid_file", "Liczba komponentów JPEG jest niepoprawna."
+                    )
+                for offset in range(6, len(segment), 3):
+                    component_id, sampling, quantization_table = segment[offset : offset + 3]
+                    if (
+                        component_id in frame_components
+                        or sampling >> 4 not in range(1, 5)
+                        or sampling & 0x0F not in range(1, 5)
+                        or quantization_table > 3
+                    ):
+                        raise AttachmentValidationError(
+                            "invalid_file", "Parametry komponentu JPEG są niepoprawne."
+                        )
+                    frame_components.add(component_id)
                 _image_dimensions(width, height)
                 has_frame = True
+            if marker == 0xDA:
+                if not has_frame or len(segment) < 6:
+                    raise AttachmentValidationError(
+                        "invalid_file", "Nagłówek SOS JPEG jest niepoprawny."
+                    )
+                scan_component_count = segment[0]
+                if scan_component_count < 1 or len(segment) != 4 + 2 * scan_component_count:
+                    raise AttachmentValidationError(
+                        "invalid_file", "Lista komponentów SOS jest niepoprawna."
+                    )
+                scan_components = set()
+                for offset in range(1, 1 + 2 * scan_component_count, 2):
+                    component_id = segment[offset]
+                    tables = segment[offset + 1]
+                    if (
+                        component_id not in frame_components
+                        or component_id in scan_components
+                        or tables >> 4 > 3
+                        or tables & 0x0F > 3
+                    ):
+                        raise AttachmentValidationError(
+                            "invalid_file", "Komponent SOS JPEG jest niepoprawny."
+                        )
+                    scan_components.add(component_id)
+                spectral_start, spectral_end, successive_approximation = segment[-3:]
+                if (
+                    spectral_start > spectral_end
+                    or spectral_end > 63
+                    or successive_approximation >> 4 > 13
+                    or successive_approximation & 0x0F > 13
+                ):
+                    raise AttachmentValidationError(
+                        "invalid_file", "Parametry skanu JPEG są niepoprawne."
+                    )
+                has_scan = True
             if marker == 0xDA:
                 while True:
                     value = stream.read(1)

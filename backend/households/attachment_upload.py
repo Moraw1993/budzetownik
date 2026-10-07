@@ -121,34 +121,61 @@ class ClaimedAttachmentUploadHandler(FileUploadHandler):
         self._close_current()
 
     def close_files(self):
-        self._close_current()
+        errors = []
+        try:
+            self._close_current()
+        except Exception as exc:
+            errors.append(exc)
         for uploaded in self.completed_files:
-            uploaded.close()
+            try:
+                uploaded.close()
+            except Exception as exc:
+                errors.append(exc)
+        if errors:
+            raise errors[0]
 
     def finish_success(self):
-        self.close_files()
         try:
-            cleanup_claim(self.batch_id)
-        except OSError:
+            self.close_files()
+        except Exception:
+            self.preserve_claim = True
+            logger.exception("income_attachment_handle_close_failed")
+        try:
+            if not self.preserve_claim:
+                cleanup_claim(self.batch_id)
+        except Exception:
+            self.preserve_claim = True
             logger.exception("income_attachment_claim_cleanup_failed")
         finally:
             self._settled = True
-            release_batch_lock(self.lock_descriptor)
+            descriptor = self.lock_descriptor
             self.lock_descriptor = None
+            try:
+                release_batch_lock(descriptor)
+            except Exception:
+                logger.exception("income_attachment_lock_release_failed")
 
     def finish_request(self):
         if self._settled:
             return
-        self.close_files()
+        try:
+            self.close_files()
+        except Exception:
+            logger.exception("income_attachment_handle_close_failed")
+            self.preserve_claim = True
         try:
             if not self.preserve_claim:
                 cleanup_claim(self.batch_id)
-        except OSError:
+        except Exception:
             logger.exception("income_attachment_claim_cleanup_failed")
         finally:
             self._settled = True
-            release_batch_lock(self.lock_descriptor)
+            descriptor = self.lock_descriptor
             self.lock_descriptor = None
+            try:
+                release_batch_lock(descriptor)
+            except Exception:
+                logger.exception("income_attachment_lock_release_failed")
 
 
 class AttachmentUploadSetupMiddleware:

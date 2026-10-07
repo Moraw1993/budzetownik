@@ -1,10 +1,12 @@
+import hashlib
 import json
 import logging
+import os
 from datetime import UTC, datetime, timedelta
-from itertools import islice
 from pathlib import Path
-from uuid import UUID
+from uuid import UUID, uuid4
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
@@ -19,6 +21,9 @@ from households.models import IncomeAttachment, IncomeAttachmentAvailability
 
 logger = logging.getLogger("households.security")
 GRACE_PERIOD = timedelta(hours=24)
+CURSOR_LOCK_ID = UUID(int=0)
+CURSOR_FILENAME = "reconciliation-cursors.json"
+CURSOR_NAMES = {"pending", "claims", "orphans", "available"}
 
 
 class BaseReconciler:
@@ -26,22 +31,49 @@ class BaseReconciler:
         self.execute = execute
         self.limit = limit
         self.now = timezone.now()
-        self.report = {"pending": 0, "claims": 0, "orphans": 0, "missing": 0, "skipped": 0}
+        self.cursors = {name: None for name in CURSOR_NAMES}
+        self.report = {
+            "pending": 0,
+            "claims": 0,
+            "orphans": 0,
+            "missing": 0,
+            "corrupt": 0,
+            "skipped": 0,
+        }
 
     def older_than_grace(self, path):
         modified = datetime.fromtimestamp(path.stat().st_mtime, tz=UTC)
         return self.now - modified >= GRACE_PERIOD
 
+    def _cursor_window(self, items, name, key):
+        cursor = self.cursors[name]
+        candidates = []
+        for item in items:
+            item_key = key(item)
+            if cursor is None or item_key > cursor:
+                candidates.append(item)
+                if len(candidates) > self.limit:
+                    break
+        selected = candidates[: self.limit]
+        self.cursors[name] = key(selected[-1]) if len(candidates) > self.limit else None
+        return selected
+
     def handle_pending(self):
-        batch_ids = (
+        cursor = self.cursors["pending"]
+        batches = (
             IncomeAttachment.objects.filter(
                 availability_state=IncomeAttachmentAvailability.REMOVED,
                 storage_deleted_at__isnull=True,
             )
             .values_list("upload_batch_id", flat=True)
-            .distinct()[: self.limit]
+            .distinct()
         )
-        for batch_id in batch_ids:
+        if cursor:
+            batches = batches.filter(upload_batch_id__gt=UUID(cursor))
+        batches = list(batches.order_by("upload_batch_id")[: self.limit + 1])
+        selected = batches[: self.limit]
+        self.cursors["pending"] = str(selected[-1]) if len(batches) > self.limit else None
+        for batch_id in selected:
             with locked_batch(batch_id, blocking=False) as descriptor:
                 if descriptor is None:
                     self.report["skipped"] += 1
@@ -62,17 +94,20 @@ class BaseReconciler:
                         ).update(storage_deleted_at=timezone.now())
 
     def handle_stale_claims(self):
-        from django.conf import settings
-
         root = Path(settings.MEDIA_ROOT) / CLAIM_DIRECTORY
         if not root.exists():
+            self.cursors["claims"] = None
             return
-        directories = [
-            item
-            for item in root.iterdir()
-            if item.is_dir() and not item.is_symlink() and item.name != "locks"
-        ][: self.limit]
-        for directory in directories:
+        directories = sorted(
+            (
+                item
+                for item in root.iterdir()
+                if item.is_dir() and not item.is_symlink() and item.name != "locks"
+            ),
+            key=lambda item: item.name,
+        )
+        selected = self._cursor_window(directories, "claims", lambda item: item.name)
+        for directory in selected:
             try:
                 batch_id = UUID(directory.name)
             except ValueError:
@@ -88,6 +123,8 @@ class BaseReconciler:
                 try:
                     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
                     keys = manifest.get("final_keys", [])
+                    if not isinstance(keys, list):
+                        keys = []
                 except (OSError, ValueError, AttributeError):
                     keys = []
                 for key in keys:
@@ -99,7 +136,7 @@ class BaseReconciler:
     def reconcile_key(self, key, *, orphan=False):
         attachment = IncomeAttachment.objects.filter(storage_key=key).first()
         path = storage_path(key)
-        exists = path.exists()
+        exists = path.is_file() and not path.is_symlink()
         if attachment and attachment.availability_state == IncomeAttachmentAvailability.AVAILABLE:
             if not exists:
                 self.report["missing"] += 1
@@ -125,17 +162,19 @@ class BaseReconciler:
             unlink_key(key)
 
     def handle_orphan_objects(self):
-        from django.conf import settings
-
         root = Path(settings.MEDIA_ROOT) / "income-attachments"
         if not root.exists():
+            self.cursors["orphans"] = None
             return
-        candidates = (
-            path
-            for path in islice(root.rglob("*"), self.limit * 10)
-            if path.is_file() and not path.is_symlink() and self.older_than_grace(path)
+        paths = self._iter_files(root)
+        selected = self._cursor_window(
+            paths,
+            "orphans",
+            lambda path: path.relative_to(Path(settings.MEDIA_ROOT)).as_posix(),
         )
-        for path in candidates:
+        for path in selected:
+            if not self.older_than_grace(path):
+                continue
             try:
                 relative = path.relative_to(Path(settings.MEDIA_ROOT)).as_posix()
                 segments = relative.split("/")
@@ -152,14 +191,91 @@ class BaseReconciler:
                     continue
                 self.reconcile_key(relative, orphan=True)
 
+    @classmethod
+    def _iter_files(cls, directory):
+        try:
+            children = sorted(directory.iterdir(), key=lambda item: item.name)
+        except OSError:
+            return
+        for path in children:
+            if path.is_symlink():
+                continue
+            if path.is_dir():
+                yield from cls._iter_files(path)
+            elif path.is_file():
+                yield path
+
+    def handle_available(self):
+        cursor = self.cursors["available"]
+        attachments = IncomeAttachment.objects.filter(
+            availability_state=IncomeAttachmentAvailability.AVAILABLE
+        )
+        if cursor:
+            attachments = attachments.filter(pk__gt=UUID(cursor))
+        attachments = list(attachments.order_by("pk")[: self.limit + 1])
+        selected = attachments[: self.limit]
+        self.cursors["available"] = str(selected[-1].pk) if len(attachments) > self.limit else None
+        for attachment in selected:
+            with locked_batch(attachment.upload_batch_id, blocking=False) as descriptor:
+                if descriptor is None:
+                    self.report["skipped"] += 1
+                    continue
+                path = storage_path(attachment.storage_key)
+                if not path.is_file() or path.is_symlink():
+                    self.report["missing"] += 1
+                    logger.error("income_attachment_storage_missing")
+                    continue
+                digest = hashlib.sha256()
+                with path.open("rb") as stream:
+                    for chunk in iter(lambda: stream.read(64 * 1024), b""):
+                        digest.update(chunk)
+                if digest.hexdigest() != attachment.content_sha256:
+                    self.report["corrupt"] += 1
+                    logger.error("income_attachment_storage_checksum_mismatch")
+
+    def load_cursors(self):
+        path = Path(settings.MEDIA_ROOT) / CLAIM_DIRECTORY / CURSOR_FILENAME
+        try:
+            loaded = json.loads(path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            return
+        except (OSError, ValueError):
+            logger.exception("income_attachment_reconciliation_cursor_unreadable")
+            return
+        if not isinstance(loaded, dict):
+            logger.error("income_attachment_reconciliation_cursor_invalid")
+            return
+        for name in CURSOR_NAMES:
+            cursor = loaded.get(name)
+            self.cursors[name] = cursor if isinstance(cursor, str) else None
+
+    def save_cursors(self):
+        root = Path(settings.MEDIA_ROOT) / CLAIM_DIRECTORY
+        root.mkdir(mode=0o700, parents=True, exist_ok=True)
+        if root.is_symlink():
+            raise OSError("Attachment reconciliation state cannot be a symbolic link.")
+        os.chmod(root, 0o700)
+        path = root / CURSOR_FILENAME
+        temporary = root / f"{CURSOR_FILENAME}.{uuid4()}.tmp"
+        flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+        descriptor = os.open(temporary, flags, 0o600)
+        try:
+            with os.fdopen(descriptor, "w", encoding="utf-8", closefd=False) as stream:
+                json.dump(self.cursors, stream, sort_keys=True, separators=(",", ":"))
+                stream.flush()
+                os.fsync(stream.fileno())
+        finally:
+            os.close(descriptor)
+        os.replace(temporary, path)
+
 
 class Command(BaseCommand):
-    help = "Reconcile private income attachment cleanup and stale claims. Defaults to dry-run."
+    help = "Reconcile private income attachment storage. Dry-run by default; scan cursors persist."
 
     def add_arguments(self, parser):
         parser.add_argument("--execute", action="store_true", help="Apply cleanup changes.")
         parser.add_argument(
-            "--limit", type=int, default=100, help="Maximum batches/items to inspect."
+            "--limit", type=int, default=100, help="Maximum rows/paths per scan category."
         )
 
     def handle(self, *args, **options):
@@ -168,9 +284,16 @@ class Command(BaseCommand):
             return
         reconciler = BaseReconciler(execute=options["execute"], limit=options["limit"])
         try:
-            reconciler.handle_pending()
-            reconciler.handle_stale_claims()
-            reconciler.handle_orphan_objects()
+            with locked_batch(CURSOR_LOCK_ID, blocking=False) as descriptor:
+                if descriptor is None:
+                    reconciler.report["skipped"] += 1
+                else:
+                    reconciler.load_cursors()
+                    reconciler.handle_pending()
+                    reconciler.handle_stale_claims()
+                    reconciler.handle_orphan_objects()
+                    reconciler.handle_available()
+                    reconciler.save_cursors()
         except OSError:
             logger.exception("income_attachment_reconciliation_failed")
             raise

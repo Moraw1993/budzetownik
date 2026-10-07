@@ -1,21 +1,34 @@
+import hashlib
+import os
 import struct
 import tempfile
 import zlib
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
-from uuid import uuid4
+from unittest.mock import patch
+from uuid import UUID, uuid4
 
 from accounts.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, override_settings
+from django.test import TestCase, TransactionTestCase, override_settings
 from rest_framework.test import APIClient
 
+from households.attachment_storage import (
+    create_claim,
+    release_batch_lock,
+    storage_path,
+    write_manifest,
+)
+from households.attachment_upload import ClaimedAttachmentUploadHandler
 from households.attachment_validation import AttachmentValidationError, validate_attachment
 from households.income_services import create_income_record
+from households.management.commands.reconcile_income_attachment_storage import BaseReconciler
 from households.models import (
     AuditLog,
     HouseholdMember,
+    IncomeAttachment,
+    IncomeAttachmentAvailability,
     IncomeFrequency,
     IncomeRecord,
     IncomeSource,
@@ -41,6 +54,22 @@ def valid_png(width=1, height=1):
     )
 
 
+def valid_jpeg(width=1, height=1):
+    frame = (
+        b"\x08" + struct.pack(">HH", height, width) + b"\x03\x01\x11\x00\x02\x11\x00\x03\x11\x00"
+    )
+    scan = b"\x03\x01\x00\x02\x11\x03\x11\x00\x3f\x00"
+    return (
+        b"\xff\xd8\xff\xc0"
+        + struct.pack(">H", len(frame) + 2)
+        + frame
+        + b"\xff\xda"
+        + struct.pack(">H", len(scan) + 2)
+        + scan
+        + b"\x00\xff\xd9"
+    )
+
+
 class AttachmentValidationTests(TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
@@ -58,6 +87,30 @@ class AttachmentValidationTests(TestCase):
             self.validate("rachunek.png", valid_png()), ("image/png", len(valid_png()))
         )
         self.assertEqual(self.validate("rachunek.pdf", pdf), ("application/pdf", len(pdf)))
+
+    def test_accepts_structurally_valid_jpeg_extensions(self):
+        content = valid_jpeg()
+
+        self.assertEqual(self.validate("rachunek.jpg", content), ("image/jpeg", len(content)))
+        self.assertEqual(self.validate("rachunek.jpeg", content), ("image/jpeg", len(content)))
+
+    def test_rejects_jpeg_without_valid_frame_scan_or_end_marker(self):
+        frame_end = 23
+        malformed = (
+            b"\xff\xd8\xff\xc0\x00\x07\x08\x00\x01\x00\x01\xff\xd9",
+            valid_jpeg().replace(b"\xff\xda", b"\xff\xdb", 1),
+            valid_jpeg()[:-2],
+            valid_jpeg()[:frame_end] + b"\xff\xda\x00\x05\x01\x01\x00\xff\xd9",
+            valid_jpeg()[:frame_end] + b"\xff\xda\x00\x0c\x01",
+            valid_jpeg(width=12_001),
+        )
+
+        for content in malformed:
+            with (
+                self.subTest(size=len(content)),
+                self.assertRaises(AttachmentValidationError),
+            ):
+                self.validate("broken.jpg", content)
 
     def test_rejects_corrupt_png_extension_mismatch_and_excessive_dimensions(self):
         corrupt_png = valid_png()[:-1] + b"x"
@@ -79,7 +132,7 @@ class AttachmentValidationTests(TestCase):
         self.assertEqual(raised.exception.code, "invalid_file")
 
 
-class IncomeAttachmentApiTests(TestCase):
+class IncomeAttachmentApiTests(TransactionTestCase):
     def setUp(self):
         self.media_dir = tempfile.TemporaryDirectory()
         self.addCleanup(self.media_dir.cleanup)
@@ -162,11 +215,122 @@ class IncomeAttachmentApiTests(TestCase):
         self.assertEqual(download["Cache-Control"], "no-store")
         self.assertEqual(b"".join(download.streaming_content), content)
 
-        with self.captureOnCommitCallbacks(execute=True):
-            removed = self.request("delete", f"{self.path}{item['id']}/")
+        removed = self.request("delete", f"{self.path}{item['id']}/")
         self.assertEqual(removed.status_code, 204)
         self.assertEqual(self.request("get").data["results"], [])
         self.assertEqual(AuditLog.objects.filter(object_type="income_attachment").count(), 2)
+
+    def test_post_commit_handle_close_failure_keeps_available_storage_bytes(self):
+        content = valid_png()
+        uploaded = SimpleUploadedFile("paragon.png", content, content_type="image/png")
+        original_close_files = ClaimedAttachmentUploadHandler.close_files
+
+        def close_then_fail(handler):
+            original_close_files(handler)
+            raise OSError("simulated descriptor close failure")
+
+        with patch.object(ClaimedAttachmentUploadHandler, "close_files", close_then_fail):
+            response = self.request("post", data={"files": [uploaded]}, format="multipart")
+
+        self.assertEqual(response.status_code, 201, response.content)
+        attachment = IncomeRecord.objects.get(pk=self.income.pk).attachments.get()
+        self.assertEqual(attachment.availability_state, "available")
+        self.assertEqual(AuditLog.objects.filter(object_type="income_attachment").count(), 1)
+        self.assertEqual(storage_path(attachment.storage_key).read_bytes(), content)
+
+    def test_reconciliation_reports_missing_available_file_after_manifest_cleanup(self):
+        uploaded = SimpleUploadedFile("paragon.png", valid_png())
+        response = self.request("post", data={"files": [uploaded]}, format="multipart")
+        self.assertEqual(response.status_code, 201, response.content)
+        attachment = IncomeRecord.objects.get(pk=self.income.pk).attachments.get()
+        storage_path(attachment.storage_key).unlink()
+
+        dry_run = BaseReconciler(execute=False, limit=10)
+        dry_run.handle_stale_claims()
+        dry_run.handle_orphan_objects()
+        dry_run.handle_available()
+        execute = BaseReconciler(execute=True, limit=10)
+        execute.handle_stale_claims()
+        execute.handle_orphan_objects()
+        execute.handle_available()
+
+        self.assertEqual(dry_run.report["missing"], 1)
+        self.assertEqual(execute.report["missing"], 1)
+        attachment.refresh_from_db()
+        self.assertEqual(attachment.availability_state, IncomeAttachmentAvailability.AVAILABLE)
+        self.assertIsNone(attachment.storage_deleted_at)
+
+        path = storage_path(attachment.storage_key)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"tampered content")
+        integrity = BaseReconciler(execute=False, limit=10)
+        integrity.handle_available()
+        self.assertEqual(integrity.report["corrupt"], 1)
+        self.assertEqual(path.read_bytes(), b"tampered content")
+
+    def test_orphan_scan_cursor_progresses_past_protected_files(self):
+        old_timestamp = 1
+        owned_batch = UUID(int=1)
+        orphan_batch = UUID(int=2)
+        owned_key = f"income-attachments/{self.household.pk}/{owned_batch}/{UUID(int=1)}"
+        orphan_key = f"income-attachments/{self.household.pk}/{orphan_batch}/{UUID(int=2)}"
+        owned_path = storage_path(owned_key)
+        orphan_path = storage_path(orphan_key)
+        owned_path.parent.mkdir(parents=True, mode=0o700)
+        orphan_path.parent.mkdir(parents=True, mode=0o700)
+        owned_path.write_bytes(valid_png())
+        orphan_path.write_bytes(valid_png())
+        os.utime(owned_path, (old_timestamp, old_timestamp))
+        os.utime(orphan_path, (old_timestamp, old_timestamp))
+        IncomeAttachment.objects.create(
+            id=UUID(int=1),
+            household=self.household,
+            income_record=self.income,
+            upload_batch_id=owned_batch,
+            original_name="owned.png",
+            media_type="image/png",
+            size_bytes=owned_path.stat().st_size,
+            storage_key=owned_key,
+            content_sha256=hashlib.sha256(owned_path.read_bytes()).hexdigest(),
+            created_by=self.owner,
+        )
+
+        first = BaseReconciler(execute=True, limit=1)
+        first.handle_orphan_objects()
+        first.save_cursors()
+        second = BaseReconciler(execute=True, limit=1)
+        second.load_cursors()
+        second.handle_orphan_objects()
+
+        self.assertEqual(first.report["orphans"], 0)
+        self.assertEqual(second.report["orphans"], 1)
+        self.assertTrue(owned_path.exists())
+        self.assertFalse(orphan_path.exists())
+
+    def test_stale_claim_scan_cursor_progresses_past_fresh_claims(self):
+        fresh_batch = UUID(int=1)
+        stale_batch = UUID(int=2)
+        fresh_path, fresh_lock = create_claim(fresh_batch)
+        release_batch_lock(fresh_lock)
+        stale_path, stale_lock = create_claim(stale_batch)
+        release_batch_lock(stale_lock)
+        write_manifest(
+            stale_batch, {"batch_id": str(stale_batch), "state": "promoting", "final_keys": []}
+        )
+        old_timestamp = 1
+        os.utime(stale_path, (old_timestamp, old_timestamp))
+
+        first = BaseReconciler(execute=True, limit=1)
+        first.handle_stale_claims()
+        first.save_cursors()
+        second = BaseReconciler(execute=True, limit=1)
+        second.load_cursors()
+        second.handle_stale_claims()
+
+        self.assertEqual(first.report["claims"], 0)
+        self.assertEqual(second.report["claims"], 1)
+        self.assertTrue(fresh_path.exists())
+        self.assertFalse(stale_path.exists())
 
     def test_rejects_invalid_file_and_read_only_role_without_persisting(self):
         invalid = SimpleUploadedFile("notes.txt", b"plain text", content_type="text/plain")

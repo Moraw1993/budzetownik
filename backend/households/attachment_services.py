@@ -137,6 +137,7 @@ def add_income_attachments(*, request, user, household_id, year_id, month_id, in
         raise AttachmentUploadAborted()
     batch_id = handler.batch_id
     promoted_keys = []
+    committed = False
     try:
         rows = _new_attachments(
             household_id=household_id,
@@ -192,9 +193,15 @@ def add_income_attachments(*, request, user, household_id, year_id, month_id, in
                     after=attachment_snapshot(attachment),
                 )
                 created.append(attachment)
+        committed = True
         handler.finish_success()
         return created
     except Exception:
+        if committed:
+            handler.preserve_claim = True
+            logger.exception("income_attachment_post_commit_finalization_failed")
+            handler.finish_request()
+            raise
         failed_keys = []
         for key in reversed(promoted_keys):
             try:
