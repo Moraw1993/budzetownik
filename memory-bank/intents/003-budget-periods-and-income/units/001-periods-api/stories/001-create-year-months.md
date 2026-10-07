@@ -2,12 +2,13 @@
 id: 001-create-year-months
 unit: 001-periods-api
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: must
 created: '2026-10-06T20:32:37Z'
 assigned_bolt: 013-periods-api
-implemented: false
-requirements: [FR-01]
+implemented: true
+requirements:
+  - FR-01
 ---
 
 # Story: 001-create-year-months
@@ -20,10 +21,10 @@ requirements: [FR-01]
 
 ## Acceptance Criteria
 
-- [ ] **Given** a year not yet present for my household, **when** I create it, **then** it contains exactly January through December once each and all twelve months are inactive.
-- [ ] **Given** that the year already exists, **when** I submit it again, **then** the API rejects the duplicate without creating extra months.
-- [ ] **Given** simultaneous requests to create the same household/year, **when** both complete, **then** there is exactly one year and twelve months.
-- [ ] **Given** another household's year, **when** I request it, **then** tenant isolation prevents disclosure or modification.
+- [x] **Given** a year not yet present for my household, **when** I create it, **then** it contains exactly January through December once each and all twelve months are inactive.
+- [x] **Given** that the year already exists, **when** I submit it again, **then** the API rejects the duplicate without creating extra months.
+- [x] **Given** simultaneous requests to create the same household/year, **when** both complete, **then** there is exactly one year and twelve months.
+- [x] **Given** another household's year, **when** I request it, **then** tenant isolation prevents disclosure or modification.
 
 ## Technical Notes
 

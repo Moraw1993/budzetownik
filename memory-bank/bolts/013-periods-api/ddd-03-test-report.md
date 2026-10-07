@@ -2,81 +2,67 @@
 unit: 001-periods-api
 bolt: 013-periods-api
 stage: test
-status: in-progress
-updated: '2026-10-07T11:28:03Z'
+status: complete
+updated: '2026-10-07T17:37:46Z'
 ---
 
 # Raport testów: API okresów rozliczeniowych
 
-## Podsumowanie
+## Wynik
 
-- Pełny zestaw Django (`households accounts runtime`): **92/92 testów przeszło** na testowej bazie PostgreSQL.
-- Bolt 013 wnosi 9 testów: 7 testów API oraz 2 testy współbieżności. Obejmują one tworzenie pełnego roku, walidację, role, izolację gospodarstw, wszystkie dziewięć kombinacji lifecycle, timestampy, audyt, rollback oraz wyścigi tworzenia roku i aktywacji.
-- Ruff 0.16.6, ESLint, Stylelint i TypeScript przechodzą. `scripts/quality.ps1` nie przechodzi, ponieważ Prettier wskazuje 34 niezmienione pliki spoza zakresu kontraktu 013. `makemigrations --check --dry-run` zwrócił `No changes detected`; migrację 0005 objęły pełne testy.
-- Pokrycie gałęziowe zmienionych modułów aplikacyjnych wyniosło **99%** (385 instrukcji, 3 niepokryte, 16 gałęzi, 1 częściowo pokryta). Pomiar wykonałem w jednorazowym kontenerze; nie dodano zależności do projektu.
-- Wydajności endpointów okresów nie zmierzono. Istniejący `scripts/acceptance_perf.py` nie obsługuje tych tras, więc cel P95 <500 ms pozostaje niezweryfikowany.
+- Pełny zestaw Django na PostgreSQL: **95/95 testów zaliczonych**.
+- Pełny zestaw pod `coverage.py 7.16.2`: **95/95 testów zaliczonych**.
+- Pokrycie produkcyjnego pakietu `households`, bez testów i migracji: **97% pokrycia instrukcji (991 instrukcji, 26 niepokrytych)**. To nie jest pokrycie gałęziowe ani całego backendu.
+- `scripts/quality.ps1`: **PASS** po integracji repozytoryjnej polityki LF z PR #6 (`ec74b975ad02e9cd587ee65d15b6092b7685956e`): Ruff format/check, Prettier, ESLint, Stylelint i TypeScript.
+- `python manage.py makemigrations --check --dry-run households`: **No changes detected**.
+- Próba integracji z aktualnym `origin/develop` (`ec74b975ad02e9cd587ee65d15b6092b7685956e`): `git merge-tree --write-tree` zakończył się kodem 0.
+- P95 endpointów okresów nie mierzono; pomiar pozostaje w zakresie acceptance bolta 017.
 
-## Środowisko i metoda
+## Zakres i środowisko
 
-Testy i pomiar pokrycia uruchomiłem w jednorazowych kontenerach backendu z odrębną testową bazą PostgreSQL. Nie migrowałem ani nie modyfikowałem bazy uruchomionej aplikacji. `coverage` został doinstalowany tylko w kontenerze pomiarowym.
+Bolt 013 dodaje 9 testów: siedem testów API i dwa testy współbieżności. Obejmują one tworzenie roku z 12 miesiącami, walidację, role, izolację gospodarstw, niezależne przejścia miesięcy, audyt, rollback oraz równoległe tworzenie roku i aktywację miesiąca.
 
-Pełny zestaw Django uruchomiony pod coverage podczas Stage 4 przeszedł 91/91 testów. Po dodaniu macierzy ponownie uruchomiono pełny backend i uzyskano 92/92. Coverage dotyczy kodu aplikacyjnego z commita implementacji `e9f582b`; nowa zmiana Stage B dotyczy wyłącznie testu. `scripts/quality.ps1` uruchomiono ponownie: Ruff przeszedł, ale Prettier zgłosił 34 zastane pliki. ESLint, Stylelint i TypeScript uruchomiono osobno i przeszły.
+Testy uruchomiono w kontenerze backendu na testowej bazie PostgreSQL. Kontrola migracji użyła istniejącej bazy `postgres` tylko do odczytu. `coverage.py` zainstalowano wyłącznie w jednorazowym kontenerze pomiarowym; nie dodano zależności ani artefaktu coverage do repozytorium.
 
 ## Kryteria akceptacji
 
 | Historia | Wynik |
 | --- | --- |
-| `001-create-year-months` | ✅ Rok tworzy dokładnie 12 miesięcy, wszystkie nieaktywne; walidacja duplikatu i zakresu, atomowość, audyt i izolacja gospodarstw zweryfikowane. |
-| `002-activate-month` | ✅ Jawna aktywacja jest niezależna; kilka miesięcy może być aktywnych, ponowienie przejścia jest deterministyczne, a role i audyt sprawdzone. |
-| `003-close-and-reopen-month` | ✅ Stan i lifecycle przechodzą pełną macierz 3×3; testy potwierdzają status HTTP, timestampy i audyt/no-op. Ochrona income CRUD przy close oraz wyścigi zapisu z zamknięciem zostały przeniesione do jawnych kryteriów 014 i pozostają do dowodu w tym bolcie. |
+| `001-create-year-months` | ✅ Rok tworzy dokładnie 12 miesięcy w transakcji, wszystkie początkowo nieaktywne. Testy sprawdzają duplikat, zakres, rok przestępny, atomowość, audyt i izolację gospodarstw. |
+| `002-activate-month` | ✅ Jawna aktywacja jest niezależna od innych miesięcy; może być aktywnych kilka okresów. Testy sprawdzają ponowienie przejścia, role i audyt. |
+| `003-close-and-reopen-month` | ✅ API okresów sprawdza przejścia i audyt. Integracja z zapisem przychodu jest pokryta w 014: testy PostgreSQL `test_close_first_rejects_create_patch_and_delete_after_waiting` i `test_write_first_commits_create_patch_and_delete_before_close` sprawdzają oba porządki blokad dla CREATE/PATCH/DELETE. Stage 5 bolta 014 uzyskał niezależne **ACCEPTED / PASS (8,8/10)**. |
 
-## Testy API, bezpieczeństwa i współbieżności
+## Bezpieczeństwo i współbieżność
 
-Siedem testów API bolta 013 sprawdza tworzenie roku z dwunastoma miesiącami (w tym długość lutego w roku przestępnym), odmowę duplikatu i niepoprawnych pól, listowanie, role, izolację gospodarstw, audyt oraz rollback. Test macierzy obejmuje każdą parę stan/operacja, sprawdzając odpowiedź, niezmienność lub zmianę timestampów i liczbę/treść audytu; potwierdza także `reopen(active)` jako no-op. Dwa testy współbieżności na PostgreSQL sprawdzają wyścig tworzenia roku i równoległe aktywacje.
+Testy API okresów weryfikują wymagane role, odmowy dla ról bez zapisu, 404 dla zasobów innego gospodarstwa, pojedyncze zdarzenia audytu i rollback przy błędzie audytu. Testy współbieżności na PostgreSQL sprawdzają utworzenie jednego kompletnego roku oraz równoległe aktywacje bez niespójnego stanu i podwójnego audytu.
 
-Testy bezpieczeństwa są częścią testów API, a nie oddzielnie oznaczoną grupą: sprawdzono odmowę zapisu dla Member/Viewer oraz odpowiedź 404 dla zasobów innego gospodarstwa.
+Testy integracyjne bolta 014 wykonują CREATE/PATCH/DELETE przy jednoczesnym zamykaniu miesiąca. W obu kierunkach testy obserwują, że konkurencyjny backend PostgreSQL czeka na blokadę, a końcowy stan i audyt odpowiadają kolejności serializowanych operacji. Nie twierdzą, że obserwacja `wait_event_type=Lock` izoluje konkretny wiersz blokady.
+
+Podczas niezależnego review test słownika firm wykrył, że porównywał czas utworzenia umowy z czasem archiwizacji jako zastępczy dowód kolejności operacji. Zastąpiłem tę kruchą zależność od zegara ściennego bezpośrednim zapisem kolejności uzyskania wspólnej blokady; asercja teraz wymaga odrzucenia nowej umowy, gdy pierwsza blokadę uzyska archiwizacja, i dopuszcza ją, gdy pierwsza była umowa. Test przeszedł 8 kolejnych powtórzeń oraz pełny zestaw pod coverage (95/95).
 
 ## Pokrycie
 
-| Moduł | Pokrycie z gałęziami |
+Zakres: kod produkcyjny `households`, z wyłączeniem `*/tests/*` i `*/migrations/*`.
+
+| Metryka | Wynik |
 | --- | ---: |
-| `households/exceptions.py` | 100% |
-| `households/models.py` | 100% |
-| `households/period_serializers.py` | 100% |
-| `households/period_services.py` | 93% |
-| `households/period_views.py` | 100% |
-| `households/record_serializers.py` | 100% |
-| `households/urls.py` | 100% |
-| **Łącznie** | **99%** |
+| Instrukcje | 991 |
+| Niepokryte instrukcje | 26 |
+| Pokrycie instrukcji | 97% |
 
-Zakres pomiaru obejmuje zmienione moduły wykonawcze, nie migrację ani testy. Niepokryte linie serwisu okresów dotyczą ścieżek konfliktu i błędu zapisu; główne zachowanie oraz wycofanie przy błędzie audytu mają testy.
+Wynik przekracza wymagane 80%. Nie jest to pokrycie gałęziowe; poprzedni raport błędnie opisywał metrykę jako branch coverage i podawał nieaktualne 99%.
 
-## Wydajność
+## Bramki końcowe
 
-| Metryka | Cel | Wynik | Status |
-| --- | --- | --- | --- |
-| P95 endpointów okresów | <500 ms | Nie zmierzono | ⚠️ |
-| Przepustowość | Nie określono | Nie zmierzono | — |
+- [x] Historie bolta 013 zweryfikowane, w tym zamknięty okres względem zapisów przychodu w integracyjnych testach 014.
+- [x] Pokrycie kodu przekracza 80%.
+- [x] Testy bezpieczeństwa przechodzą.
+- [x] Kontrola jakości i migracji przechodzi.
+- [x] Zależny bolt 014 ma zaakceptowany checkpoint Stage 5.
+- [x] Formalne domknięcie metadanych bolta po akceptacji niezależnego review tego raportu.
 
-Brak pomiaru wynika z tego, że obecny benchmark akceptacyjny obejmuje gospodarstwa, członków i dawne źródła dochodu, ale nie endpointy okresów. Właścicielem benchmarku okresów i całego przepływu jest bolt 017; do jego wykonania P95 pozostaje niezweryfikowane.
-
-## Otwarte kwestie
-
-| Kwestia | Waga | Status |
-| --- | --- | --- |
-| Integracyjna ochrona zamkniętego miesiąca przed zapisem przychodu, wraz z wyścigiem zamknięcie–zapis | Wysoka dla kompletności historii 003 | Do zweryfikowania w bolcie 014, gdy powstanie API przychodów |
-| Pomiar P95 tras okresów | Niska | Do dodania do benchmarku akceptacyjnego przed oceną wydajności |
-
-Nie znaleziono błędów krytycznych. Zgodnie z zakresem następny bolt 014 ma wykorzystać blokadę roku z ADR-006 przed zapisem przychodu; wtedy można zweryfikować powiązaną regułę historii 003 end-to-end.
+P95 endpointów okresów pozostaje niezmierzony i przypisany do bolta akceptacyjnego 017; raport nie przedstawia tego pomiaru jako wykonanego.
 
 ## Checkpoint
 
-Użytkownik zaakceptował raport Stage 5 i podział zakresu. Bolt 013 pozostaje `in-progress`: pełna kontrola jakości zatrzymuje się na zastanym formatowaniu 34 plików, a dowód close–write i pomiar P95 należą odpowiednio do 014 i 017. Akceptacja raportu nie oznacza zamknięcia bolta.
-
-## Ready for Operations
-
-- [ ] Wszystkie kryteria akceptacji bolta sprawdzone end-to-end — pozostaje integracja z API przychodów z bolta 014.
-- [x] Pokrycie kodu >80%.
-- [ ] Brak otwartych kwestii o wysokim wpływie na pełną historię — integracja ochrony przychodu czeka na bolt 014.
-- [ ] Cel wydajności zweryfikowany.
-- [x] Testy bezpieczeństwa przechodzą.
+Stage 5 uzyskał niezależne **ACCEPTED / PASS**. Oficjalny `bolt-complete.cjs` oznaczył bolt i trzy stories jako complete oraz zamknął jednostkę 001-periods-api. P95 tras okresów pozostaje zaplanowany do pomiaru w 017.
