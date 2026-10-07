@@ -115,6 +115,15 @@ def _income_audit_snapshot(record):
     }
 
 
+def _eligible_income_sources(*, household_id, month, member_id):
+    return IncomeSource.objects.filter(
+        household_id=household_id,
+        member_id=member_id,
+        is_active=True,
+        start_date__lte=month.month_end,
+    ).filter(Q(end_date__isnull=True) | Q(end_date__gte=month.month_start))
+
+
 def _resolve_assignment(*, household_id, month, member_id, source_id):
     member = None
     if member_id is not None:
@@ -131,14 +140,20 @@ def _resolve_assignment(*, household_id, month, member_id, source_id):
     )
     if source is None:
         raise NotFound()
-    if not source.is_active:
-        raise ValidationError({"source_id": "Wybierz aktywne źródło dochodu."})
-    if source.member_id != member_id:
-        raise ValidationError({"source_id": "Źródło musi należeć do wybranego odbiorcy."})
-    if source.start_date > month.month_end or (
-        source.end_date is not None and source.end_date < month.month_start
+    if (
+        not _eligible_income_sources(
+            household_id=household_id,
+            month=month,
+            member_id=member_id,
+        )
+        .filter(pk=source.pk)
+        .exists()
     ):
-        raise ValidationError({"source_id": "Źródło nie obejmuje wybranego miesiąca."})
+        raise ValidationError(
+            {
+                "source_id": "Źródło musi być aktywne, przypisane do odbiorcy i obejmować wybrany miesiąc."
+            }
+        )
     return member, source
 
 
@@ -367,13 +382,11 @@ def income_source_options(*, user, household_id, year_id, month_id, member_id):
         if not member_exists:
             raise NotFound()
 
-    sources = IncomeSource.objects.filter(
-        household_id=household_id,
-        member_id=member_id,
-        is_active=True,
-        start_date__lte=month.month_end,
-    ).filter(Q(end_date__isnull=True) | Q(end_date__gte=month.month_start))
-    return sources.select_related("contract__company").order_by("name", "id")
+    return (
+        _eligible_income_sources(household_id=household_id, month=month, member_id=member_id)
+        .select_related("contract__company")
+        .order_by("name", "id")
+    )
 
 
 def month_income_totals(*, user, household_id, year_id, month_id):
@@ -409,15 +422,7 @@ def year_income_totals(*, user, household_id, year_id):
 
 
 def source_option_data(source):
-    contract_data = None
-    if source.kind == IncomeKind.CONTRACT:
-        contract = source.contract
-        contract_data = {
-            "company_id": str(contract.company_id),
-            "company_name": contract.company.name,
-            "contract_type": contract.contract_type,
-            "other_type_name": contract.other_type_name or None,
-        }
+    contract_data = _contract_snapshot(source)
     return {
         "id": source.pk,
         "name": source.name,

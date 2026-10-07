@@ -1,15 +1,21 @@
-from datetime import date
+from datetime import date, timedelta
 from uuid import uuid4
 
 from accounts.models import User
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from households.models import (
     AuditLog,
+    Company,
+    Contract,
+    ContractType,
+    GrossBasis,
     HouseholdMember,
     IncomeCreateIdempotency,
     IncomeFrequency,
+    IncomeKind,
     IncomeRecord,
     IncomeSource,
     Membership,
@@ -45,7 +51,14 @@ class MonthlyIncomeApiTests(TestCase):
             f"months/{self.month.pk}/incomes/"
         )
 
-    def create_source(self, *, member=None, name="Wynagrodzenie", start_date=date(2041, 1, 1)):
+    def create_source(
+        self,
+        *,
+        member=None,
+        name="Wynagrodzenie",
+        start_date=date(2041, 1, 1),
+        end_date=None,
+    ):
         return IncomeSource.objects.create(
             household=self.household,
             member=member,
@@ -53,10 +66,37 @@ class MonthlyIncomeApiTests(TestCase):
             category="salary",
             payer="",
             start_date=start_date,
+            end_date=end_date,
             currency="PLN",
             frequency=IncomeFrequency.MONTHLY,
             is_regular=True,
         )
+
+    def create_contract_source(self):
+        company = Company.objects.create(
+            household=self.household,
+            name="Archived employer",
+            is_active=False,
+            deactivated_at=timezone.now(),
+        )
+        source = IncomeSource.objects.create(
+            household=self.household,
+            member=self.member,
+            name="Employment contract",
+            kind=IncomeKind.CONTRACT,
+            start_date=date(2041, 1, 1),
+            currency="PLN",
+            frequency="",
+            is_regular=None,
+        )
+        Contract.objects.create(
+            source=source,
+            company=company,
+            contract_type=ContractType.EMPLOYMENT,
+            gross_amount="12345.67",
+            gross_basis=GrossBasis.MONTHLY,
+        )
+        return source, company
 
     def request(self, method, path, data=None, *, user=None, key=None):
         self.client.force_login(self.owner if user is None else user)
@@ -179,6 +219,88 @@ class MonthlyIncomeApiTests(TestCase):
         )
         self.assertEqual(response.status_code, 403)
         self.assertEqual(IncomeRecord.objects.count(), 0)
+
+    def test_source_options_render_contract_and_other_with_whitelisted_data(self):
+        contract_source, company = self.create_contract_source()
+        other_source = self.source
+        options_path = self.path.replace("incomes/", "income-source-options/")
+
+        response = self.request("get", f"{options_path}?member_id={self.member.pk}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/json")
+        self.assertEqual(response.data["count"], 2)
+        options = {item["id"]: item for item in response.data["results"]}
+        contract_option = options[str(contract_source.pk)]
+        other_option = options[str(other_source.pk)]
+        self.assertEqual(
+            contract_option["contract"],
+            {
+                "company_id": str(company.pk),
+                "company_name": company.name,
+                "contract_type": ContractType.EMPLOYMENT,
+                "other_type_name": None,
+            },
+        )
+        self.assertEqual(other_option["contract"], None)
+        self.assertEqual(
+            set(contract_option["contract"]),
+            {"company_id", "company_name", "contract_type", "other_type_name"},
+        )
+        self.assertNotIn("gross_amount", contract_option)
+        self.assertNotIn("gross_basis", contract_option)
+
+    def test_source_options_match_income_assignment_at_period_boundaries(self):
+        starts_on_month_end = self.create_source(
+            member=self.member,
+            name="Starts on month end",
+            start_date=self.month.month_end,
+        )
+        ends_on_month_start = self.create_source(
+            member=self.member,
+            name="Ends on month start",
+            end_date=self.month.month_start,
+        )
+        starts_after_month = self.create_source(
+            member=self.member,
+            name="Starts after month",
+            start_date=self.month.month_end + timedelta(days=1),
+        )
+        ends_before_month = self.create_source(
+            member=self.member,
+            name="Ends before month",
+            end_date=self.month.month_start - timedelta(days=1),
+        )
+        options_path = self.path.replace("incomes/", "income-source-options/")
+        response = self.request("get", f"{options_path}?member_id={self.member.pk}")
+
+        self.assertEqual(response.status_code, 200)
+        offered_ids = {item["id"] for item in response.data["results"]}
+        eligible_sources = {self.source, starts_on_month_end, ends_on_month_start}
+        excluded_sources = {starts_after_month, ends_before_month}
+        self.assertEqual(offered_ids, {str(source.pk) for source in eligible_sources})
+
+        for source in eligible_sources:
+            with self.subTest(source=source.name):
+                created = self.request(
+                    "post",
+                    self.path,
+                    self.income_data(source_id=str(source.pk)),
+                    key=uuid4(),
+                )
+                self.assertEqual(created.status_code, 201, created.data)
+
+        for source in excluded_sources:
+            with self.subTest(source=source.name):
+                rejected = self.request(
+                    "post",
+                    self.path,
+                    self.income_data(source_id=str(source.pk)),
+                    key=uuid4(),
+                )
+                self.assertEqual(rejected.status_code, 400)
+
+        self.assertEqual(IncomeRecord.objects.count(), len(eligible_sources))
 
     def test_source_options_are_recipient_and_period_scoped(self):
         self.create_source(member=None, name="Świadczenie")

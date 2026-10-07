@@ -21,6 +21,7 @@ from .income_services import (
     income_source_options,
     month_income_totals,
     resolve_income_period,
+    source_option_data,
     update_income_record,
     year_income_totals,
 )
@@ -115,7 +116,10 @@ class IncomeSourceOptionsView(PrivateAPIView):
         )
         paginator = IncomePagination()
         page = paginator.paginate_queryset(sources, request)
-        return paginator.get_paginated_response(IncomeSourceOptionOutput(page, many=True).data)
+        serialized_sources = [source_option_data(source) for source in page]
+        return paginator.get_paginated_response(
+            IncomeSourceOptionOutput(serialized_sources, many=True).data
+        )
 
 
 class MonthIncomeTotalsView(PrivateAPIView):

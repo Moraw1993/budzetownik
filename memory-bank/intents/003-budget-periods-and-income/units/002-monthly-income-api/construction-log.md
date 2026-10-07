@@ -36,6 +36,7 @@ last_updated: '2026-10-07T13:51:15Z'
 
 | 2026-10-07T13:31:28Z | 014-monthly-income-api | stage-start | Stage 4 Implement approved by the user's explicit instruction to continue. Resolved pre-implementation follow-ups in implementation-plan.md; based on current develop plus the in-progress 013 dependency. |
 | 2026-10-07T13:51:15Z | 014-monthly-income-api | implement-complete | Added IncomeRecord and durable create idempotency, scoped income CRUD/options/totals API, migration and focused tests. 82 households tests pass and migration state matches models. scripts/quality.ps1 reaches format:check but reports 34 existing unformatted files outside this backend-only diff; full script is not green. Stage 5 awaits user checkpoint. |
+| 2026-10-07T15:55:40Z | 014-monthly-income-api | stage4-review-fixes | Fixed contract option JSON projection by reusing the whitelisted contract snapshot and shared source eligibility query for options and writes. Added API render and inclusive overlap boundary regressions; 84 households tests, Ruff and diff checks pass. Full quality remains blocked by 34 existing Prettier files outside this backend diff. Prepared for independent Stage 4 re-review; Stage 5 has not started. |
 
 ## Execution Summary
 
@@ -49,4 +50,4 @@ last_updated: '2026-10-07T13:51:15Z'
 
 ## Notes
 
-Stages 1–4 are complete, including ADR-007 and ADR-008. Stage 5 awaits the user checkpoint. Bolt 013 remains `in-progress`; 014 must build on its period contract and cannot claim the close–write gate is proven until PostgreSQL tests pass.
+Stages 1–4 are implemented, including ADR-007 and ADR-008. Reviewer findings F1/F2 have been fixed and the Stage 4 checkpoint is pending independent re-review; Stage 5 has not started. Bolt 013 remains active; 014 must build on its period contract and cannot claim the close–write gate is proven until PostgreSQL tests pass.
