@@ -392,6 +392,15 @@ textarea:disabled,
   font-weight: 600;
 }
 
+.household-switcher:has(select:focus-visible) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 4px;
+}
+
+.household-switcher select:focus-visible {
+  outline: none;
+}
+
 .household-switcher svg {
   position: absolute;
   right: 12px;
