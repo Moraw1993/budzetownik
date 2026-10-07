@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T18:08:00Z'
+last_updated: '2026-10-07T20:09:25Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -59,4 +59,4 @@ Bolt 014 and stories 001–004 are complete and independently accepted. Bolt 015
 
 | 2026-10-07T18:03:48Z | 015-income-attachments-api | stage-start | Started Stage 1 Domain Model from develop commit 4e3b8de after PR #8 merged; required bolt 014 is complete. |
 
-| 2026-10-07T18:08:00Z | 015-income-attachments-api | domain-model-ready | Modeled private attachment ownership, lifecycle, validation, access control, batch atomicity and cleanup; Stage 1 artifact awaits independent reviewer checkpoint. |
+| 2026-10-07T20:09:25Z | 015-income-attachments-api | domain-model-revised | Resolved reviewer findings on active-month mutation rules, single IncomeRecord aggregate ownership, batch visibility/orphan claims, and atomic audit versus asynchronous storage cleanup. Resubmitted Stage 1 for independent review. |
