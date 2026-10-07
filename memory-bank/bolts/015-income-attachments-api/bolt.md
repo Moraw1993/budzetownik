@@ -3,13 +3,13 @@ id: 015-income-attachments-api
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 type: ddd-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 005-private-income-attachments
 created: '2026-10-06T20:32:37Z'
-started: null
+started: '2026-10-07T18:03:48Z'
 completed: null
-current_stage: null
+current_stage: domain-model
 stages_completed: []
 requires_bolts:
   - 014-monthly-income-api

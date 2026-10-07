@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T18:04:00Z'
+last_updated: '2026-10-07T18:03:48Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -22,7 +22,7 @@ last_updated: '2026-10-07T18:04:00Z'
 | Bolt ID | Stories | Status | Changed |
 | --- | --- | --- | --- |
 | 014-monthly-income-api | 001-record-income, 002-select-dictionary-source, 003-record-amount-currency-date, 004-period-totals-by-currency | ✅ complete | 2026-10-07T17:49:42Z |
-| 015-income-attachments-api | 005-private-income-attachments | ⏳ planned | 2026-10-07T18:04:00Z |
+| 015-income-attachments-api | 005-private-income-attachments | ⏳ in-progress | 2026-10-07T18:03:48Z |
 
 ## Execution History
 
@@ -35,7 +35,6 @@ last_updated: '2026-10-07T18:04:00Z'
 | 2026-10-07T11:47:50Z | 014-monthly-income-api | technical-design-revised | Incorporated R1–R5 in the API, transaction, PATCH, 404, and conflict contracts. Prepared for independent re-review; user approval remains pending. |
 | 2026-10-07T11:55:46Z | 014-monthly-income-api | technical-design-accepted | Second independent review of commit `7fa75b6`: R1–R5 resolved, no Stage 2 blocker, score 8.5/10. User's conditional acceptance applies after revisions. Stage 2 complete; review suggestions are recorded as pre-implementation follow-ups. |
 | 2026-10-07T12:16:28Z | 014-monthly-income-api | adr-analysis-complete | User selected both proposed decisions. Created accepted ADR-007 for durable create idempotency and ADR-008 for historical snapshots and soft delete; updated the decision index. Stage 3 is complete; Stage 4 awaits human checkpoint approval. |
-
 | 2026-10-07T13:31:28Z | 014-monthly-income-api | stage-start | Stage 4 Implement approved by the user's explicit instruction to continue. Resolved pre-implementation follow-ups in implementation-plan.md; based on current develop plus the in-progress 013 dependency. |
 | 2026-10-07T13:51:15Z | 014-monthly-income-api | implement-complete | Added IncomeRecord and durable create idempotency, scoped income CRUD/options/totals API, migration and focused tests. 82 households tests pass and migration state matches models. scripts/quality.ps1 reaches format:check but reports 34 existing unformatted files outside this backend-only diff; full script is not green. Stage 5 awaits user checkpoint. |
 | 2026-10-07T15:55:40Z | 014-monthly-income-api | stage4-review-fixes | Fixed contract option JSON projection by reusing the whitelisted contract snapshot and shared source eligibility query for options and writes. Added API render and inclusive overlap boundary regressions; 84 households tests, Ruff and diff checks pass. Full quality remains blocked by 34 existing Prettier files outside this backend diff. Prepared for independent Stage 4 re-review; Stage 5 has not started. |
@@ -51,9 +50,11 @@ last_updated: '2026-10-07T18:04:00Z'
 | Original bolts planned | 2 |
 | Current bolt count | 2 |
 | Bolts completed | 1 |
-| Bolts in progress | 0 |
-| Bolts remaining | 1 |
+| Bolts in progress | 1 |
+| Bolts remaining | 0 |
 
 ## Notes
 
-Bolt 014 and stories 001–004 are complete and independently accepted. Unit 002 remains in progress because story 005 belongs to planned bolt 015. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.
+Bolt 014 and stories 001–004 are complete and independently accepted. Bolt 015 is in progress at Stage 1; story 005 remains pending implementation and unit 002 remains in progress. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.
+
+| 2026-10-07T18:03:48Z | 015-income-attachments-api | stage-start | Started Stage 1 Domain Model from develop commit 4e3b8de after PR #8 merged; required bolt 014 is complete. |

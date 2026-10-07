@@ -3,7 +3,7 @@ unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 unit_type: backend
 default_bolt_type: ddd-construction-bolt
-phase: inception
+phase: construction
 status: in-progress
 created: '2026-10-06T20:32:37Z'
 updated: '2026-10-07T18:04:00Z'
