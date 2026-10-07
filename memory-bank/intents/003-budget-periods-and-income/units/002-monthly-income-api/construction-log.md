@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T11:43:55Z'
+last_updated: '2026-10-07T11:49:42Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -30,6 +30,7 @@ last_updated: '2026-10-07T11:43:55Z'
 | 2026-10-07T11:31:16Z | 014-monthly-income-api | domain-model-accepted | User selected option 1: accepted D1–D4 and the proposed API contract. Stage 1 complete; Stage 2 technical design is active. |
 | 2026-10-07T11:33:22Z | 014-monthly-income-api | technical-design-ready | Documented persistence, API schemas, security, error codes, idempotency and lock/transaction sequence. Stage 2 awaits user checkpoint. |
 | 2026-10-07T11:43:55Z | 014-monthly-income-api | independent-review | Reviewer scored Stage 2 as 7/10 and requires five design changes R1–R5 before acceptance. Findings and required tests are recorded in `ddd-02-technical-design.md`; no code changes authorized or made. |
+| 2026-10-07T11:47:50Z | 014-monthly-income-api | technical-design-revised | Incorporated R1–R5 in the API, transaction, PATCH, 404, and conflict contracts. Prepared for independent re-review; user approval remains pending. |
 
 ## Execution Summary
 
