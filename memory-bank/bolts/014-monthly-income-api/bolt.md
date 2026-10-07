@@ -3,17 +3,20 @@ id: 014-monthly-income-api
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 type: ddd-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 001-record-income
   - 002-select-dictionary-source
   - 003-record-amount-currency-date
   - 004-period-totals-by-currency
 created: '2026-10-06T20:32:37Z'
-started: null
+started: '2026-10-07T11:31:16Z'
 completed: null
-current_stage: null
-stages_completed: []
+current_stage: technical-design
+stages_completed:
+  - name: domain-model
+    completed: '2026-10-07T11:31:16Z'
+    artifact: ddd-01-domain-model.md
 requires_bolts:
   - 013-periods-api
   - 010-family-income-api
@@ -52,7 +55,7 @@ Spełnić FR-03, FR-04, FR-05 i FR-08 oraz wesprzeć egzekwowanie FR-07 przez CR
 
 **Type**: DDD Construction Bolt (`ddd-construction-bolt`).
 
-- [ ] 1. Domain Model → `ddd-01-domain-model.md`
+- [x] 1. Domain Model → `ddd-01-domain-model.md`
 - [ ] 2. Technical Design → `ddd-02-technical-design.md`
 - [ ] 3. ADR Analysis (optional) → `adr-*.md`
 - [ ] 4. Implement → source code and migrations

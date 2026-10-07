@@ -2,13 +2,13 @@
 unit: 002-monthly-income-api
 bolt: 014-monthly-income-api
 stage: domain-model
-status: awaiting-validation
-updated: '2026-10-07T11:28:03Z'
+status: complete
+updated: '2026-10-07T11:31:16Z'
 ---
 
 # Stage 1 — model domenowy rzeczywistych przychodów
 
-> Status decyzji: propozycja do checkpointu użytkownika. D1–D4 poniżej nie są jeszcze zatwierdzonymi regułami i nie upoważniają do implementacji zależnych od nich zachowań.
+> Akceptacja: użytkownik odpowiedział „1” — zaakceptował D1–D4 oraz proponowany kontrakt API. Te decyzje są bazą dla Stage 2; implementacja nadal wymaga przejścia kolejnych checkpointów.
 
 ## Kontekst i granica domeny
 
@@ -137,14 +137,8 @@ Proponowana semantyka błędów: 400 dla kształtu, nieznanych pól, kwot/dat i 
 - Nie dodawać osobnej story o załącznikach tutaj: istniejąca story `005-private-income-attachments` przypisana jest do bolta 015. Edycję/usuwanie i retry dopisać do 001, aby uniknąć konfliktu numeracji.
 - D5 (załączniki) i D6 (UI) nie są częścią tego checkpointu.
 
-## Decyzje wymagające odpowiedzi
+## Zatwierdzone decyzje i granice
 
-Każdy punkt jest propozycją wymagającą osobnej akceptacji lub wskazania zmiany:
+Użytkownik zaakceptował wszystkie propozycje D1–D4 oraz kontrakt API z poprzednich sekcji. Przyjęte są zatem: osobny wpis z historycznymi snapshotami i soft-delete; kwalifikacja źródła względem odbiorcy i miesiąca; dodatnia kwota `Decimal(18,2)` bez zaokrągleń i data niezależna od okresu; niemutowalny miesiąc, wersjonowane PATCH/DELETE i idempotentny POST z UUID `Idempotency-Key`; oraz przedstawione trasy, kształty odpowiedzi, paginacja i semantyka statusów.
 
-1. **D1 — utrwalenie historii:** osobny `IncomeRecord`, snapshoty odbiorcy/źródła, soft-delete i brak kopiowania kwot źródła/umowy — akceptujesz?
-2. **D2 — przypisanie:** aktywne źródło dokładnie tego odbiorcy, okresowa reguła overlap dla obu rodzajów źródeł, archiwalne źródła tylko do odczytu istniejącej historii, bez wpływu `receipt_date` na kwalifikację — akceptujesz?
-3. **D3 — walidacja:** Decimal(18,2) dodatnie od 0.01, bez zaokrągleń, waluta 3 wielkie litery, data może wypaść poza okresem i w przyszłości — akceptujesz?
-4. **D4 — modyfikacje/retry:** miesiąc niemutowalny, PATCH/DELETE z `expected_version`, soft-delete oraz UUID `Idempotency-Key` dla POST z trwałą ochroną retry w bazie — akceptujesz?
-5. **Kontrakt API:** ścieżki, kształty, paginacja, kody 400/403/404/409 i przykładowe payloady z sekcji powyżej — akceptujesz jako bazę dla Stage 2?
-
-Po akceptacji odpowiedzi zostaną przeniesione do stories i zatwierdzonego artefaktu domenowego. Otwarty pozostaje osobny wybór o ochronie przed opóźnionym żądaniem lifecycle po cyklu close→reopen z 013; nie jest rozstrzygany przez D4. Kod 014 nie powinien zależeć od niego poza użyciem obecnie wdrożonego kontraktu 013.
+Osobna decyzja dotycząca ochrony przed opóźnionym żądaniem lifecycle po cyklu close→reopen z 013 nie była częścią tego checkpointu. Bolt 014 korzysta z bieżącego zaakceptowanego kontraktu 013; ewentualna zmiana tego kontraktu wymaga osobnego checkpointu.

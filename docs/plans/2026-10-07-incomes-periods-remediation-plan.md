@@ -161,6 +161,8 @@ Proponowane ścieżki pod `/api/households/{household_id}/`, wszystkie z końcow
 
 Done C: artifacts 014 zawierają jedną zaakceptowaną odpowiedź na każdą D1–D4, pełne CRUD/eligibility/history/retry stories oraz zatwierdzony kontrakt.
 
+**Checkpoint 2026-10-07:** Użytkownik wybrał „1” — zaakceptował D1–D4 i proponowany kontrakt API. Model domenowy 014 przyjęty; bolt rozpoczęty, Stage 2 (Technical Design) jest bieżący. Story zostaną doprecyzowane zgodnie z zaakceptowanym modelem przy zatwierdzaniu projektu technicznego. Decyzja o retry starego lifecycle request po close→reopen pozostaje osobna i nie jest częścią D1–D4.
+
 ## 6. Etap D — implementacja 014 i dowód kontraktu close–write
 
 Realizować etapami DDD: model → technical design/ADR → implement → test, z checkpointami projektu.
