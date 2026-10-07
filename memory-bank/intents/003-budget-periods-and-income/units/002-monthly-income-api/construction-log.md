@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T20:26:04Z'
+last_updated: '2026-10-07T20:32:09Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -51,6 +51,7 @@ last_updated: '2026-10-07T20:26:04Z'
 | 2026-10-07T20:18:58Z | 015-income-attachments-api | technical-design-ready | Defined API, limits, private filesystem, transaction/lock order, cleanup/retention, audit, failure behavior and test plan. scripts/quality.ps1 and git diff --check passed; awaiting independent Stage 2 review. |
 
 | 2026-10-07T20:25:05Z | 015-income-attachments-api | technical-design-revised | Reviewer returned 7.0/10 CHANGES REQUIRED (S2-1–S2-5); documented pre-parser byte limits, claim lock/fencing, 404 ordering, post-commit cleanup retries and bounded format contract. Resubmitted for review. |
+| 2026-10-07T20:32:09Z | 015-income-attachments-api | technical-design-revised | Reviewer returned 8.0/10 CHANGES REQUIRED on commit `62e05da` (Caddy deadline semantics and Django StopUpload partial-result handling). Specified Caddy 2.10.0 absolute body-read deadline and direct-backend boundary; added request error latch, post-CSRF abort guard, DRF parser and SessionAuthentication checks, final use-case guard, atomic-batch failure mapping, and required regression tests. Resubmitted for independent review. |
 
 ## Execution Summary
 
