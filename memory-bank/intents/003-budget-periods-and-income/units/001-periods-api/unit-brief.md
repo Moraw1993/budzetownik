@@ -4,9 +4,9 @@ intent: 003-budget-periods-and-income
 unit_type: backend
 default_bolt_type: ddd-construction-bolt
 phase: inception
-status: draft
+status: complete
 created: '2026-10-06T20:32:37Z'
-updated: '2026-10-06T20:32:37Z'
+updated: '2026-10-07T17:37:46Z'
 ---
 
 # API okresów rozliczeniowych

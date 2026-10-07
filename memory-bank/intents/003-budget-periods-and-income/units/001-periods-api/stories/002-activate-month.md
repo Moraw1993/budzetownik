@@ -2,12 +2,13 @@
 id: 002-activate-month
 unit: 001-periods-api
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: must
 created: '2026-10-06T20:32:37Z'
 assigned_bolt: 013-periods-api
-implemented: false
-requirements: [FR-02]
+implemented: true
+requirements:
+  - FR-02
 ---
 
 # Story: 002-activate-month
@@ -20,11 +21,11 @@ requirements: [FR-02]
 
 ## Acceptance Criteria
 
-- [ ] **Given** a newly created year, **when** I view its months, **then** all twelve are inactive and none accepts income.
-- [ ] **Given** an inactive month, **when** I explicitly activate it, **then** it becomes active and can accept income entries.
-- [ ] **Given** other months are active or inactive, **when** I activate any inactive month in any order, **then** its state changes independently and already active months remain active.
-- [ ] **Given** Member or Viewer access, **when** the user requests activation, **then** the API denies the state change.
-- [ ] **Given** a month from another household, **when** I try to activate it, **then** the operation is denied without leaking tenant data.
+- [x] **Given** a newly created year, **when** I view its months, **then** all twelve are inactive and none accepts income.
+- [x] **Given** an inactive month, **when** I explicitly activate it, **then** it becomes active and can accept income entries.
+- [x] **Given** other months are active or inactive, **when** I activate any inactive month in any order, **then** its state changes independently and already active months remain active.
+- [x] **Given** Member or Viewer access, **when** the user requests activation, **then** the API denies the state change.
+- [x] **Given** a month from another household, **when** I try to activate it, **then** the operation is denied without leaking tenant data.
 
 ## Technical Notes
 

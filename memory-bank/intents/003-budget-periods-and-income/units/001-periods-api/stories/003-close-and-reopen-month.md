@@ -2,12 +2,13 @@
 id: 003-close-and-reopen-month
 unit: 001-periods-api
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: must
 created: '2026-10-06T20:32:37Z'
 assigned_bolt: 013-periods-api
-implemented: false
-requirements: [FR-07]
+implemented: true
+requirements:
+  - FR-07
 ---
 
 # Story: 003-close-and-reopen-month
@@ -20,11 +21,11 @@ requirements: [FR-07]
 
 ## Acceptance Criteria
 
-- [ ] **Given** an active month, **when** I close it, **then** its status becomes closed and the change records actor, time, and audit event.
-- [ ] **Given** a closed month, **when** a user adds, edits, or deletes an income, **then** the API rejects the write, including requests racing with closure.
-- [ ] **Given** a closed month, **when** I explicitly reopen it, **then** it returns to active and income changes are allowed again.
-- [ ] **Given** an inactive month, **when** I request closure or reopening, **then** the API enforces the defined valid state transitions and does not permit income writes.
-- [ ] **Given** Member or Viewer access, **when** the user closes/reopens a month, **then** the API denies the operation.
+- [x] **Given** an active month, **when** I close it, **then** its status becomes closed and the change records actor, time, and audit event.
+- [x] **Given** a closed month, **when** a user adds, edits, or deletes an income, **then** the API rejects the write, including requests racing with closure.
+- [x] **Given** a closed month, **when** I explicitly reopen it, **then** it returns to active and income changes are allowed again.
+- [x] **Given** an inactive month, **when** I request closure or reopening, **then** the API enforces the defined valid state transitions and does not permit income writes.
+- [x] **Given** Member or Viewer access, **when** the user closes/reopens a month, **then** the API denies the operation.
 
 ## Technical Notes
 

@@ -1,13 +1,16 @@
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from datetime import date
 from decimal import Decimal
-from threading import Barrier
+from threading import Barrier, local
+from unittest.mock import patch
 
 from accounts.models import User
 from django.db import connections
 from django.test import TransactionTestCase
 from rest_framework.exceptions import ValidationError
 
+from households import family_income_services
 from households.exceptions import SourceConflict
 from households.family_income_services import write_company, write_contract
 from households.models import (
@@ -106,7 +109,18 @@ class FamilyIncomeConcurrencyTests(TransactionTestCase):
             self.assertIsNone(source.default_monthly_amount)
 
     def test_archival_and_new_contract_use_same_household_lock(self):
+        operation = local()
+        lock_order = []
+        original_locked_access = family_income_services.locked_access
+
+        @contextmanager
+        def observe_locked_access(**kwargs):
+            with original_locked_access(**kwargs) as membership:
+                lock_order.append(operation.name)
+                yield membership
+
         def archive():
+            operation.name = "archive"
             write_company(
                 user=self.owner,
                 household_id=self.household.pk,
@@ -117,6 +131,7 @@ class FamilyIncomeConcurrencyTests(TransactionTestCase):
             return "archived"
 
         def create():
+            operation.name = "create"
             try:
                 write_contract(
                     user=self.owner,
@@ -127,13 +142,17 @@ class FamilyIncomeConcurrencyTests(TransactionTestCase):
             except ValidationError:
                 return "rejected"
 
-        outcomes = self.run_parallel(archive, create)
+        with patch("households.family_income_services.locked_access", new=observe_locked_access):
+            outcomes = self.run_parallel(archive, create)
+
         self.assertIn("archived", outcomes)
         self.assertIn(outcomes[1], {"created", "rejected"})
+        self.assertCountEqual(lock_order, ["archive", "create"])
+        expected_create_result = "rejected" if lock_order[0] == "archive" else "created"
+        self.assertEqual(outcomes[1], expected_create_result)
         self.company.refresh_from_db()
         self.assertFalse(self.company.is_active)
         self.assertEqual(Contract.objects.count(), int(outcomes[1] == "created"))
         if outcomes[1] == "created":
             contract = Contract.objects.get()
             self.assertEqual(contract.company_id, self.company.pk)
-            self.assertLessEqual(contract.created_at, self.company.deactivated_at)
