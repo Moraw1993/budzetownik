@@ -15,15 +15,15 @@ ADR-002 wymaga blokowania agregatu oraz ponownej weryfikacji członkostwa i roli
 
 ## Decision
 
-Operacja zmieniająca stan miesiąca i każda operacja zapisująca przychód najpierw blokują ten sam wiersz `AccountingYear` przez `select_for_update()` i wykonują sprawdzenie oraz zapis w jednej transakcji bazodanowej.
+Operacja zmieniająca stan miesiąca i każda operacja zapisująca przychód najpierw używa `locked_access`, które blokuje wiersz `Household` i ponownie sprawdza członkostwo oraz rolę zgodnie z ADR-002. Następnie blokuje ten sam wiersz `AccountingYear` przez `select_for_update()` i wykonuje sprawdzenie oraz zapis w jednej transakcji bazodanowej. Obowiązuje stała kolejność blokad: `Household`, potem `AccountingYear`.
 
-Operacja przychodu po uzyskaniu blokady ponownie sprawdza aktualne członkostwo i rolę zgodnie z ADR-002, odczytuje stan miesiąca pod tą samą blokadą i zapisuje przychód tylko wtedy, gdy miesiąc jest `active`. Zmiana stanu miesiąca weryfikuje dozwolone przejście i zapisuje je razem z niezmiennym wpisem audytu zgodnie z ADR-004. Kolejność uzyskania blokady rozstrzyga wyścig: zapis przychodu może zakończyć się przed zatwierdzeniem zamknięcia albo zostać odrzucony po nim.
+Po uzyskaniu blokady roku operacja przychodu odczytuje stan miesiąca i zapisuje przychód tylko wtedy, gdy miesiąc jest `active`. Zmiana stanu miesiąca weryfikuje dozwolone przejście i zapisuje je razem z niezmiennym wpisem audytu zgodnie z ADR-004. Kolejność uzyskania blokady roku rozstrzyga wyścig: zapis przychodu może zakończyć się przed zatwierdzeniem zamknięcia albo zostać odrzucony po nim.
 
-Blokada obejmuje jeden agregat roku. Zapis w jednym roku nie wymaga blokady innych lat tego gospodarstwa. Operacje nie wykonują wywołań sieciowych ani plikowych, gdy trzymają blokadę.
+Blokada okresowa obejmuje jeden agregat roku. Zapis w jednym roku nie blokuje bezpośrednio innych lat, choć obecny household lock z ADR-002 serializuje mutacje tego samego gospodarstwa. Operacje nie wykonują wywołań sieciowych ani plikowych, gdy trzymają blokady.
 
 ## Rationale
 
-Wspólny wiersz agregatu daje obu niezależnym kontekstom ten sam punkt synchronizacji i chroni regułę zamkniętego miesiąca bez rozproszonej transakcji. Zakres roczny jest zgodny z granicą agregatu ustanowioną dla kompletności dwunastu miesięcy. Domowe aplikacje mają małą współbieżność, więc krótkie transakcje powinny utrzymać koszt serializacji na akceptowalnym poziomie.
+Wspólny wiersz agregatu daje obu niezależnym kontekstom jawny punkt synchronizacji i chroni regułę zamkniętego miesiąca bez rozproszonej transakcji. Zakres roczny jest zgodny z granicą agregatu ustanowioną dla kompletności dwunastu miesięcy. Kolejność `Household` → `AccountingYear` zachowuje istniejący protokół dostępu i zapobiega zakleszczeniom wynikającym z różnej kolejności blokad. Domowe aplikacje mają małą współbieżność, więc krótkie transakcje powinny utrzymać koszt serializacji na akceptowalnym poziomie.
 
 ### Alternatives Considered
 
@@ -31,7 +31,7 @@ Wspólny wiersz agregatu daje obu niezależnym kontekstom ten sam punkt synchron
 |-------------|------|------|--------------|
 | Blokować wyłącznie wiersz miesiąca | Większa równoległość zapisów w różnych miesiącach | Rozprasza synchronizację poza zdefiniowaną granicę agregatu i wymaga wspólnej dyscypliny blokowania miesiąca w każdym kontekście | Używamy wiersza korzenia agregatu jako jawnego kontraktu między boltami |
 | Odczytać stan bez blokady i sprawdzić go ponownie po zapisie | Mniej oczekiwania na blokady | Pozostawia trudny do zagwarantowania wyścig między końcową kontrolą a zatwierdzeniem zamknięcia | Nie zapewnia wymaganej kolejności zatwierdzonych operacji |
-| Blokować całe gospodarstwo dla każdego zapisu | Prosta wspólna blokada dla różnych domen | Niepotrzebnie serializuje niezależne lata i zwiększa zakres ADR-002 | Dla tego niezmiennika wystarcza agregat roku |
+| Polegać wyłącznie na istniejącej blokadzie gospodarstwa | Nie wymaga dodatkowego odczytu i blokady roku | Nie utrwala jawnego kontraktu agregatu okresu dla kolejnych domen, gdyby globalna blokada gospodarstwa została kiedyś zawężona | Zachowujemy household lock dla dostępu, a blokadę roku jako kontrakt domenowy współdzielony z przychodami |
 
 ## Consequences
 
@@ -43,7 +43,8 @@ Wspólny wiersz agregatu daje obu niezależnym kontekstom ten sam punkt synchron
 
 ### Negative
 
-- Operacje zapisu w tym samym roku czekają na siebie, także jeśli dotyczą różnych miesięcy.
+- Operacje zależne od stanu okresu w tym samym roku czekają na wspólnej blokadzie agregatu.
+- Obecna polityka `locked_access` już serializuje wszystkie mutacje jednego gospodarstwa; blokada roku jest dodatkowym, jawnym kontraktem domenowym.
 - Każdy przyszły kontekst zapisujący dane zależne od stanu miesiąca musi stosować tę samą blokadę korzenia.
 
 ### Risks

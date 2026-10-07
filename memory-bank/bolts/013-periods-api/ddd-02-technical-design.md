@@ -4,7 +4,7 @@ bolt: 013-periods-api
 stage: technical-design
 status: complete
 created: '2026-10-07T10:11:57Z'
-updated: '2026-10-07T10:14:45Z'
+updated: '2026-10-07T10:25:08Z'
 ---
 
 # Technical Design — 013-periods-api
@@ -66,16 +66,17 @@ Repeating an operation when the month is already in that operation's target stat
 - Preserve the existing authenticated session and CSRF protections for state-changing requests.
 - Household members may read years and months. Only Owner and Admin may create years or change month state; Member and Viewer receive `403` on writes.
 - Resolve each object through the household-scoped query, not by loading a global id and trusting a later check. Missing and cross-household objects both return `404` to avoid disclosing another household's records.
-- For writes, lock the aggregate root first and re-check current household membership and role after acquiring the lock, including after any lock wait, as specified by ADR-002.
+- Route every mutation through the existing `locked_access` policy. It locks the `Household` row and re-checks membership and role after acquiring that lock, as required by ADR-002.
+- For period state changes, acquire the `AccountingYear` row lock only after `locked_access` has acquired the household lock and revalidated access. Keep this lock order (`Household` then `AccountingYear`) consistent in every caller.
 - Do not accept household, actor, role, or audit identity from the request body.
 
 ## Transactions and concurrency
 
 Year creation runs in `transaction.atomic()`. Database uniqueness is the final guard against concurrent duplicate creates; translate the losing insert to `409 Conflict`, with the transaction rolled back so no partial months remain.
 
-State changes lock the `AccountingYear` row with `select_for_update()`, then re-check membership/role, resolve the month within that locked year, verify its state, persist the transition, and append the immutable audit record in the same transaction. Locking the year (rather than only one month) gives the future income writer a shared synchronization point.
+State changes run inside `locked_access`, which first locks the `Household` row and re-checks membership/role. They then lock the `AccountingYear` row with `select_for_update()`, resolve the month within that locked year, verify its state, persist the transition, and append the immutable audit record in the same transaction. This preserves ADR-002's lock order and gives the future income writer a shared period-domain synchronization point.
 
-Bolt `014-monthly-income-api` must acquire the same year lock before checking that a month is active and before persisting an income change, keeping the state check and income write in the same transaction. Therefore close-versus-income races serialize: whichever transaction obtains the root lock first determines whether the income write precedes the close or is rejected after it. This deliberately serializes writes within one household-year; transactions must remain short and database-only. Validate the target API latency of P95 below 500 ms under representative household load.
+Bolt `014-monthly-income-api` must enter `locked_access` first, then acquire the same year lock before checking that a month is active and before persisting an income change, keeping the state check and income write in the same transaction. Therefore close-versus-income races serialize: whichever transaction obtains the year lock first determines whether the income write precedes the close or is rejected after it. The existing household lock serializes household mutations more broadly under ADR-002; the year lock remains the explicit shared contract for operations governed by period state. Transactions must remain short and database-only. Validate the target API latency of P95 below 500 ms under representative household load.
 
 ## Audit integration
 

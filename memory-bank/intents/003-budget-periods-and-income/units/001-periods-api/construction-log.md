@@ -2,7 +2,7 @@
 unit: 001-periods-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T09:57:34Z'
-last_updated: '2026-10-07T10:20:11Z'
+last_updated: '2026-10-07T10:25:08Z'
 ---
 
 # Construction Log: 001-periods-api
@@ -35,6 +35,7 @@ last_updated: '2026-10-07T10:20:11Z'
 | 2026-10-07T10:07:25Z | 013-periods-api | stage-complete | domain-model → technical-design; approved by user |
 | 2026-10-07T10:14:45Z | 013-periods-api | stage-complete | technical-design → adr-analysis; approved by user |
 | 2026-10-07T10:20:11Z | 013-periods-api | stage-complete | adr-analysis → implement; ADR-006 accepted by user |
+| 2026-10-07T10:25:08Z | 013-periods-api | design-refined | Stage 4 code review confirmed the existing `locked_access` order; period operations retain it and acquire `AccountingYear` second per ADR-006 |
 
 ## Execution Summary
 
