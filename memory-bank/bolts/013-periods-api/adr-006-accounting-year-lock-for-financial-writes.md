@@ -1,7 +1,7 @@
 ---
 bolt: 013-periods-api
 created: 2026-10-07T10:16:53Z
-status: proposed
+status: accepted
 superseded_by: null
 ---
 

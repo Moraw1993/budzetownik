@@ -1,6 +1,6 @@
 ---
 total_decisions: 6
-last_updated: 2026-10-07T10:16:53Z
+last_updated: 2026-10-07T10:20:11Z
 ---
 # Decyzje architektoniczne
 
@@ -40,7 +40,7 @@ last_updated: 2026-10-07T10:16:53Z
 - Decyzja: `IncomeSource` zachowuje wspólny UUID; `Contract` zawiera szczegóły 1:1, a migracja nie tworzy umów ani przychodów miesięcznych.
 
 ## ADR-006: Wspólna blokada roku dla zapisów finansowych
-- Status: proposed.
+- Status: accepted.
 - Bolt: 013-periods-api.
 - Dokument: [ADR](../bolts/013-periods-api/adr-006-accounting-year-lock-for-financial-writes.md).
 - Czytać przy implementacji zmian stanu okresu lub zapisów finansowych zależnych od aktywności miesiąca.
