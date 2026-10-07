@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T18:03:48Z'
+last_updated: '2026-10-07T18:08:00Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -58,3 +58,5 @@ last_updated: '2026-10-07T18:03:48Z'
 Bolt 014 and stories 001–004 are complete and independently accepted. Bolt 015 is in progress at Stage 1; story 005 remains pending implementation and unit 002 remains in progress. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.
 
 | 2026-10-07T18:03:48Z | 015-income-attachments-api | stage-start | Started Stage 1 Domain Model from develop commit 4e3b8de after PR #8 merged; required bolt 014 is complete. |
+
+| 2026-10-07T18:08:00Z | 015-income-attachments-api | domain-model-ready | Modeled private attachment ownership, lifecycle, validation, access control, batch atomicity and cleanup; Stage 1 artifact awaits independent reviewer checkpoint. |
