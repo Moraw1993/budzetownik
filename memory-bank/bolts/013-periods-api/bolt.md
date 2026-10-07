@@ -3,15 +3,15 @@ id: 013-periods-api
 unit: 001-periods-api
 intent: 003-budget-periods-and-income
 type: ddd-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 001-create-year-months
   - 002-activate-month
   - 003-close-and-reopen-month
 created: '2026-10-06T20:32:37Z'
-started: null
+started: '2026-10-07T09:57:34Z'
 completed: null
-current_stage: null
+current_stage: domain-model
 stages_completed: []
 requires_bolts: []
 enables_bolts:
