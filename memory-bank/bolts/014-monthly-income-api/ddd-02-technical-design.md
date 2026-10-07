@@ -4,7 +4,7 @@ bolt: 014-monthly-income-api
 stage: design
 status: awaiting-validation
 created: '2026-10-07T11:31:16Z'
-updated: '2026-10-07T11:33:22Z'
+updated: '2026-10-07T11:43:55Z'
 ---
 
 # Technical Design — 014-monthly-income-api
@@ -199,3 +199,49 @@ The later implementation/test stages must include migrations and prove: all four
 ## Stage 2 checkpoint
 
 The user has accepted the domain rules and route family. This stage asks approval for the technical choices that make them executable: `IncomeRecord` plus `IncomeCreateIdempotency` tables; JSONB snapshots and protected relationships; stored original response for idempotent create; lock and transaction sequence above; stable error codes; endpoint access/pagination; and the listed constraints/indexes. Any requested change must be incorporated before Stage 3 or implementation.
+
+## Independent review — required changes before Stage 2 acceptance
+
+The independent reviewer rated this design **7/10** and recommended revision before acceptance. The following five items are required changes, not optional suggestions. Stage 2 remains awaiting validation until they are resolved in the design and verified by a second review.
+
+### R1 — Bind an idempotency fingerprint to the URL operation
+
+**Finding:** A fingerprint of only the request body can replay the result from one month when the same key/body is sent to another month. Looking up the key before validating the URL can also disclose a stored result for a missing or foreign year/month.
+
+**Required design change:** Keep key uniqueness scoped to `(household, actor, operation)`; do not add month to the key scope. Define a versioned canonical fingerprint over operation, `year_id`, `month_id`, and normalized body. Normalize UUID text, amount, date, and household-recipient `member_id`; explicitly treat omitted and `null` `member_id` consistently. Resolve and tenant-scope the year/month path before replay, without requiring the month to remain active. A foreign/missing path returns `404`; the same key with a different valid month or payload returns `409 idempotency_conflict`. Exact retries after close, source/member archive, later edit, or soft-delete may replay the stored original `201` only while current access and write role remain valid.
+
+**Required tests:** Same key/body under two valid months conflicts and creates no second income; missing/foreign year or month does not replay; exact retry after close/archive/edit/delete returns the saved original response without a second audit; revoked membership or write role prevents replay.
+
+### R2 — Validate the effective recipient/source pair on PATCH
+
+**Finding:** The current rule “validate changed relationships and preserve unchanged historical relationships” is ambiguous for partial PATCH. Changing only `member_id` while retaining a source assigned to the old member could bypass new-assignment eligibility.
+
+**Required design change:** Construct `effective_member_id` and `effective_source_id` from the stored values plus PATCH fields, then compare actual IDs. If neither ID changes, retain both historical relationships without revalidating archived records. If either ID changes, validate the resulting pair together: member (if any) and source must be active, tenant-scoped, assigned to the same resulting recipient, and the source date interval must overlap the accounting month. Refresh `recipient_snapshot` only when `member_id` actually changes; refresh `source_snapshot` only when `source_id` actually changes. Explicitly resubmitting an unchanged ID does not refresh a snapshot.
+
+**Required tests:** `member_id` only, `source_id` only, both changed, neither changed, and same IDs resubmitted; cover mismatched ownership, archived old relations, and source recipient changed in the dictionary. A member-only change must fail when the retained source belongs to the old member.
+
+### R3 — Define the unique-key collision transaction boundary
+
+**Finding:** The current “catch collision and re-read” instruction does not say whether the error occurs inside a broken atomic block or whether income/audit could commit without the key.
+
+**Required design change:** Use the household lock to serialize ordinary same-scope requests and the unique constraint as the final guard. Prefer treating any unexpected idempotency uniqueness violation as failure of the entire outer transaction: roll back income, audit, and key together, then let the client retry and observe the committed key. Do not catch/recover `IntegrityError` unless the design first introduces a savepoint around the full income+audit+key unit, catches only the named key constraint after savepoint rollback, and proves no partial writes. Propagate unrelated integrity errors.
+
+**Required tests:** Parallel same-key/same-payload and same-key/different-payload requests; forced uniqueness conflict at the end of create; audit failure; idempotency insert failure. Final state must contain exactly one income/audit/key on success and no partial income/audit/key after a failed unit.
+
+### R4 — Make 404 precedence consistent for missing/deleted records
+
+**Finding:** PATCH/DELETE currently check period state before loading the scoped income. A deleted, missing, or foreign income under an inactive/closed month could return `409` instead of the documented `404`.
+
+**Required design change:** Keep the lock order `Household → AccountingYear`, then resolve and lock the scoped, non-deleted income before checking active month state; only then validate the period, version, and mutation. Preserve `404` for missing, deleted, or foreign income regardless of whether its month is active, inactive, or closed. Ensure URL year/month ownership is checked before resource lookup.
+
+**Required tests:** Matrix of deleted/missing/foreign income against active/inactive/closed month, with a `404` result for every unavailable income. Existing close/write tests must still prove both serial orders for create/PATCH/DELETE.
+
+### R5 — Specify one exact 409 response shape and handler integration
+
+**Finding:** Prose promises period state/current version, while examples return code-only bodies. The existing exception handler currently maps only existing conflicts, so new cases would not necessarily produce the documented response.
+
+**Required design change:** Choose one exact JSON shape for each new conflict and use it consistently in prose, examples, endpoint notes, and tests. Preserve the current DRF field-error shape for `400` and current conflict convention for `409`; extend the existing exception mapping or use an explicit view response mapping, without introducing a global envelope. Either include `state`/`current_version` everywhere they are promised, or remove those promises and require clients to refetch.
+
+**Required tests:** Assert exact status and JSON for inactive/closed period, stale version, and idempotency conflict; assert that existing period conflicts retain their current response shape.
+
+The reviewer's additional suggestions (tenant-consistency rules for every FK, strict JSON types/no-op PATCH behavior, snapshot schema/action length, option endpoint edge cases, and additional overlap/aggregation fixtures) are advisory follow-ups. Include them in technical criteria where they close an ambiguity, but they are distinct from required changes R1–R5.
