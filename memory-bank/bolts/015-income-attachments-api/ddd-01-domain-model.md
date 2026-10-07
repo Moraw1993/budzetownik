@@ -2,8 +2,8 @@
 unit: 002-monthly-income-api
 bolt: 015-income-attachments-api
 stage: model
-status: awaiting-review
-updated: '2026-10-07T20:09:25Z'
+status: complete
+updated: '2026-10-07T20:13:37Z'
 ---
 
 # Stage 1 — model domenowy prywatnych załączników przychodu
@@ -40,7 +40,11 @@ Tożsamość: UUID. Proponowane właściwości:
 - `storage_reference` — niejawne, losowe odwołanie do prywatnego obiektu, niedostępne w odpowiedzi użytkowej;
 - `content_digest` — opcjonalny skrót integralności, którego algorytm i cel należy zatwierdzić w Stage 2;
 - `created_at` i `created_by` — czas dodania i wykonawca;
-- stan dostępności, jeśli lokalna kontrola zawartości wymaga kwarantanny przed odczytem.
+- availability_state — jawny stan logiczny available albo removed, niezależny od ewentualnej kwarantanny zawartości;
+
+- removed_at i removed_by — aktor i czas logicznego odebrania dostępu, null tylko dla available;
+- storage_deleted_at — null, gdy zawartość pozostaje dostępna lub cleanup oczekuje; timestamp potwierdza fizyczne usunięcie po logical removal;
+- created_at i created_by — czas dodania i wykonawca.
 
 Załącznik nie przechowuje kopii kwoty, źródła ani daty otrzymania przychodu. Te dane należą do `IncomeRecord`; metadane załącznika nie mogą stać się alternatywnym źródłem prawdy.
 

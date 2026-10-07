@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T20:09:25Z'
+last_updated: '2026-10-07T20:18:58Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -43,6 +43,13 @@ last_updated: '2026-10-07T20:09:25Z'
 | 2026-10-07T17:49:42Z | 014-monthly-income-api | bolt-complete | Official `bolt-complete.cjs` marked 014 and its four stories complete; it incorrectly marked unit 002 complete because its LF-only scan skipped the CRLF frontmatter in planned bolt 015. Corrected unit 002 back to in-progress; story 005 remains pending 015. Artifact path is `ddd-03-test-report.md`. |
 | 2026-10-07T18:04:00Z | 014-monthly-income-api | completion-scope-corrected | Kept 014 and stories 001–004 complete, restored unit 002 to in-progress for pending story 005/bolt 015, and removed 015's self-referencing requires_units. The completion script's LF-only frontmatter scan had silently skipped 015's CRLF metadata. |
 
+| 2026-10-07T18:03:48Z | 015-income-attachments-api | stage-start | Started Stage 1 Domain Model from develop commit 4e3b8de after PR #8 merged; required bolt 014 is complete. |
+| 2026-10-07T20:08:00Z | 015-income-attachments-api | domain-model-ready | Modeled private attachment ownership, lifecycle, validation, access control, batch atomicity and cleanup; Stage 1 artifact submitted for independent review. |
+| 2026-10-07T20:09:25Z | 015-income-attachments-api | domain-model-revised | Resolved reviewer findings on active-month mutation rules, single IncomeRecord aggregate ownership, batch visibility/orphan claims, and atomic audit versus asynchronous storage cleanup; committed as 54ce295. |
+| 2026-10-07T20:13:37Z | 015-income-attachments-api | domain-model-accepted | Reviewer accepted model at 8.7/10. Incorporated both non-blocking P3 clarifications; Stage 1 complete. |
+| 2026-10-07T20:13:37Z | 015-income-attachments-api | stage-start | Started Stage 2 Technical Design after Stage 1 acceptance. Inspected existing 014 API/models, ADR-006 lock order, private media volume, Caddy routes and backup/restore. |
+| 2026-10-07T20:18:58Z | 015-income-attachments-api | technical-design-ready | Defined API, limits, private filesystem, transaction/lock order, cleanup/retention, audit, failure behavior and test plan. scripts/quality.ps1 and git diff --check passed; awaiting independent Stage 2 review. |
+
 ## Execution Summary
 
 | Metric | Value |
@@ -55,8 +62,4 @@ last_updated: '2026-10-07T20:09:25Z'
 
 ## Notes
 
-Bolt 014 and stories 001–004 are complete and independently accepted. Bolt 015 is in progress at Stage 1; story 005 remains pending implementation and unit 002 remains in progress. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.
-
-| 2026-10-07T18:03:48Z | 015-income-attachments-api | stage-start | Started Stage 1 Domain Model from develop commit 4e3b8de after PR #8 merged; required bolt 014 is complete. |
-
-| 2026-10-07T20:09:25Z | 015-income-attachments-api | domain-model-revised | Resolved reviewer findings on active-month mutation rules, single IncomeRecord aggregate ownership, batch visibility/orphan claims, and atomic audit versus asynchronous storage cleanup. Resubmitted Stage 1 for independent review. |
+Bolt 014 and stories 001–004 are complete and independently accepted. Bolt 015 is in progress at Stage 2; story 005 remains pending implementation and unit 002 remains in progress. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.
