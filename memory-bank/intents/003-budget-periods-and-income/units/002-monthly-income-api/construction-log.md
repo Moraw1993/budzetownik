@@ -2,25 +2,27 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T13:51:15Z'
+last_updated: '2026-10-07T18:04:00Z'
 ---
 
 # Construction Log: 002-monthly-income-api
 
 ## Original Plan
 
-**From Inception**: 1 bolt planned
+**From Inception**: 2 bolts planned
 **Planned Date**: 2026-10-06
 
 | Bolt ID | Stories | Type |
 | --- | --- | --- |
 | 014-monthly-income-api | 001-record-income, 002-select-dictionary-source, 003-record-amount-currency-date, 004-period-totals-by-currency | ddd-construction-bolt |
+| 015-income-attachments-api | 005-private-income-attachments | ddd-construction-bolt |
 
 ## Current Bolt Structure
 
 | Bolt ID | Stories | Status | Changed |
 | --- | --- | --- | --- |
-| 014-monthly-income-api | 001-record-income, 002-select-dictionary-source, 003-record-amount-currency-date, 004-period-totals-by-currency | ⏳ in-progress | 2026-10-07T11:31:16Z |
+| 014-monthly-income-api | 001-record-income, 002-select-dictionary-source, 003-record-amount-currency-date, 004-period-totals-by-currency | ✅ complete | 2026-10-07T17:49:42Z |
+| 015-income-attachments-api | 005-private-income-attachments | ⏳ planned | 2026-10-07T18:04:00Z |
 
 ## Execution History
 
@@ -37,17 +39,21 @@ last_updated: '2026-10-07T13:51:15Z'
 | 2026-10-07T13:31:28Z | 014-monthly-income-api | stage-start | Stage 4 Implement approved by the user's explicit instruction to continue. Resolved pre-implementation follow-ups in implementation-plan.md; based on current develop plus the in-progress 013 dependency. |
 | 2026-10-07T13:51:15Z | 014-monthly-income-api | implement-complete | Added IncomeRecord and durable create idempotency, scoped income CRUD/options/totals API, migration and focused tests. 82 households tests pass and migration state matches models. scripts/quality.ps1 reaches format:check but reports 34 existing unformatted files outside this backend-only diff; full script is not green. Stage 5 awaits user checkpoint. |
 | 2026-10-07T15:55:40Z | 014-monthly-income-api | stage4-review-fixes | Fixed contract option JSON projection by reusing the whitelisted contract snapshot and shared source eligibility query for options and writes. Added API render and inclusive overlap boundary regressions; 84 households tests, Ruff and diff checks pass. Full quality remains blocked by 34 existing Prettier files outside this backend diff. Prepared for independent Stage 4 re-review; Stage 5 has not started. |
+| 2026-10-07T17:49:42Z | 014-monthly-income-api | stage5-accepted | Independent reviewer accepted Stage 5 at 8.8/10 after verifying 130/130 Django tests, 98% production households statement coverage, full quality and migration checks. P95 remains explicitly assigned to acceptance bolt 017. |
+| 2026-10-07T17:49:42Z | 014-monthly-income-api | integrated-develop | Integrated `origin/develop` 7384b149; reviewer verified all eight resolved 013 files match develop and no merge conflicts remain. Merge commit `efd8abb` records the integration. |
+| 2026-10-07T17:49:42Z | 014-monthly-income-api | bolt-complete | Official `bolt-complete.cjs` marked 014 and its four stories complete; it incorrectly marked unit 002 complete because its LF-only scan skipped the CRLF frontmatter in planned bolt 015. Corrected unit 002 back to in-progress; story 005 remains pending 015. Artifact path is `ddd-03-test-report.md`. |
+| 2026-10-07T18:04:00Z | 014-monthly-income-api | completion-scope-corrected | Kept 014 and stories 001–004 complete, restored unit 002 to in-progress for pending story 005/bolt 015, and removed 015's self-referencing requires_units. The completion script's LF-only frontmatter scan had silently skipped 015's CRLF metadata. |
 
 ## Execution Summary
 
 | Metric | Value |
 | --- | --- |
-| Original bolts planned | 1 |
-| Current bolt count | 1 |
-| Bolts completed | 0 |
-| Bolts in progress | 1 |
-| Bolts remaining | 0 |
+| Original bolts planned | 2 |
+| Current bolt count | 2 |
+| Bolts completed | 1 |
+| Bolts in progress | 0 |
+| Bolts remaining | 1 |
 
 ## Notes
 
-Stages 1–4 are implemented, including ADR-007 and ADR-008. Reviewer findings F1/F2 have been fixed and the Stage 4 checkpoint is pending independent re-review; Stage 5 has not started. Bolt 013 remains active; 014 must build on its period contract and cannot claim the close–write gate is proven until PostgreSQL tests pass.
+Bolt 014 and stories 001–004 are complete and independently accepted. Unit 002 remains in progress because story 005 belongs to planned bolt 015. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.

@@ -2,8 +2,8 @@
 unit: 002-monthly-income-api
 bolt: 014-monthly-income-api
 stage: test
-status: in-progress
-updated: '2026-10-07T16:54:59Z'
+status: complete
+updated: '2026-10-07T18:04:00Z'
 ---
 
 # Test Report — 002-monthly-income-api
@@ -13,7 +13,7 @@ updated: '2026-10-07T16:54:59Z'
 | Category | Passed | Failed | Skipped | Coverage |
 |----------|--------|--------|---------|----------|
 | Focused income API, concurrency, acceptance | 35 | 0 | 0 | Included below |
-| Full Django backend suite | 130 | 0 | 0 | 98% statements — households production |
+| Full Django backend suite after integrating develop `7384b1490271e6b5e2f82c95aa8d92aafd24aac7` | 130 | 0 | 0 | 98% statements — households production |
 | Performance | Not run | — | — | P95 belongs to acceptance bolt 017 |
 | **Verified total** | **130 in full suite** | **0** | **0** | **98% statements — households production** |
 
@@ -56,12 +56,12 @@ Reproduction commands inside the disposable backend container:
 
 ## Quality and Dependency Gates
 
-- Ruff format check: **69 backend files already formatted**.
+- Ruff format check: **78 plików backend/scripts już sformatowanych**.
 - Ruff check: **passed**.
 - git diff --check: **passed**.
 - makemigrations --check --dry-run households: **no changes detected**.
-- scripts/quality.ps1: **blocked** by 34 existing Prettier findings in files outside this bolt's diff. This failure is not represented as a quality pass and needs a separate scoped remediation.
-- Required bolt 013-periods-api: remains formally in progress; its own quality gate and completion record must be resolved before this bolt can be marked complete.
+- scripts/quality.ps1 after integrating the repository LF policy from PR #6: **passed** (Ruff, Prettier, ESLint, Stylelint, TypeScript).
+- Required bolt 013-periods-api: **complete and merged into develop** in PR #7 (`7384b1490271e6b5e2f82c95aa8d92aafd24aac7`). Its final acceptance test and lock-order regression test are included in this branch.
 
 ## Independent Review
 
@@ -71,14 +71,14 @@ The reviewer accepted the Stage 5 test checkpoint at **8.8/10 (PASS)**. The revi
 
 | Issue | Severity | Status |
 |-------|----------|--------|
-| Existing 34-file Prettier baseline prevents scripts/quality.ps1 from passing | High gate | Open; separate task required |
-| Bolt 013 prerequisite remains formally in progress | Dependency gate | Open |
+| Existing Prettier baseline | Quality gate | Resolved by repository LF policy in PR #6; full quality gate passes |
+| Bolt 013 prerequisite | Dependency gate | Complete and merged in PR #7 |
 | Independent review of the P3 clarifications | Review gate | Accepted / PASS (8.8/10) |
 
 ## Ready for Operations
 
-- [ ] All acceptance criteria and prerequisite bolts complete
+- [x] Bolt 014 criteria and prerequisites complete; unit 002 waits for 015
 - [x] Coverage target measured and met
-- [ ] Full quality script passes
+- [x] Full quality script passes
 - [x] Independent test checkpoint review accepted
-- [ ] Bolt completion metadata updated
+- [x] Bolt 014 and stories 001–004 are complete; unit 002 remains in progress until bolt 015 completes story 005.

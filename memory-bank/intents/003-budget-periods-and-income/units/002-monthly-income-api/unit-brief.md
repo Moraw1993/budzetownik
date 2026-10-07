@@ -4,9 +4,9 @@ intent: 003-budget-periods-and-income
 unit_type: backend
 default_bolt_type: ddd-construction-bolt
 phase: inception
-status: draft
+status: in-progress
 created: '2026-10-06T20:32:37Z'
-updated: '2026-10-07T11:21:40Z'
+updated: '2026-10-07T18:04:00Z'
 ---
 
 # API rzeczywistych przychodów
@@ -40,10 +40,10 @@ Jednostka zależy od 001-periods-api oraz istniejącego 001-family-income-api (�
 
 Łącznie 4 stories Must i 1 Should; story 005 należy do osobnego bolta 015.
 
-- [ ] **001-record-income** — Must — 014-monthly-income-api
-- [ ] **002-select-dictionary-source** — Must — 014-monthly-income-api
-- [ ] **003-record-amount-currency-date** — Must — 014-monthly-income-api
-- [ ] **004-period-totals-by-currency** — Must — 014-monthly-income-api
+- [x] **001-record-income** — Must — 014-monthly-income-api
+- [x] **002-select-dictionary-source** — Must — 014-monthly-income-api
+- [x] **003-record-amount-currency-date** — Must — 014-monthly-income-api
+- [x] **004-period-totals-by-currency** — Must — 014-monthly-income-api
 - [ ] **005-private-income-attachments** — Should — 015-income-attachments-api
 
 ## Kryteria zakończenia

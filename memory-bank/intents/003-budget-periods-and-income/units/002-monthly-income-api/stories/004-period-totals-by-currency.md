@@ -2,12 +2,13 @@
 id: 004-period-totals-by-currency
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: must
 created: '2026-10-06T20:32:37Z'
 assigned_bolt: 014-monthly-income-api
-implemented: false
-requirements: [FR-08]
+implemented: true
+requirements:
+  - FR-08
 ---
 
 # Story: 004-period-totals-by-currency
@@ -20,11 +21,11 @@ requirements: [FR-08]
 
 ## Acceptance Criteria
 
-- [ ] **Given** saved actual incomes in a month, **when** I view the month summary, **then** it totals only those entries and groups each currency separately.
-- [ ] **Given** saved actual incomes in a year, **when** I view the year summary, **then** it totals the year's entries by currency without including contract or suggested amounts.
-- [ ] **Given** entries in more than one currency, **when** I view the summary, **then** no combined converted total is presented.
-- [ ] **Given** a closed month, **when** I read its summary, **then** the saved totals remain available to authorized readers.
-- [ ] **Given** another household's entries, **when** I request totals, **then** tenant isolation excludes and protects them.
+- [x] **Given** saved actual incomes in a month, **when** I view the month summary, **then** it totals only those entries and groups each currency separately.
+- [x] **Given** saved actual incomes in a year, **when** I view the year summary, **then** it totals the year's entries by currency without including contract or suggested amounts.
+- [x] **Given** entries in more than one currency, **when** I view the summary, **then** no combined converted total is presented.
+- [x] **Given** a closed month, **when** I read its summary, **then** the saved totals remain available to authorized readers.
+- [x] **Given** another household's entries, **when** I request totals, **then** tenant isolation excludes and protects them.
 
 ## Technical Notes
 
