@@ -220,7 +220,13 @@ class BaseReconciler:
                 if descriptor is None:
                     self.report["skipped"] += 1
                     continue
-                path = storage_path(attachment.storage_key)
+                current = IncomeAttachment.objects.filter(pk=attachment.pk).first()
+                if (
+                    current is None
+                    or current.availability_state != IncomeAttachmentAvailability.AVAILABLE
+                ):
+                    continue
+                path = storage_path(current.storage_key)
                 if not path.is_file() or path.is_symlink():
                     self.report["missing"] += 1
                     logger.error("income_attachment_storage_missing")
@@ -229,7 +235,7 @@ class BaseReconciler:
                 with path.open("rb") as stream:
                     for chunk in iter(lambda: stream.read(64 * 1024), b""):
                         digest.update(chunk)
-                if digest.hexdigest() != attachment.content_sha256:
+                if digest.hexdigest() != current.content_sha256:
                     self.report["corrupt"] += 1
                     logger.error("income_attachment_storage_checksum_mismatch")
 
@@ -247,7 +253,19 @@ class BaseReconciler:
             return
         for name in CURSOR_NAMES:
             cursor = loaded.get(name)
-            self.cursors[name] = cursor if isinstance(cursor, str) else None
+            if not isinstance(cursor, str):
+                self.cursors[name] = None
+                continue
+            if name in {"pending", "available"}:
+                try:
+                    cursor = str(UUID(cursor))
+                except ValueError:
+                    logger.error(
+                        "income_attachment_reconciliation_cursor_invalid", extra={"category": name}
+                    )
+                    self.cursors[name] = None
+                    continue
+            self.cursors[name] = cursor
 
     def save_cursors(self):
         root = Path(settings.MEDIA_ROOT) / CLAIM_DIRECTORY
@@ -267,6 +285,11 @@ class BaseReconciler:
         finally:
             os.close(descriptor)
         os.replace(temporary, path)
+        directory_descriptor = os.open(root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+        try:
+            os.fsync(directory_descriptor)
+        finally:
+            os.close(directory_descriptor)
 
 
 class Command(BaseCommand):
@@ -275,7 +298,10 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--execute", action="store_true", help="Apply cleanup changes.")
         parser.add_argument(
-            "--limit", type=int, default=100, help="Maximum rows/paths per scan category."
+            "--limit",
+            type=int,
+            default=100,
+            help="Maximum items processed per category; cursor state advances between runs.",
         )
 
     def handle(self, *args, **options):

@@ -1,8 +1,10 @@
 import hashlib
+import json
 import os
 import struct
 import tempfile
 import zlib
+from contextlib import contextmanager
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
@@ -14,6 +16,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, TransactionTestCase, override_settings
 from rest_framework.test import APIClient
 
+from households.attachment_services import remove_income_attachment
 from households.attachment_storage import (
     create_claim,
     release_batch_lock,
@@ -23,6 +26,7 @@ from households.attachment_storage import (
 from households.attachment_upload import ClaimedAttachmentUploadHandler
 from households.attachment_validation import AttachmentValidationError, validate_attachment
 from households.income_services import create_income_record
+from households.management.commands import reconcile_income_attachment_storage
 from households.management.commands.reconcile_income_attachment_storage import BaseReconciler
 from households.models import (
     AuditLog,
@@ -268,6 +272,45 @@ class IncomeAttachmentApiTests(TransactionTestCase):
         self.assertEqual(integrity.report["corrupt"], 1)
         self.assertEqual(path.read_bytes(), b"tampered content")
 
+    def test_integrity_scan_rechecks_state_after_acquiring_batch_lock(self):
+        original_locked_batch = reconcile_income_attachment_storage.locked_batch
+
+        for execute in (False, True):
+            with self.subTest(execute=execute):
+                uploaded = SimpleUploadedFile("paragon.png", valid_png())
+                response = self.request("post", data={"files": [uploaded]}, format="multipart")
+                self.assertEqual(response.status_code, 201, response.content)
+                attachment = IncomeRecord.objects.get(pk=self.income.pk).attachments.get(
+                    pk=response.data["results"][0]["id"]
+                )
+
+                @contextmanager
+                def delete_before_lock(batch_id, selected_attachment_id=attachment.pk, **kwargs):
+                    remove_income_attachment(
+                        user=self.owner,
+                        household_id=self.household.pk,
+                        year_id=self.year.pk,
+                        month_id=self.month.pk,
+                        income_id=self.income.pk,
+                        attachment_id=selected_attachment_id,
+                    )
+                    with original_locked_batch(batch_id, **kwargs) as descriptor:
+                        yield descriptor
+
+                reconciler = BaseReconciler(execute=execute, limit=10)
+                with patch(
+                    "households.management.commands.reconcile_income_attachment_storage.locked_batch",
+                    delete_before_lock,
+                ):
+                    reconciler.handle_available()
+
+                self.assertEqual(reconciler.report["missing"], 0)
+                self.assertEqual(reconciler.report["corrupt"], 0)
+                attachment.refresh_from_db()
+                self.assertEqual(
+                    attachment.availability_state, IncomeAttachmentAvailability.REMOVED
+                )
+
     def test_orphan_scan_cursor_progresses_past_protected_files(self):
         old_timestamp = 1
         owned_batch = UUID(int=1)
@@ -331,6 +374,29 @@ class IncomeAttachmentApiTests(TransactionTestCase):
         self.assertEqual(second.report["claims"], 1)
         self.assertTrue(fresh_path.exists())
         self.assertFalse(stale_path.exists())
+
+    def test_reconciliation_resets_only_malformed_uuid_cursors(self):
+        cursor_path = Path(self.media_dir.name) / ".incoming" / "reconciliation-cursors.json"
+        cursor_path.parent.mkdir(parents=True)
+        cursor_path.write_text(
+            json.dumps(
+                {
+                    "pending": "not-a-uuid",
+                    "available": str(UUID(int=4)),
+                    "claims": "claim-directory",
+                    "orphans": "income-attachments/path",
+                }
+            ),
+            encoding="utf-8",
+        )
+        reconciler = BaseReconciler(execute=False, limit=1)
+
+        reconciler.load_cursors()
+
+        self.assertIsNone(reconciler.cursors["pending"])
+        self.assertEqual(reconciler.cursors["available"], str(UUID(int=4)))
+        self.assertEqual(reconciler.cursors["claims"], "claim-directory")
+        self.assertEqual(reconciler.cursors["orphans"], "income-attachments/path")
 
     def test_rejects_invalid_file_and_read_only_role_without_persisting(self):
         invalid = SimpleUploadedFile("notes.txt", b"plain text", content_type="text/plain")
