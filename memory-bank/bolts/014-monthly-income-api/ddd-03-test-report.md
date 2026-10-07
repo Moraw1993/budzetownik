@@ -3,7 +3,7 @@ unit: 002-monthly-income-api
 bolt: 014-monthly-income-api
 stage: test
 status: in-progress
-updated: '2026-10-07T16:52:23Z'
+updated: '2026-10-07T16:54:59Z'
 ---
 
 # Test Report — 002-monthly-income-api
@@ -13,9 +13,9 @@ updated: '2026-10-07T16:52:23Z'
 | Category | Passed | Failed | Skipped | Coverage |
 |----------|--------|--------|---------|----------|
 | Focused income API, concurrency, acceptance | 35 | 0 | 0 | Included below |
-| Full Django backend suite | 130 | 0 | 0 | 98% statements |
+| Full Django backend suite | 130 | 0 | 0 | 98% statements — households production |
 | Performance | Not run | — | — | P95 belongs to acceptance bolt 017 |
-| **Verified total** | **130 in full suite** | **0** | **0** | **98% statements** |
+| **Verified total** | **130 in full suite** | **0** | **0** | **98% statements — households production** |
 
 The focused 35-test run is included in the full 130-test backend suite; totals are not additive.
 
@@ -47,7 +47,12 @@ No P95 measurement was run in this bolt. The intent assigns end-to-end P95 measu
 
 ## Coverage Report
 
-The full backend suite was run with coverage.py over the production households package, excluding tests and migrations: **98% statement coverage (1,327 statements, 28 missed)**. The generic DDD template target of >80% is met. Coverage was installed only in the disposable container; no project dependency or generated artifact was added.
+The full backend suite was run with coverage.py 7.16.2 over the production households package, excluding tests and migrations: **98% statement coverage (1,327 statements, 28 missed)**. This is statement coverage, not branch coverage, and does not represent every backend package. The generic DDD template target of >80% is met. Coverage was installed only in the disposable container; no project dependency or generated artifact was added.
+
+Reproduction commands inside the disposable backend container:
+
+- python -m coverage run --source=households --omit="*/tests/*,*/migrations/*" manage.py test --noinput
+- python -m coverage report --omit="*/tests/*,*/migrations/*" --fail-under=80
 
 ## Quality and Dependency Gates
 
