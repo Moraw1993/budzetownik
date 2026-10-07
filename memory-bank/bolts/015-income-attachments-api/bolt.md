@@ -9,10 +9,11 @@ stories:
 created: '2026-10-06T20:32:37Z'
 started: '2026-10-07T18:03:48Z'
 completed: null
-current_stage: implement
+current_stage: test
 stages_completed:
   - domain-model
   - technical-design
+  - implement
 requires_bolts:
   - 014-monthly-income-api
 enables_bolts:
@@ -45,10 +46,10 @@ Spełnić FR-06 dla PNG, JPG/JPEG i PDF oraz kryteria story 005 jednostki 002-mo
 
 **Type**: DDD Construction Bolt (`ddd-construction-bolt`).
 
-- [ ] 1. Domain Model → `ddd-01-domain-model.md`
-- [ ] 2. Technical Design → `ddd-02-technical-design.md`
-- [ ] 3. ADR Analysis (optional) → `adr-*.md`
-- [ ] 4. Implement → private storage/API
+- [x] 1. Domain Model → `ddd-01-domain-model.md`
+- [x] 2. Technical Design → `ddd-02-technical-design.md`
+- [x] 3. ADR Analysis (optional) — reviewed; no additional ADR required.
+- [x] 4. Implement → private storage/API
 - [ ] 5. Test → `ddd-03-test-report.md`
 
 Each DDD stage requires its human checkpoint under the bolt type instructions.

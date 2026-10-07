@@ -54,6 +54,7 @@ last_updated: '2026-10-07T20:34:47Z'
 | 2026-10-07T20:32:09Z | 015-income-attachments-api | technical-design-revised | Reviewer returned 8.0/10 CHANGES REQUIRED on commit `62e05da` (Caddy deadline semantics and Django StopUpload partial-result handling). Specified Caddy 2.10.0 absolute body-read deadline and direct-backend boundary; added request error latch, post-CSRF abort guard, DRF parser and SessionAuthentication checks, final use-case guard, atomic-batch failure mapping, and required regression tests. Resubmitted for independent review. |
 
 | 2026-10-07T20:34:47Z | 015-income-attachments-api | technical-design-accepted | Independent review accepted commit `a77a951` at 8.7/10; all Stage 2 blockers resolved. ADR analysis found no new standalone decision beyond existing private storage/audit patterns; optional Stage 3 skipped. Began Stage 4 after prior user authorization for autonomous completion. Implementation will align Gunicorn sync worker timeout with Caddy upload deadline and test the actual end-to-end budget. |
+| 2026-10-07T22:51:00Z | 015-income-attachments-api | implementation-ready | Implemented private attachment metadata, bounded format validation, staged all-or-nothing upload, tenant-scoped list/download/delete, audit/soft-delete cleanup, and dry-run reconciliation. Caddy 2.10.0 config validates; Ruff and scripts/quality.ps1 pass; 117 households tests pass, including seven attachment tests. Submitted Stage 4 for independent review; bolt advanced to Stage 5. |
 
 ## Execution Summary
 
@@ -67,4 +68,4 @@ last_updated: '2026-10-07T20:34:47Z'
 
 ## Notes
 
-Bolt 014 and stories 001–004 are complete and independently accepted. Bolt 015 is in progress at Stage 2; story 005 remains pending implementation and unit 002 remains in progress. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.
+Bolt 014 and stories 001–004 are complete and independently accepted. Bolt 015 is in Stage 5 after implementation; story 005 remains pending final test report, independent review, and official completion. Unit 002 remains in progress. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.

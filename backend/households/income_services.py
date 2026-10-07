@@ -3,6 +3,7 @@ import json
 from dataclasses import dataclass
 from uuid import UUID
 
+from django.db import transaction
 from django.db.models import Q, Sum
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -20,6 +21,8 @@ from .models import (
     AccountingYear,
     Household,
     HouseholdMember,
+    IncomeAttachment,
+    IncomeAttachmentAvailability,
     IncomeCreateIdempotency,
     IncomeKind,
     IncomeRecord,
@@ -351,6 +354,38 @@ def delete_income_record(*, user, household_id, year_id, month_id, income_id, ex
             before=before,
             after=_income_audit_snapshot(record),
         )
+        attachments = list(
+            IncomeAttachment.objects.select_for_update()
+            .filter(
+                household_id=household_id,
+                income_record_id=record.pk,
+                availability_state=IncomeAttachmentAvailability.AVAILABLE,
+            )
+            .order_by("created_at", "id")
+        )
+        if attachments:
+            from .attachment_services import _cleanup_removed_batch, attachment_snapshot
+
+            cleanup_batches = set()
+            removed_at = timezone.now()
+            for attachment in attachments:
+                before_attachment = attachment_snapshot(attachment)
+                attachment.availability_state = IncomeAttachmentAvailability.REMOVED
+                attachment.removed_at = removed_at
+                attachment.removed_by = user
+                attachment.save(update_fields=["availability_state", "removed_at", "removed_by"])
+                write_audit(
+                    user=user,
+                    household_id=household_id,
+                    action="deleted",
+                    object_type="income_attachment",
+                    object_id=attachment.pk,
+                    before=before_attachment,
+                    after=attachment_snapshot(attachment),
+                )
+                cleanup_batches.add(attachment.upload_batch_id)
+            for batch_id in cleanup_batches:
+                transaction.on_commit(lambda batch_id=batch_id: _cleanup_removed_batch(batch_id))
         return record
 
 

@@ -2,6 +2,12 @@ from rest_framework.exceptions import APIException
 from rest_framework.views import exception_handler
 
 
+class AttachmentUploadAborted(APIException):
+    status_code = 400
+    default_detail = "Cała partia załączników została odrzucona z powodu przekroczenia limitu."
+    default_code = "attachment_upload_limit_exceeded"
+
+
 class LastOwnerError(APIException):
     status_code = 409
     default_detail = "Gospodarstwo musi zachować co najmniej jednego Owner."
@@ -47,6 +53,7 @@ def household_exception_handler(exc, context):
         | IncomePeriodConflict
         | IncomeVersionConflict
         | IdempotencyConflict
+        | AttachmentUploadAborted
     )
     if response is not None and isinstance(exc, conflict_types):
         response.data["code"] = exc.get_codes()
