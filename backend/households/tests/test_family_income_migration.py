@@ -14,10 +14,10 @@ from households.models import AuditLog, Company, Contract, IncomeSource
 
 class FamilyIncomeMigrationTests(TransactionTestCase):
     old_target = ("households", "0003_relationtype_householdmember_auditlog_incomesource_and_more")
-    new_target = ("households", "0004_family_income")
 
     def restore_current_schema(self):
-        MigrationExecutor(connection).migrate([self.new_target])
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())
 
     def test_legacy_sources_and_audit_survive_without_inferred_contracts(self):
         owner = User.objects.create_user(username="legacy-owner")
