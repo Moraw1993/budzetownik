@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T11:55:46Z'
+last_updated: '2026-10-07T12:16:28Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -32,6 +32,7 @@ last_updated: '2026-10-07T11:55:46Z'
 | 2026-10-07T11:43:55Z | 014-monthly-income-api | independent-review | Reviewer scored Stage 2 as 7/10 and requires five design changes R1–R5 before acceptance. Findings and required tests are recorded in `ddd-02-technical-design.md`; no code changes authorized or made. |
 | 2026-10-07T11:47:50Z | 014-monthly-income-api | technical-design-revised | Incorporated R1–R5 in the API, transaction, PATCH, 404, and conflict contracts. Prepared for independent re-review; user approval remains pending. |
 | 2026-10-07T11:55:46Z | 014-monthly-income-api | technical-design-accepted | Second independent review of commit `7fa75b6`: R1–R5 resolved, no Stage 2 blocker, score 8.5/10. User's conditional acceptance applies after revisions. Stage 2 complete; review suggestions are recorded as pre-implementation follow-ups. |
+| 2026-10-07T12:16:28Z | 014-monthly-income-api | adr-analysis-complete | User selected both proposed decisions. Created accepted ADR-007 for durable create idempotency and ADR-008 for historical snapshots and soft delete; updated the decision index. Stage 3 is complete; Stage 4 awaits human checkpoint approval. |
 
 ## Execution Summary
 
