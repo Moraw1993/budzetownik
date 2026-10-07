@@ -29,6 +29,90 @@ function familyData() {
   };
 }
 
+test("kontrolki pierwszego rzędu formularza umowy mają równe wymiary", async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const state = await mockRecords(page, {
+    members: [member("member-1", "Anna")],
+    companies: [company("long-company", "Firma o bardzo długiej nazwie testowej")],
+  });
+  await page.goto("/");
+  await openContract(page);
+  await page.getByLabel("Firma", { exact: true }).selectOption("long-company");
+  await page.evaluate(() => document.fonts.ready);
+
+  await page.screenshot({
+    path: testInfo.outputPath("contract-form-1440.png"),
+    fullPage: true,
+  });
+
+  const controlBoxes = await page.evaluate(() =>
+    [
+      "#contract-form select[name='member_id']",
+      "#contract-form select[name='company_id']",
+      "#contract-form input[name='name']",
+    ].map((selector) => {
+      const bounds = document.querySelector(selector)?.getBoundingClientRect();
+      return bounds ? { y: bounds.y, height: bounds.height } : null;
+    }),
+  );
+  expect(controlBoxes.every(Boolean)).toBe(true);
+  const [memberBox, companyBox, nameBox] = controlBoxes;
+  expect(Math.abs(memberBox!.y - companyBox!.y)).toBeLessThanOrEqual(1);
+  expect(Math.abs(nameBox!.y - companyBox!.y)).toBeLessThanOrEqual(1);
+  expect(Math.abs(memberBox!.height - companyBox!.height)).toBeLessThanOrEqual(1);
+  expect(Math.abs(nameBox!.height - companyBox!.height)).toBeLessThanOrEqual(1);
+  expect(memberBox!.height).toBeGreaterThanOrEqual(44);
+  expect(companyBox!.height).toBeGreaterThanOrEqual(44);
+  expect(nameBox!.height).toBeGreaterThanOrEqual(44);
+
+  const initialRowBounds = await page.evaluate(() => {
+    const companyButton = document
+      .querySelector<HTMLButtonElement>("#contract-form .company-select-field > .button")
+      ?.getBoundingClientRect();
+    const nextRow = document
+      .querySelector<HTMLSelectElement>("#contract-form select[name='contract_type']")
+      ?.getBoundingClientRect();
+    return companyButton && nextRow
+      ? { buttonBottom: companyButton.bottom, nextRowTop: nextRow.top }
+      : null;
+  });
+  expect(initialRowBounds).not.toBeNull();
+  expect(initialRowBounds!.buttonBottom).toBeLessThan(initialRowBounds!.nextRowTop);
+
+  await page.getByLabel("Osoba umowy").selectOption("member-1");
+  await page.getByLabel("Nazwa umowy").fill("Umowa walidacyjna");
+  await page.getByLabel("Kwota brutto z umowy").fill("1234,56");
+  await page.getByLabel("Data rozpoczęcia umowy").fill("2026-01-01");
+  state.rejectWrite = {
+    status: 400,
+    body: { member_id: ["Błąd walidacji osoby umowy."] },
+  };
+  await page.getByRole("button", { name: "Dodaj umowę", exact: true }).click();
+  await expect(page.getByLabel("Osoba umowy")).toHaveAttribute("aria-invalid", "true");
+  await expect(page.getByLabel("Osoba umowy")).toHaveAccessibleDescription(
+    "Błąd walidacji osoby umowy.",
+  );
+  await page.screenshot({
+    path: testInfo.outputPath("contract-form-1440-validation.png"),
+    fullPage: true,
+  });
+  const errorRowBounds = await page.evaluate(() => {
+    const companyButton = document
+      .querySelector<HTMLButtonElement>("#contract-form .company-select-field > .button")
+      ?.getBoundingClientRect();
+    const nextRow = document
+      .querySelector<HTMLSelectElement>("#contract-form select[name='contract_type']")
+      ?.getBoundingClientRect();
+    return companyButton && nextRow
+      ? { buttonBottom: companyButton.bottom, nextRowTop: nextRow.top }
+      : null;
+  });
+  expect(errorRowBounds).not.toBeNull();
+  expect(errorRowBounds!.buttonBottom).toBeLessThan(errorRowBounds!.nextRowTop);
+});
+
 test("karty, zakładki, przypisania i liczniki nie mieszają typów źródeł", async ({ page }) => {
   await mockRecords(page, familyData());
   await page.goto("/");
@@ -357,6 +441,10 @@ for (const width of [1440, 1024, 390]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,
     );
+    await page.screenshot({
+      path: testInfo.outputPath(`contract-form-${width}.png`),
+      fullPage: true,
+    });
     await page.getByRole("button", { name: "+ Nowa firma" }).click();
     await expect(page.getByRole("dialog").getByLabel("Nazwa firmy")).toBeFocused();
     const dialogBox = await page.getByRole("dialog").boundingBox();

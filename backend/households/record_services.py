@@ -72,12 +72,16 @@ def validate_links(record, data):
     else:
         linked_fields = {}
     for field, model in linked_fields.items():
-        if (
-            data.get(field) is not None
-            and not model.objects.filter(
-                pk=data[field], household_id=record.household_id, is_active=True
-            ).exists()
-        ):
+        value = data.get(field)
+        unchanged_income_owner = (
+            isinstance(record, IncomeSource) and record.pk is not None and value == record.member_id
+        )
+        if value is None:
+            continue
+        related_records = model.objects.filter(pk=value, household_id=record.household_id)
+        if not unchanged_income_owner:
+            related_records = related_records.filter(is_active=True)
+        if not related_records.exists():
             raise ValidationError({field: "Wybierz aktywny obiekt z tego gospodarstwa."})
 
 

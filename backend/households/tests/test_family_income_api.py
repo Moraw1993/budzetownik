@@ -210,6 +210,114 @@ class FamilyIncomeApiTests(TestCase):
             400,
         )
 
+    def test_other_source_edit_preserves_archived_owner_and_rejects_new_archived_links(self):
+        source = self.create(
+            "income-sources/", {**self.other_data, "member_id": str(self.member.pk)}
+        )
+        self.assertEqual(
+            self.request("post", f"members/{self.member.pk}/deactivate/", {}).status_code,
+            200,
+        )
+        path = f"income-sources/{source['id']}/"
+        audit_count = AuditLog.objects.filter(object_type="income_source").count()
+
+        updated = self.request(
+            "patch",
+            path,
+            {
+                **self.other_data,
+                "member_id": str(self.member.pk),
+                "name": "Świadczenie po archiwizacji osoby",
+                "expected_version": source["version"],
+            },
+        )
+        self.assertEqual(updated.status_code, 200, updated.data)
+        self.assertEqual(str(updated.data["member_id"]), str(self.member.pk))
+        self.assertEqual(updated.data["version"], source["version"] + 1)
+
+        without_owner = self.request(
+            "patch",
+            path,
+            {"name": "Edycja bez pola właściciela", "expected_version": updated.data["version"]},
+        )
+        self.assertEqual(without_owner.status_code, 200, without_owner.data)
+        self.assertEqual(str(without_owner.data["member_id"]), str(self.member.pk))
+
+        after_valid_edits = AuditLog.objects.filter(object_type="income_source").count()
+        stale = self.request(
+            "patch",
+            path,
+            {"name": "Stara edycja", "expected_version": source["version"]},
+        )
+        self.assertEqual(stale.status_code, 409)
+        self.assertEqual(
+            IncomeSource.objects.get(pk=source["id"]).name, "Edycja bez pola właściciela"
+        )
+        self.assertEqual(
+            AuditLog.objects.filter(object_type="income_source").count(), after_valid_edits
+        )
+        self.assertEqual(after_valid_edits, audit_count + 2)
+
+        for member_id in (str(self.member.pk), str(self.foreign_member.pk)):
+            with self.subTest(member_id=member_id):
+                rejected = self.request(
+                    "post", "income-sources/", {**self.other_data, "member_id": member_id}
+                )
+                self.assertEqual(rejected.status_code, 400)
+        self.assertEqual(IncomeSource.objects.count(), 1)
+        self.assertEqual(
+            AuditLog.objects.filter(object_type="income_source").count(), after_valid_edits
+        )
+
+    def test_other_source_patch_requires_writer_and_rolls_back_audit_failure(self):
+        source = self.create("income-sources/", self.other_data)
+        path = f"income-sources/{source['id']}/"
+        payload = {"name": "Zmieniona nazwa", "expected_version": source["version"]}
+
+        for user in (self.member_user, self.viewer):
+            response = self.request("patch", path, payload, user=user)
+            self.assertEqual(response.status_code, 403)
+
+        audit_count = AuditLog.objects.count()
+        with (
+            patch("households.record_services.AuditLog.objects.create", side_effect=IntegrityError),
+            self.assertRaises(IntegrityError),
+        ):
+            self.request("patch", path, payload)
+
+        unchanged = IncomeSource.objects.get(pk=source["id"])
+        self.assertEqual(unchanged.name, source["name"])
+        self.assertEqual(unchanged.version, source["version"])
+        self.assertEqual(AuditLog.objects.count(), audit_count)
+
+    def test_other_source_cannot_be_reassigned_to_archived_or_foreign_member(self):
+        original_member = HouseholdMember.objects.create(
+            household=self.household, display_name="Pierwotna osoba"
+        )
+        source = self.create(
+            "income-sources/", {**self.other_data, "member_id": str(original_member.pk)}
+        )
+        self.assertEqual(
+            self.request("post", f"members/{self.member.pk}/deactivate/", {}).status_code,
+            200,
+        )
+        audit_count = AuditLog.objects.filter(object_type="income_source").count()
+        path = f"income-sources/{source['id']}/"
+
+        for member_id in (str(self.member.pk), str(self.foreign_member.pk)):
+            with self.subTest(member_id=member_id):
+                response = self.request(
+                    "patch",
+                    path,
+                    {"member_id": member_id, "expected_version": source["version"]},
+                )
+                self.assertEqual(response.status_code, 400)
+
+        unchanged = IncomeSource.objects.get(pk=source["id"])
+        self.assertEqual(unchanged.member_id, original_member.pk)
+        self.assertEqual(unchanged.version, source["version"])
+        self.assertEqual(AuditLog.objects.filter(object_type="income_source").count(), audit_count)
+
     def test_conversion_preserves_id_and_audits_previous_value(self):
         old = self.create("income-sources/", self.other_data)
         response = self.request(

@@ -13,6 +13,8 @@ structure:
     description: "Project Standards (Architecture, Tech Stack)"
   - path: operations/
     description: "Operations Context (Deployment, Monitoring)"
+  - path: issues/
+    description: "Bug reports with one folder per issue and attached evidence"
 
 # Project configuration file (created during project-init)
 project_config:
@@ -70,6 +72,14 @@ naming:
       - "ddd-02-technical-design.md"   # Stage 2 artifact (DDD bolt)
       - "ddd-03-test-report.md"        # Stage 4 artifact (DDD bolt)
 
+  issues:
+    format: "ISS-{YYYY}-{NNN}"
+    example: "ISS-2026-001"
+    note: "Yearly sequence; check existing issue folders before allocating the next number"
+    contents:
+      - "issue.md"
+      - "evidence/"
+
 # Schema Definition (Source of Truth for Agents)
 schema:
   intents: "memory-bank/intents/{intent-name}/"
@@ -77,6 +87,8 @@ schema:
   stories: "memory-bank/intents/{intent-name}/units/{unit-name}/stories/"
   bolts: "memory-bank/bolts/{bolt-id}/"
   bolt-artifacts: "memory-bank/bolts/{bolt-id}/"
+  issues: "memory-bank/issues/{issue-id}/"
+  issue-evidence: "memory-bank/issues/{issue-id}/evidence/"
   standards: "memory-bank/standards/"
   story-index: "memory-bank/story-index.md"
   inception-log: "memory-bank/intents/{intent-name}/inception-log.md"
@@ -90,6 +102,7 @@ schema:
     inception: [intents, units, stories, story-index, bolts]  # Plans bolts initially
     construction: [units, bolts, decision-index]               # Executes, can replan bolts, maintains decision index
     operations: [operations]
+    issue-agent: [issues]                                      # Captures and maintains bug reports
 
 # Global Story Index Options
 # Choose ONE approach for project-wide story tracking
