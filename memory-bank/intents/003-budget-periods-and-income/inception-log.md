@@ -1,8 +1,8 @@
 ---
 intent: 003-budget-periods-and-income
 created: '2026-10-06T20:09:33Z'
-completed: null
-status: in-progress
+completed: '2026-10-07T09:54:15Z'
+status: complete
 ---
 
 # Inception Log: Okresy rozliczeniowe i rzeczywiste przychody
@@ -17,18 +17,18 @@ status: in-progress
 
 | Artifact | Status | File |
 | --- | --- | --- |
-| Requirements | Checkpoint 2 approved; draft for checkpoint 3 | requirements.md |
-| System Context | Defined | system-context.md |
-| Units | Generated; awaiting checkpoint 3 review | units.md and units/*/unit-brief.md |
-| Stories | 15 generated; awaiting checkpoint 3 review | units/*/stories/*.md |
-| Bolt Plan | 5 planned; awaiting checkpoint 3 review | memory-bank/bolts/013–017/bolt.md |
+| Requirements | Approved at checkpoints 2 and 3 | requirements.md |
+| System Context | Reviewed and approved at checkpoint 3 | system-context.md |
+| Units | 4 reviewed and approved at checkpoint 3 | units.md and units/*/unit-brief.md |
+| Stories | 15 reviewed and approved at checkpoint 3 | units/*/stories/*.md |
+| Bolt Plan | 5 planned bolts reviewed and approved at checkpoint 3 | memory-bank/bolts/013–017/bolt.md |
 
 ## Summary
 
 | Metric | Count |
 | --- | --- |
-| Functional Requirements | 8 draft |
-| Non-Functional Requirements | 2 draft groups |
+| Functional Requirements | 8 approved |
+| Non-Functional Requirements | 2 groups approved |
 | Units | 4 |
 | Stories | 15 draft |
 | Bolts Planned | 5 |
@@ -46,6 +46,7 @@ Four units: periods API (3 stories), monthly-income API (5), periods-and-income 
 | 2026-10-06 | Income records identify a person or household, support multiple income items, and include amount, currency, receipt date and attachment. | User checkpoint 1 response. | Confirmed by user at Checkpoint 2 |
 | 2026-10-06 | Multiple months may be active at once and in any order; the received date can differ from the accounting month; income sources must be dictionary entries, with quick-add to the dictionary; each income may have multiple PNG/JPG/PDF attachments. | User checkpoint 1 follow-up. | Confirmed by user at Checkpoint 2 |
 | 2026-10-06 | Preserve existing access roles: Owner/Administrator edit, Member/Viewer read-only. | Keeps financial writes consistent with established household access policy. | Confirmed by user at Checkpoint 2 |
+| 2026-10-07 | Requirements, context, four units, 15 stories, and bolts 013–017 accepted as the Inception plan. | User approved the complete artifact review at Checkpoint 3. | Confirmed by user at Checkpoint 3 |
 
 ## Scope Changes
 
@@ -61,12 +62,12 @@ Four units: periods API (3 stories), monthly-income API (5), periods-and-income 
 - [x] Units decomposed
 - [x] Stories created for all units
 - [x] Bolts planned
-- [ ] Human review complete
+- [x] Human review complete at Checkpoint 3
 
 ## Next Steps
 
-1. Review requirements, context, units, stories, and bolt sequence at Checkpoint 3.
-2. After Checkpoint 3 approval, perform the separate Checkpoint 4 readiness confirmation before Construction.
+1. Confirm readiness to begin Construction at the separate Checkpoint 4.
+2. Start with bolt 013-periods-api after Checkpoint 4 confirmation.
 
 ## Dependencies
 

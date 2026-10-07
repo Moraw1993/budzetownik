@@ -1,9 +1,9 @@
 ---
 intent: 003-budget-periods-and-income
 phase: inception
-status: in-progress
+status: inception-complete
 created: '2026-10-06T20:09:33Z'
-updated: '2026-10-06T20:31:50Z'
+updated: '2026-10-07T09:54:15Z'
 ---
 
 # Requirements: Okresy rozliczeniowe i rzeczywiste przychody
