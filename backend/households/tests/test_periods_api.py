@@ -190,6 +190,79 @@ class AccountingPeriodApiTests(TestCase):
         self.assertEqual(audit_response.status_code, 200)
         self.assertEqual(audit_response.data["count"], 4)
 
+    def test_month_transition_state_action_matrix_preserves_timestamps_and_audit(self):
+        cases = (
+            ("inactive", "activate", 200, "active", "activated"),
+            ("inactive", "close", 409, "inactive", None),
+            ("inactive", "reopen", 409, "inactive", None),
+            ("active", "activate", 200, "active", None),
+            ("active", "close", 200, "closed", "closed"),
+            ("active", "reopen", 200, "active", None),
+            ("closed", "activate", 409, "closed", None),
+            ("closed", "close", 200, "closed", None),
+            ("closed", "reopen", 200, "active", "reopened"),
+        )
+
+        for index, (initial_state, operation, status, target_state, audit_action) in enumerate(
+            cases
+        ):
+            with self.subTest(initial_state=initial_state, operation=operation):
+                year = create_accounting_year(
+                    user=self.owner,
+                    household_id=self.household.pk,
+                    calendar_year=2040 + index,
+                )
+                month = year.months.get(month_number=1)
+                month_path = f"accounting-years/{year.pk}/months/{month.pk}"
+                if initial_state in {"active", "closed"}:
+                    self.assertEqual(
+                        self.request("post", f"{month_path}/activate/", {}).status_code,
+                        200,
+                    )
+                if initial_state == "closed":
+                    self.assertEqual(
+                        self.request("post", f"{month_path}/close/", {}).status_code,
+                        200,
+                    )
+
+                month.refresh_from_db()
+                previous_activated_at = month.activated_at
+                previous_closed_at = month.closed_at
+                audit_query = AuditLog.objects.filter(
+                    object_type="accounting_month", object_id=month.pk
+                )
+                previous_audit_count = audit_query.count()
+
+                response = self.request("post", f"{month_path}/{operation}/", {})
+                self.assertEqual(response.status_code, status, response.data)
+                if status == 409:
+                    self.assertEqual(response.data["code"], "accounting_period_conflict")
+                else:
+                    self.assertEqual(response.data["state"], target_state)
+
+                month.refresh_from_db()
+                self.assertEqual(month.state, target_state)
+                if audit_action is None:
+                    self.assertEqual(audit_query.count(), previous_audit_count)
+                    self.assertEqual(month.activated_at, previous_activated_at)
+                    self.assertEqual(month.closed_at, previous_closed_at)
+                    continue
+
+                self.assertEqual(audit_query.count(), previous_audit_count + 1)
+                event = audit_query.get(action=audit_action)
+                self.assertEqual(event.actor, self.owner)
+                self.assertEqual(event.before, {"state": initial_state})
+                self.assertEqual(event.after, {"state": target_state})
+                self.assertIsNotNone(event.occurred_at)
+                if operation in {"activate", "reopen"}:
+                    self.assertIsNotNone(month.activated_at)
+                    if operation == "reopen":
+                        self.assertGreater(month.activated_at, previous_activated_at)
+                        self.assertEqual(month.closed_at, previous_closed_at)
+                if operation == "close":
+                    self.assertIsNotNone(month.closed_at)
+                    self.assertGreater(month.closed_at, previous_closed_at or previous_activated_at)
+
     def test_audit_failure_rolls_back_year_creation_and_month_transition(self):
         with (
             patch("households.record_services.AuditLog.objects.create", side_effect=IntegrityError),
