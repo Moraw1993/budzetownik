@@ -464,6 +464,92 @@ class IncomeRecord(models.Model):
         ]
 
 
+class IncomeAttachmentAvailability(models.TextChoices):
+    AVAILABLE = "available", "Dostępny"
+    REMOVED = "removed", "Usunięty"
+
+
+class IncomeAttachment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    household = models.ForeignKey(Household, on_delete=models.PROTECT)
+    income_record = models.ForeignKey(
+        IncomeRecord, on_delete=models.PROTECT, related_name="attachments"
+    )
+    upload_batch_id = models.UUIDField(db_index=True)
+    original_name = models.CharField(max_length=255)
+    media_type = models.CharField(max_length=40)
+    size_bytes = models.PositiveBigIntegerField()
+    storage_key = models.CharField(max_length=300, unique=True)
+    content_sha256 = models.CharField(max_length=64)
+    availability_state = models.CharField(
+        max_length=12,
+        choices=IncomeAttachmentAvailability.choices,
+        default=IncomeAttachmentAvailability.AVAILABLE,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="created_income_attachments",
+    )
+    removed_at = models.DateTimeField(null=True, blank=True)
+    removed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="removed_income_attachments",
+    )
+    storage_deleted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["created_at", "id"]
+        indexes = [
+            models.Index(
+                fields=["household", "income_record", "availability_state", "created_at", "id"],
+                name="income_att_owner_idx",
+            ),
+            models.Index(
+                fields=["storage_deleted_at"],
+                condition=models.Q(
+                    availability_state=IncomeAttachmentAvailability.REMOVED,
+                    storage_deleted_at__isnull=True,
+                ),
+                name="income_att_cleanup_idx",
+            ),
+        ]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(size_bytes__gt=0, size_bytes__lte=10 * 1024 * 1024),
+                name="income_att_size_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(content_sha256__regex=r"^[0-9a-f]{64}$"),
+                name="income_att_sha256_valid",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(
+                        availability_state=IncomeAttachmentAvailability.AVAILABLE,
+                        removed_at__isnull=True,
+                        removed_by__isnull=True,
+                        storage_deleted_at__isnull=True,
+                    )
+                    | models.Q(
+                        availability_state=IncomeAttachmentAvailability.REMOVED,
+                        removed_at__isnull=False,
+                        removed_by__isnull=False,
+                    )
+                ),
+                name="income_att_state_valid",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(availability_state__in=IncomeAttachmentAvailability.values),
+                name="income_att_state_choice",
+            ),
+        ]
+
+
 class IncomeCreateIdempotency(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     household = models.ForeignKey(Household, on_delete=models.PROTECT)

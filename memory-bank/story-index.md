@@ -1,7 +1,7 @@
 # Indeks scenariuszy
 
-Intenty: 001-household-foundation, 002-family-income-management i 003-budget-periods-and-income. Utworzono: 48; ukończono i zweryfikowano: 20; w trakcie: 0; zaplanowano lub oczekuje na przegląd: 28.
-Aktualizacja: 2026-10-06. Fundament ma 24 scenariusze (20 ukończonych, 4 zaplanowane); intent 002 ma 9 scenariuszy (5 ukończonych, 4 draft); intent 003 ma 15 wygenerowanych scenariuszy draft. Plany intentu 003 oczekują na checkpoint 3.
+Intenty: 001-household-foundation, 002-family-income-management i 003-budget-periods-and-income. Utworzono: 48; ukończono i zweryfikowano: 41; w trakcie: 0; zaplanowano lub oczekuje na przegląd: 7.
+Aktualizacja: 2026-10-08T20:18:26Z. Fundament: 24/24 scenariusze complete; rodzina: 9/9 complete; okresy i przychody: 8/15 complete. Backend 013–015 ukończony; UI016 i odbiór017 pozostają zaplanowane.
 
 ### 001-local-runtime/001-compose-start.md ✅ GENERATED
 **Tytuł**: Uruchomienie przez Compose
@@ -127,25 +127,25 @@ Aktualizacja: 2026-10-06. Fundament ma 24 scenariusze (20 ukończonych, 4 zaplan
 **Tytuł**: Responsywna gęstość ekranów gospodarstwa
 **Plik**: [006-responsive-content-density](intents/001-household-foundation/units/003-household-foundation-ui/stories/006-responsive-content-density.md)
 **Bolt**: [009-household-foundation-ui](bolts/009-household-foundation-ui/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 004-local-acceptance/001-end-to-end-acceptance.md ✅ GENERATED
 **Tytuł**: Odbiór całego fundamentu
 **Plik**: [001-end-to-end-acceptance](intents/001-household-foundation/units/004-local-acceptance/stories/001-end-to-end-acceptance.md)
 **Bolt**: [008-local-acceptance](bolts/008-local-acceptance/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 004-local-acceptance/002-backup-restore.md ✅ GENERATED
 **Tytuł**: Kopia i odtworzenie danych
 **Plik**: [002-backup-restore](intents/001-household-foundation/units/004-local-acceptance/stories/002-backup-restore.md)
 **Bolt**: [008-local-acceptance](bolts/008-local-acceptance/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 004-local-acceptance/003-api-performance.md ✅ GENERATED
 **Tytuł**: Pomiar wydajności lokalnej
 **Plik**: [003-api-performance](intents/001-household-foundation/units/004-local-acceptance/stories/003-api-performance.md)
 **Bolt**: [008-local-acceptance](bolts/008-local-acceptance/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ## 002-family-income-management
 
@@ -153,25 +153,25 @@ Aktualizacja: 2026-10-06. Fundament ma 24 scenariusze (20 ukończonych, 4 zaplan
 **Tytuł**: Słownik firm gospodarstwa
 **Plik**: [001-company-dictionary](intents/002-family-income-management/units/001-family-income-api/stories/001-company-dictionary.md)
 **Bolt**: [010-family-income-api](bolts/010-family-income-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 001-family-income-api/002-contract-sources.md ✅ GENERATED
 **Tytuł**: Umowa jako źródło dochodu członka
 **Plik**: [002-contract-sources](intents/002-family-income-management/units/001-family-income-api/stories/002-contract-sources.md)
 **Bolt**: [010-family-income-api](bolts/010-family-income-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 001-family-income-api/003-other-sources.md ✅ GENERATED
 **Tytuł**: Inne źródła osoby i gospodarstwa
 **Plik**: [003-other-sources](intents/002-family-income-management/units/001-family-income-api/stories/003-other-sources.md)
 **Bolt**: [010-family-income-api](bolts/010-family-income-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 001-family-income-api/004-legacy-source-migration.md ✅ GENERATED
 **Tytuł**: Zachowanie i jawne przekształcenie istniejących źródeł
 **Plik**: [004-legacy-source-migration](intents/002-family-income-management/units/001-family-income-api/stories/004-legacy-source-migration.md)
 **Bolt**: [010-family-income-api](bolts/010-family-income-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 002-family-management-ui/001-family-navigation.md ✅ GENERATED
 **Tytuł**: Dział zarządzania rodziną
@@ -209,49 +209,49 @@ Aktualizacja: 2026-10-06. Fundament ma 24 scenariusze (20 ukończonych, 4 zaplan
 **Tytuł**: Utworzenie roku i dwunastu nieaktywnych miesięcy
 **Plik**: [001-create-year-months](intents/003-budget-periods-and-income/units/001-periods-api/stories/001-create-year-months.md)
 **Bolt**: [013-periods-api](bolts/013-periods-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 001-periods-api/002-activate-month.md ✅ GENERATED
 **Tytuł**: Jawna, niezależna aktywacja miesiąca
 **Plik**: [002-activate-month](intents/003-budget-periods-and-income/units/001-periods-api/stories/002-activate-month.md)
 **Bolt**: [013-periods-api](bolts/013-periods-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 001-periods-api/003-close-and-reopen-month.md ✅ GENERATED
 **Tytuł**: Zamknięcie i jawne ponowne otwarcie miesiąca
 **Plik**: [003-close-and-reopen-month](intents/003-budget-periods-and-income/units/001-periods-api/stories/003-close-and-reopen-month.md)
 **Bolt**: [013-periods-api](bolts/013-periods-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 002-monthly-income-api/001-record-income.md ✅ GENERATED
 **Tytuł**: Zapis rzeczywistego przychodu
 **Plik**: [001-record-income](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/001-record-income.md)
 **Bolt**: [014-monthly-income-api](bolts/014-monthly-income-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 002-monthly-income-api/002-select-dictionary-source.md ✅ GENERATED
 **Tytuł**: Wybór lub szybkie dodanie źródła słownikowego
 **Plik**: [002-select-dictionary-source](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/002-select-dictionary-source.md)
 **Bolt**: [014-monthly-income-api](bolts/014-monthly-income-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 002-monthly-income-api/003-record-amount-currency-date.md ✅ GENERATED
 **Tytuł**: Kwota, waluta i rzeczywista data otrzymania
 **Plik**: [003-record-amount-currency-date](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/003-record-amount-currency-date.md)
 **Bolt**: [014-monthly-income-api](bolts/014-monthly-income-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 002-monthly-income-api/004-period-totals-by-currency.md ✅ GENERATED
 **Tytuł**: Podsumowania miesiąca i roku według waluty
 **Plik**: [004-period-totals-by-currency](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/004-period-totals-by-currency.md)
 **Bolt**: [014-monthly-income-api](bolts/014-monthly-income-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 002-monthly-income-api/005-private-income-attachments.md ✅ GENERATED
 **Tytuł**: Wiele prywatnych załączników do przychodu
 **Plik**: [005-private-income-attachments](intents/003-budget-periods-and-income/units/002-monthly-income-api/stories/005-private-income-attachments.md)
 **Bolt**: [015-income-attachments-api](bolts/015-income-attachments-api/bolt.md)
-**Status**: draft; implemented: false.
+**Status**: complete; implemented: true.
 
 ### 003-periods-income-ui/001-navigate-periods.md ✅ GENERATED
 **Tytuł**: Nawigacja po latach i stanach miesięcy

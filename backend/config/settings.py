@@ -29,8 +29,10 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "households.attachment_upload.AttachmentUploadSetupMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "households.attachment_upload.AttachmentUploadAbortGuardMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 ROOT_URLCONF = "config.urls"
@@ -79,6 +81,8 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_AGE = 12 * 60 * 60
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10
+DATA_UPLOAD_MAX_NUMBER_FILES = 5
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "households.exceptions.household_exception_handler",
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],

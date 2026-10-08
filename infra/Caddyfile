@@ -1,16 +1,28 @@
 {
-    auto_https disable_redirects
+	auto_https disable_redirects
+	servers :8443 {
+		protocols h1 h2
+	}
 }
 http://localhost:8080 {
-    redir https://localhost:8443{uri} permanent
+	redir https://localhost:8443{uri} permanent
 }
 https://localhost:8443 {
-    tls internal
-    @api path /api/*
-    handle @api {
-        reverse_proxy backend:8000
-    }
-    handle {
-        reverse_proxy frontend:3000
-    }
+	tls internal
+	@api path /api/*
+	handle @api {
+		route {
+			request_body {
+				write_timeout 10m
+			}
+			request_body {
+				max_size 26MiB
+				read_timeout 10m
+			}
+			reverse_proxy backend:8000
+		}
+	}
+	handle {
+		reverse_proxy frontend:3000
+	}
 }

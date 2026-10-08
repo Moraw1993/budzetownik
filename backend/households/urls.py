@@ -1,5 +1,10 @@
 from django.urls import path
 
+from .attachment_views import (
+    IncomeAttachmentDetailView,
+    IncomeAttachmentDownloadView,
+    IncomeAttachmentListView,
+)
 from .family_income_views import (
     CompanyArchiveView,
     CompanyDetailView,
@@ -39,6 +44,21 @@ from .views import (
 )
 
 urlpatterns = [
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/incomes/<uuid:income_id>/attachments/",
+        IncomeAttachmentListView.as_view(),
+        name="income-attachment-list",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/incomes/<uuid:income_id>/attachments/<uuid:attachment_id>/",
+        IncomeAttachmentDetailView.as_view(),
+        name="income-attachment-detail",
+    ),
+    path(
+        "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/incomes/<uuid:income_id>/attachments/<uuid:attachment_id>/download/",
+        IncomeAttachmentDownloadView.as_view(),
+        name="income-attachment-download",
+    ),
     path(
         "<uuid:household_id>/accounting-years/<uuid:year_id>/months/<uuid:month_id>/incomes/",
         IncomeListView.as_view(),
