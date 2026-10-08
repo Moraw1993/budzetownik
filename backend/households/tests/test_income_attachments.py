@@ -41,6 +41,7 @@ from households.income_services import create_income_record, delete_income_recor
 from households.management.commands import reconcile_income_attachment_storage
 from households.management.commands.reconcile_income_attachment_storage import BaseReconciler
 from households.models import (
+    AccountingMonthState,
     AuditLog,
     HouseholdMember,
     IncomeAttachment,
@@ -1133,6 +1134,15 @@ class IncomeAttachmentApiTests(TransactionTestCase):
         self.assertEqual(self.request("get", foreign_path_for_current_user).status_code, 404)
         self.assertEqual(
             self.request(
+                "post",
+                foreign_path_for_current_user,
+                {"files": [SimpleUploadedFile("forbidden.png", valid_png())]},
+                format="multipart",
+            ).status_code,
+            404,
+        )
+        self.assertEqual(
+            self.request(
                 "get",
                 f"{foreign_path_for_current_user}{foreign_attachment_id}/download/",
             ).status_code,
@@ -1193,6 +1203,15 @@ class IncomeAttachmentApiTests(TransactionTestCase):
 
         self.assertEqual(self.request("get", missing_path).status_code, 404)
         self.assertEqual(
+            self.request(
+                "post",
+                missing_path,
+                {"files": [SimpleUploadedFile("missing.png", valid_png())]},
+                format="multipart",
+            ).status_code,
+            404,
+        )
+        self.assertEqual(
             self.request("delete", f"{missing_path}{uuid4()}/").status_code,
             404,
         )
@@ -1224,6 +1243,53 @@ class IncomeAttachmentApiTests(TransactionTestCase):
         attachment.refresh_from_db()
         self.assertEqual(attachment.availability_state, IncomeAttachmentAvailability.REMOVED)
         self.assertIsNotNone(attachment.storage_deleted_at)
+
+        transition_accounting_month(
+            user=self.owner,
+            household_id=self.household.pk,
+            year_id=self.year.pk,
+            month_id=self.month.pk,
+            operation="close",
+        )
+        self.assertEqual(
+            self.request(
+                "post",
+                data={"files": [SimpleUploadedFile("deleted.png", valid_png())]},
+                format="multipart",
+            ).status_code,
+            404,
+        )
+
+    def test_inactive_month_preserves_attachment_reads_and_rejects_mutations(self):
+        uploaded = self.request(
+            "post",
+            data={"files": [SimpleUploadedFile("inactive.png", valid_png())]},
+            format="multipart",
+        )
+        self.assertEqual(uploaded.status_code, 201, uploaded.content)
+        attachment_id = uploaded.data["results"][0]["id"]
+        # The public state machine has no deactivation operation; this fixture
+        # exercises the read/write policy for an existing inactive parent.
+        self.month.state = AccountingMonthState.INACTIVE
+        self.month.activated_at = None
+        self.month.closed_at = None
+        self.month.save(update_fields=["state", "activated_at", "closed_at"])
+
+        for user in (self.owner, self.viewer):
+            with self.subTest(user=user.pk):
+                self.assertEqual(self.request("get", user=user).status_code, 200)
+                download = self.request("get", f"{self.path}{attachment_id}/download/", user=user)
+                self.assertEqual(download.status_code, 200)
+                self.assertEqual(b"".join(download.streaming_content), valid_png())
+        self.assertEqual(
+            self.request(
+                "post",
+                data={"files": [SimpleUploadedFile("denied.png", valid_png())]},
+                format="multipart",
+            ).status_code,
+            409,
+        )
+        self.assertEqual(self.request("delete", f"{self.path}{attachment_id}/").status_code, 409)
 
     def test_post_commit_handle_close_failure_keeps_available_storage_bytes(self):
         content = valid_png()

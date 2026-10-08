@@ -3,13 +3,16 @@ param(
     [string]$CaddyImage = "caddy:2.10.0-alpine",
     [string]$BackendImage = "myhomebudget-backend:local",
     [string]$FrontendImage = "myhomebudget-frontend:latest",
-    [ValidateRange(1, 20)][int]$Repetitions = 2
+    [ValidateRange(1, 20)][int]$Repetitions = 2,
+    [string]$ConfigPath
 )
 
 $ErrorActionPreference = "Stop"
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 $productionPath = Join-Path $repositoryRoot "infra/Caddyfile"
+if ($ConfigPath) { $productionPath = [System.IO.Path]::GetFullPath($ConfigPath) }
 $probePath = Join-Path $PSScriptRoot "probes/attachment_proxy_probe.py"
+$h2ProbePath = Join-Path $PSScriptRoot "probes/attachment_proxy_h2.mjs"
 $tempParent = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
 $testDirectory = Join-Path $tempParent ("mhh-attachment-proxy-" + [guid]::NewGuid())
 $suffix = [guid]::NewGuid().ToString("N").Substring(0, 8)
@@ -52,18 +55,30 @@ try {
     ) | Set-Content -LiteralPath (Join-Path $evidenceDirectory "production-validate.txt")
 
     $production = [System.IO.File]::ReadAllText($productionPath)
+    $responseBudget = if ($production.Contains("write_timeout 10m")) { "1" } else { "0" }
     if (-not $production.Contains("read_timeout 10m")) { throw "Production upload timeout was not found." }
     $probeConfig = $production.Replace("read_timeout 10m", "read_timeout 2s")
+    $probeConfig = $probeConfig.Replace("write_timeout 10m", "write_timeout 2s")
     $probeConfig = $probeConfig.Replace("backend:8000", "${upstreamName}:8001").Replace("frontend:3000", "${upstreamName}:8001")
     $logConfig = "tls internal`n`tlog {`n`t`toutput stdout`n`t`tformat json`n`t}"
     $probeConfig = $probeConfig.Replace("tls internal", $logConfig)
     $siteStart = $probeConfig.IndexOf("https://localhost:8443 {")
     if ($siteStart -lt 0) { throw "Production TLS listener was not found." }
-    $controlSite = $probeConfig.Substring($siteStart).Replace("8443", "8444").Replace("read_timeout 2s", "read_timeout 6s")
+    $controlSite = $probeConfig.Substring($siteStart).Replace("8443", "8444").Replace("read_timeout 2s", "read_timeout 6s").Replace("write_timeout 2s", "write_timeout 6s")
+    $lateWriteControlSite = $probeConfig.Substring($siteStart).Replace("8443", "8445").Replace("write_timeout 2s", "write_timeout 6s")
     $probeConfig += [Environment]::NewLine + $controlSite
+    if ($responseBudget -eq "1") { $probeConfig += [Environment]::NewLine + $lateWriteControlSite }
     $configPath = Join-Path $testDirectory "probe.Caddyfile"
     [System.IO.File]::WriteAllText($configPath, $probeConfig)
     Copy-Item -LiteralPath $configPath -Destination (Join-Path $evidenceDirectory "probe.Caddyfile")
+    [ordered]@{
+        repetitions = $Repetitions
+        protocols = @("http/1.1", "h2")
+        response_budget = ($responseBudget -eq "1")
+        configuration_sha256 = (Get-FileHash -LiteralPath $configPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        source_configuration_sha256 = (Get-FileHash -LiteralPath $productionPath -Algorithm SHA256).Hash.ToLowerInvariant()
+        caddy_image = $CaddyImage
+    } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $evidenceDirectory "manifest.json")
     $adaptOutput = & docker run --rm --mount "type=bind,source=$configPath,target=/etc/caddy/Caddyfile,readonly" `
         $CaddyImage caddy adapt --config /etc/caddy/Caddyfile --pretty `
         2>(Join-Path $evidenceDirectory "adapt-stderr.txt")
@@ -79,12 +94,19 @@ try {
     Start-ProbeProxy -Name $proxyName -Config $configPath
     Start-ProbeProxy -Name $appProxyName -Config $productionPath
     Start-Sleep -Seconds 2
-    $clientOutput = & docker run --rm --network $Network -e "PROXY_HOST=$proxyName" `
+    $clientOutput = & docker run --rm --network $Network -e "PROXY_HOST=$proxyName" -e "REQUIRE_RESPONSE_BUDGET=$responseBudget" `
         --mount "type=bind,source=$probePath,target=/tmp/probe.py,readonly" `
         $BackendImage python -u /tmp/probe.py client --repetitions $Repetitions 2>&1
     $clientExitCode = $LASTEXITCODE
     $clientOutput | Set-Content -LiteralPath (Join-Path $evidenceDirectory "client.jsonl")
     $clientOutput | ForEach-Object { Write-Output $_ }
+    $h2Output = & docker run --rm --network $Network -e "PROXY_HOST=$proxyName" `
+        -e "PROBE_REPETITIONS=$Repetitions" -e "REQUIRE_RESPONSE_BUDGET=$responseBudget" `
+        --mount "type=bind,source=$h2ProbePath,target=/tmp/h2.mjs,readonly" `
+        --entrypoint node $FrontendImage /tmp/h2.mjs 2>&1
+    $h2ExitCode = $LASTEXITCODE
+    $h2Output | Set-Content -LiteralPath (Join-Path $evidenceDirectory "client-h2.jsonl")
+    $h2Output | ForEach-Object { Write-Output $_ }
 
     $nodeClient = @'
 const assert = require("node:assert/strict");
@@ -167,7 +189,7 @@ async function http2Request() {
         $BackendImage python /tmp/probe.py assess --evidence-directory /evidence 2>&1
     $assessmentExitCode = $LASTEXITCODE
     $assessment | Tee-Object -FilePath (Join-Path $evidenceDirectory "assessment.txt")
-    if ($clientExitCode -ne 0 -or $assessmentExitCode -ne 0) { throw "Proxy probe failed. Evidence: $evidenceDirectory" }
+    if ($clientExitCode -ne 0 -or $h2ExitCode -ne 0 -or $assessmentExitCode -ne 0) { throw "Proxy probe failed. Evidence: $evidenceDirectory" }
     Write-Output "Proxy probe passed. Evidence: $evidenceDirectory"
 }
 finally {
