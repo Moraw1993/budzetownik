@@ -5,6 +5,7 @@ import os
 import struct
 import tempfile
 import threading
+import time
 import zlib
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
@@ -234,6 +235,21 @@ class IncomeAttachmentApiTests(TransactionTestCase):
         with ThreadPoolExecutor(max_workers=len(operations)) as pool:
             futures = [pool.submit(execute, operation) for operation in operations]
             return [future.result(timeout=30) for future in futures]
+
+    def wait_for_database_lock(self, blocker_pid):
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            with connections["default"].cursor() as cursor:
+                cursor.execute(
+                    "SELECT pid FROM pg_stat_activity "
+                    "WHERE wait_event_type = 'Lock' AND %s = ANY(pg_blocking_pids(pid))",
+                    [blocker_pid],
+                )
+                rows = cursor.fetchall()
+            if rows:
+                return [row[0] for row in rows]
+            time.sleep(0.05)
+        self.fail(f"No PostgreSQL backend waited on a lock held by {blocker_pid}")
 
     def test_valid_csrf_upload_rejects_oversized_second_file_atomically(self):
         client = APIClient(enforce_csrf_checks=True)
@@ -536,6 +552,297 @@ class IncomeAttachmentApiTests(TransactionTestCase):
         else:
             self.assertEqual(attachments, [])
 
+    def test_close_first_after_promotion_rolls_back_upload_and_bytes(self):
+        promoted = threading.Event()
+        allow_database_write = threading.Event()
+        keys = []
+        original_promote = __import__(
+            "households.attachment_services", fromlist=["promote_file"]
+        ).promote_file
+
+        def pause_after_promotion(source, key):
+            self.assertFalse(connections["default"].in_atomic_block)
+            original_promote(source, key)
+            keys.append(key)
+            promoted.set()
+            if not allow_database_write.wait(timeout=10):
+                raise TimeoutError("test did not release the promoted upload")
+
+        def upload():
+            client = APIClient()
+            client.force_login(self.owner)
+            return client.post(
+                self.path,
+                {"files": [SimpleUploadedFile("close-first.png", valid_png())]},
+                format="multipart",
+                secure=True,
+                HTTP_HOST="localhost",
+            )
+
+        with (
+            ThreadPoolExecutor(max_workers=1) as pool,
+            patch("households.attachment_services.promote_file", pause_after_promotion),
+        ):
+            future = pool.submit(upload)
+            self.assertTrue(promoted.wait(timeout=10))
+            self.assertTrue(storage_path(keys[0]).is_file())
+            transition_accounting_month(
+                user=self.owner,
+                household_id=self.household.pk,
+                year_id=self.year.pk,
+                month_id=self.month.pk,
+                operation="close",
+            )
+            allow_database_write.set()
+            response = future.result(timeout=20)
+
+        self.assertEqual(response.status_code, 409, response.content)
+        self.assertFalse(IncomeRecord.objects.get(pk=self.income.pk).attachments.exists())
+        self.assertFalse(storage_path(keys[0]).exists())
+        self.assertEqual(AuditLog.objects.filter(object_type="income_attachment").count(), 0)
+
+    def test_upload_commit_first_holds_real_household_lock_before_month_close(self):
+        inside_upload_transaction = threading.Event()
+        allow_upload_commit = threading.Event()
+        close_started = threading.Event()
+        upload_pid = []
+        upload_transaction_state = []
+        from households.record_services import write_audit as original_write_audit
+
+        def pause_after_attachment_audit(**kwargs):
+            result = original_write_audit(**kwargs)
+            if kwargs.get("object_type") == "income_attachment":
+                upload_transaction_state.append(connections["default"].in_atomic_block)
+                upload_pid.append(connections["default"].connection.info.backend_pid)
+                inside_upload_transaction.set()
+                if not allow_upload_commit.wait(timeout=10):
+                    raise TimeoutError("test did not release the upload transaction")
+            return result
+
+        def upload():
+            client = APIClient()
+            client.force_login(self.owner)
+            return client.post(
+                self.path,
+                {"files": [SimpleUploadedFile("upload-first.png", valid_png())]},
+                format="multipart",
+                secure=True,
+                HTTP_HOST="localhost",
+            )
+
+        def close_month():
+            close_started.set()
+            try:
+                return transition_accounting_month(
+                    user=self.owner,
+                    household_id=self.household.pk,
+                    year_id=self.year.pk,
+                    month_id=self.month.pk,
+                    operation="close",
+                )
+            finally:
+                connections.close_all()
+
+        with (
+            ThreadPoolExecutor(max_workers=2) as pool,
+            patch("households.attachment_services.write_audit", pause_after_attachment_audit),
+        ):
+            upload_future = pool.submit(upload)
+            if not inside_upload_transaction.wait(timeout=10):
+                allow_upload_commit.set()
+                upload_future.result(timeout=20)
+                self.fail("upload did not reach its transactional attachment audit")
+            close_future = pool.submit(close_month)
+            self.assertTrue(close_started.wait(timeout=10))
+            blockers = self.wait_for_database_lock(upload_pid[0])
+            allow_upload_commit.set()
+            upload_response = upload_future.result(timeout=20)
+            close_future.result(timeout=20)
+
+        self.assertTrue(blockers)
+        self.assertTrue(upload_transaction_state[0])
+        self.assertEqual(upload_response.status_code, 201, upload_response.content)
+        attachment = IncomeRecord.objects.get(pk=self.income.pk).attachments.get()
+        self.assertEqual(attachment.availability_state, IncomeAttachmentAvailability.AVAILABLE)
+        self.assertTrue(storage_path(attachment.storage_key).is_file())
+        self.assertEqual(
+            AuditLog.objects.filter(object_type="income_attachment", action="created").count(),
+            1,
+        )
+
+    def test_parent_delete_first_after_promotion_leaves_no_attachment_or_final_bytes(self):
+        promoted = threading.Event()
+        allow_database_write = threading.Event()
+        keys = []
+        original_promote = __import__(
+            "households.attachment_services", fromlist=["promote_file"]
+        ).promote_file
+
+        def pause_after_promotion(source, key):
+            self.assertFalse(connections["default"].in_atomic_block)
+            original_promote(source, key)
+            keys.append(key)
+            promoted.set()
+            if not allow_database_write.wait(timeout=10):
+                raise TimeoutError("test did not release the promoted upload")
+
+        def upload():
+            client = APIClient()
+            client.force_login(self.owner)
+            return client.post(
+                self.path,
+                {"files": [SimpleUploadedFile("delete-first.png", valid_png())]},
+                format="multipart",
+                secure=True,
+                HTTP_HOST="localhost",
+            )
+
+        with (
+            ThreadPoolExecutor(max_workers=1) as pool,
+            patch("households.attachment_services.promote_file", pause_after_promotion),
+        ):
+            future = pool.submit(upload)
+            self.assertTrue(promoted.wait(timeout=10))
+            self.assertTrue(storage_path(keys[0]).is_file())
+            delete_income_record(
+                user=self.owner,
+                household_id=self.household.pk,
+                year_id=self.year.pk,
+                month_id=self.month.pk,
+                income_id=self.income.pk,
+                expected_version=1,
+            )
+            allow_database_write.set()
+            response = future.result(timeout=20)
+
+        self.assertEqual(response.status_code, 404, response.content)
+        self.assertFalse(IncomeRecord.objects.get(pk=self.income.pk).attachments.exists())
+        self.assertFalse(storage_path(keys[0]).exists())
+        self.assertEqual(AuditLog.objects.filter(object_type="income_attachment").count(), 0)
+
+    def test_upload_commit_first_holds_real_household_lock_before_parent_delete(self):
+        inside_upload_transaction = threading.Event()
+        allow_upload_commit = threading.Event()
+        delete_started = threading.Event()
+        upload_pid = []
+        upload_transaction_state = []
+        from households.record_services import write_audit as original_write_audit
+
+        def pause_after_attachment_audit(**kwargs):
+            result = original_write_audit(**kwargs)
+            if kwargs.get("object_type") == "income_attachment":
+                upload_transaction_state.append(connections["default"].in_atomic_block)
+                upload_pid.append(connections["default"].connection.info.backend_pid)
+                inside_upload_transaction.set()
+                if not allow_upload_commit.wait(timeout=10):
+                    raise TimeoutError("test did not release the upload transaction")
+            return result
+
+        def upload():
+            client = APIClient()
+            client.force_login(self.owner)
+            return client.post(
+                self.path,
+                {"files": [SimpleUploadedFile("upload-before-delete.png", valid_png())]},
+                format="multipart",
+                secure=True,
+                HTTP_HOST="localhost",
+            )
+
+        def delete_income():
+            delete_started.set()
+            try:
+                return delete_income_record(
+                    user=self.owner,
+                    household_id=self.household.pk,
+                    year_id=self.year.pk,
+                    month_id=self.month.pk,
+                    income_id=self.income.pk,
+                    expected_version=1,
+                )
+            finally:
+                connections.close_all()
+
+        with (
+            ThreadPoolExecutor(max_workers=2) as pool,
+            patch("households.attachment_services.write_audit", pause_after_attachment_audit),
+        ):
+            upload_future = pool.submit(upload)
+            if not inside_upload_transaction.wait(timeout=10):
+                allow_upload_commit.set()
+                upload_future.result(timeout=20)
+                self.fail("upload did not reach its transactional attachment audit")
+            delete_future = pool.submit(delete_income)
+            self.assertTrue(delete_started.wait(timeout=10))
+            blockers = self.wait_for_database_lock(upload_pid[0])
+            allow_upload_commit.set()
+            upload_response = upload_future.result(timeout=20)
+            delete_future.result(timeout=20)
+
+        self.assertTrue(blockers)
+        self.assertTrue(upload_transaction_state[0])
+        self.assertEqual(upload_response.status_code, 201, upload_response.content)
+        attachment = IncomeAttachment.objects.get(income_record=self.income)
+        self.assertEqual(attachment.availability_state, IncomeAttachmentAvailability.REMOVED)
+        self.assertIsNotNone(attachment.storage_deleted_at)
+        self.assertFalse(storage_path(attachment.storage_key).exists())
+        self.assertEqual(AuditLog.objects.filter(object_type="income_attachment").count(), 2)
+
+    def test_cleanup_cannot_remove_promoted_bytes_while_upload_holds_claim_lock(self):
+        promoted = threading.Event()
+        allow_database_write = threading.Event()
+        keys = []
+        batch_ids = []
+        original_promote = __import__(
+            "households.attachment_services", fromlist=["promote_file"]
+        ).promote_file
+
+        def pause_after_promotion(source, key):
+            self.assertFalse(connections["default"].in_atomic_block)
+            original_promote(source, key)
+            keys.append(key)
+            batch_ids.append(UUID(key.split("/")[2]))
+            promoted.set()
+            if not allow_database_write.wait(timeout=10):
+                raise TimeoutError("test did not release the promoted upload")
+
+        def upload():
+            client = APIClient()
+            client.force_login(self.owner)
+            return client.post(
+                self.path,
+                {"files": [SimpleUploadedFile("protected.png", valid_png())]},
+                format="multipart",
+                secure=True,
+                HTTP_HOST="localhost",
+            )
+
+        with (
+            ThreadPoolExecutor(max_workers=1) as pool,
+            patch("households.attachment_services.promote_file", pause_after_promotion),
+        ):
+            future = pool.submit(upload)
+            self.assertTrue(promoted.wait(timeout=10))
+            claim = Path(self.media_dir.name) / ".incoming" / str(batch_ids[0])
+            os.utime(claim, (1, 1))
+            reconciler = BaseReconciler(execute=True, limit=10)
+            reconciler.handle_stale_claims()
+            self.assertEqual(reconciler.report["claims"], 0)
+            self.assertGreaterEqual(reconciler.report["skipped"], 1)
+            self.assertTrue(storage_path(keys[0]).is_file())
+            self.assertFalse(IncomeRecord.objects.get(pk=self.income.pk).attachments.exists())
+            allow_database_write.set()
+            response = future.result(timeout=20)
+
+        self.assertEqual(response.status_code, 201, response.content)
+        attachment = IncomeRecord.objects.get(pk=self.income.pk).attachments.get()
+        self.assertTrue(storage_path(attachment.storage_key).is_file())
+        self.assertEqual(storage_path(attachment.storage_key).read_bytes(), valid_png())
+        self.assertEqual(
+            AuditLog.objects.filter(object_type="income_attachment", action="created").count(),
+            1,
+        )
+
     def test_parallel_uploads_serialize_the_income_attachment_capacity(self):
         initial_files = [
             SimpleUploadedFile(f"initial-{index}.png", valid_png()) for index in range(16)
@@ -571,6 +878,90 @@ class IncomeAttachmentApiTests(TransactionTestCase):
             19,
         )
 
+    def test_capacity_upload_waits_on_real_postgres_lock_and_rechecks_after_commit(self):
+        for start in range(0, 16, 4):
+            files = [
+                SimpleUploadedFile(f"capacity-{index}.png", valid_png())
+                for index in range(start, start + 4)
+            ]
+            response = self.request("post", data={"files": files}, format="multipart")
+            self.assertEqual(response.status_code, 201, response.content)
+
+        inside_first_transaction = threading.Event()
+        allow_first_commit = threading.Event()
+        second_started = threading.Event()
+        first_pid = []
+        first_transaction_state = []
+        from households.record_services import write_audit as original_write_audit
+
+        def pause_first_batch(**kwargs):
+            result = original_write_audit(**kwargs)
+            if (
+                kwargs.get("object_type") == "income_attachment"
+                and not inside_first_transaction.is_set()
+            ):
+                first_transaction_state.append(connections["default"].in_atomic_block)
+                first_pid.append(connections["default"].connection.info.backend_pid)
+                inside_first_transaction.set()
+                if not allow_first_commit.wait(timeout=10):
+                    raise TimeoutError("test did not release capacity reservation")
+            return result
+
+        def upload_batch(prefix):
+            client = APIClient()
+            client.force_login(self.owner)
+            return client.post(
+                self.path,
+                {
+                    "files": [
+                        SimpleUploadedFile(f"{prefix}-{index}.png", valid_png())
+                        for index in range(3)
+                    ]
+                },
+                format="multipart",
+                secure=True,
+                HTTP_HOST="localhost",
+            )
+
+        def second_upload():
+            second_started.set()
+            try:
+                return upload_batch("second")
+            finally:
+                connections.close_all()
+
+        with (
+            ThreadPoolExecutor(max_workers=2) as pool,
+            patch("households.attachment_services.write_audit", pause_first_batch),
+        ):
+            first_future = pool.submit(upload_batch, "first")
+            if not inside_first_transaction.wait(timeout=10):
+                allow_first_commit.set()
+                first_future.result(timeout=20)
+                self.fail("first capacity upload did not reach its transactional audit")
+            second_future = pool.submit(second_upload)
+            self.assertTrue(second_started.wait(timeout=10))
+            blockers = self.wait_for_database_lock(first_pid[0])
+            allow_first_commit.set()
+            first_response = first_future.result(timeout=20)
+            second_response = second_future.result(timeout=20)
+
+        self.assertTrue(blockers)
+        self.assertTrue(first_transaction_state[0])
+        self.assertEqual(first_response.status_code, 201, first_response.content)
+        self.assertEqual(second_response.status_code, 400, second_response.content)
+        available = list(
+            IncomeRecord.objects.get(pk=self.income.pk).attachments.filter(
+                availability_state=IncomeAttachmentAvailability.AVAILABLE
+            )
+        )
+        self.assertEqual(len(available), 19)
+        self.assertTrue(all(storage_path(item.storage_key).is_file() for item in available))
+        self.assertEqual(
+            AuditLog.objects.filter(object_type="income_attachment", action="created").count(),
+            19,
+        )
+
     def test_upload_list_download_and_remove_private_attachment(self):
         content = valid_png()
         uploaded = SimpleUploadedFile("paragon.png", content, content_type="image/png")
@@ -593,7 +984,246 @@ class IncomeAttachmentApiTests(TransactionTestCase):
         removed = self.request("delete", f"{self.path}{item['id']}/")
         self.assertEqual(removed.status_code, 204)
         self.assertEqual(self.request("get").data["results"], [])
+        self.assertEqual(self.request("get", f"{self.path}{item['id']}/download/").status_code, 404)
         self.assertEqual(AuditLog.objects.filter(object_type="income_attachment").count(), 2)
+
+    def test_member_and_viewer_can_read_but_cannot_mutate_attachments(self):
+        uploaded = SimpleUploadedFile("paragon.png", valid_png())
+        response = self.request("post", data={"files": [uploaded]}, format="multipart")
+        self.assertEqual(response.status_code, 201, response.content)
+        attachment_id = response.data["results"][0]["id"]
+        member = User.objects.create_user(username="attachment-member")
+        Membership.objects.create(household=self.household, user=member, role=Role.MEMBER)
+
+        for user in (self.viewer, member):
+            with self.subTest(role=Membership.objects.get(user=user).role):
+                self.assertEqual(self.request("get", user=user).status_code, 200)
+                download = self.request("get", f"{self.path}{attachment_id}/download/", user=user)
+                self.assertEqual(download.status_code, 200)
+                self.assertEqual(b"".join(download.streaming_content), valid_png())
+                denied_upload = self.request(
+                    "post",
+                    data={"files": [SimpleUploadedFile("kolejny.png", valid_png())]},
+                    user=user,
+                    format="multipart",
+                )
+                self.assertEqual(denied_upload.status_code, 403)
+                self.assertEqual(
+                    self.request("delete", f"{self.path}{attachment_id}/", user=user).status_code,
+                    403,
+                )
+
+        self.assertEqual(IncomeRecord.objects.get(pk=self.income.pk).attachments.count(), 1)
+        self.assertEqual(AuditLog.objects.filter(object_type="income_attachment").count(), 1)
+
+    def test_administrator_can_upload_and_delete_attachments(self):
+        administrator = User.objects.create_user(username="attachment-admin")
+        Membership.objects.create(
+            household=self.household, user=administrator, role=Role.ADMINISTRATOR
+        )
+        response = self.request(
+            "post",
+            data={"files": [SimpleUploadedFile("admin.png", valid_png())]},
+            user=administrator,
+            format="multipart",
+        )
+        self.assertEqual(response.status_code, 201, response.content)
+        attachment_id = response.data["results"][0]["id"]
+        attachment = IncomeRecord.objects.get(pk=self.income.pk).attachments.get(pk=attachment_id)
+        self.assertTrue(storage_path(attachment.storage_key).is_file())
+
+        deleted = self.request("delete", f"{self.path}{attachment_id}/", user=administrator)
+
+        self.assertEqual(deleted.status_code, 204)
+        self.assertFalse(storage_path(attachment.storage_key).exists())
+        self.assertEqual(AuditLog.objects.filter(object_type="income_attachment").count(), 2)
+
+    def test_foreign_and_cross_parent_attachment_ids_are_not_disclosed(self):
+        uploaded = self.request(
+            "post",
+            data={"files": [SimpleUploadedFile("private.png", valid_png())]},
+            format="multipart",
+        )
+        self.assertEqual(uploaded.status_code, 201, uploaded.content)
+        attachment_id = uploaded.data["results"][0]["id"]
+        other_income = create_income_record(
+            user=self.owner,
+            household_id=self.household.pk,
+            year_id=self.year.pk,
+            month_id=self.month.pk,
+            data={
+                "member_id": self.member.pk,
+                "source_id": self.source.pk,
+                "amount": Decimal("125.00"),
+                "currency": "PLN",
+                "receipt_date": date(2044, 12, 30),
+            },
+            idempotency_key=uuid4(),
+        )
+        other_income_path = (
+            f"/api/households/{self.household.pk}/accounting-years/{self.year.pk}/"
+            f"months/{self.month.pk}/incomes/{other_income.body['id']}/attachments/"
+        )
+        foreign_owner = User.objects.create_user(username="foreign-attachment-owner")
+        foreign_household = create_household(user=foreign_owner, name="Inny dom").household
+        foreign_member = HouseholdMember.objects.create(
+            household=foreign_household, display_name="Inna osoba"
+        )
+        foreign_year = create_accounting_year(
+            user=foreign_owner, household_id=foreign_household.pk, calendar_year=2046
+        )
+        foreign_month = foreign_year.months.get(month_number=1)
+        transition_accounting_month(
+            user=foreign_owner,
+            household_id=foreign_household.pk,
+            year_id=foreign_year.pk,
+            month_id=foreign_month.pk,
+            operation="activate",
+        )
+        foreign_source = IncomeSource.objects.create(
+            household=foreign_household,
+            member=foreign_member,
+            name="Foreign salary",
+            category="salary",
+            start_date=date(2045, 1, 1),
+            currency="PLN",
+            frequency=IncomeFrequency.MONTHLY,
+            is_regular=True,
+        )
+        foreign_income = create_income_record(
+            user=foreign_owner,
+            household_id=foreign_household.pk,
+            year_id=foreign_year.pk,
+            month_id=foreign_month.pk,
+            data={
+                "member_id": foreign_member.pk,
+                "source_id": foreign_source.pk,
+                "amount": Decimal("100.00"),
+                "currency": "PLN",
+                "receipt_date": date(2046, 1, 1),
+            },
+            idempotency_key=uuid4(),
+        )
+        foreign_path = (
+            f"/api/households/{foreign_household.pk}/accounting-years/{foreign_year.pk}/"
+            f"months/{foreign_month.pk}/incomes/{foreign_income.body['id']}/attachments/"
+        )
+        foreign_upload = self.request(
+            "post",
+            foreign_path,
+            {"files": [SimpleUploadedFile("foreign.png", valid_png())]},
+            user=foreign_owner,
+            format="multipart",
+        )
+        self.assertEqual(foreign_upload.status_code, 201, foreign_upload.content)
+        foreign_attachment_id = foreign_upload.data["results"][0]["id"]
+
+        self.assertEqual(
+            self.request("get", f"{other_income_path}{attachment_id}/download/").status_code,
+            404,
+        )
+        self.assertEqual(self.request("get", other_income_path).data["results"], [])
+        self.assertEqual(
+            self.request("delete", f"{other_income_path}{attachment_id}/").status_code, 404
+        )
+        foreign_path_for_current_user = (
+            f"/api/households/{foreign_household.pk}/accounting-years/{foreign_year.pk}/"
+            f"months/{foreign_month.pk}/incomes/{foreign_income.body['id']}/attachments/"
+        )
+        self.assertEqual(self.request("get", foreign_path_for_current_user).status_code, 404)
+        self.assertEqual(
+            self.request(
+                "get",
+                f"{foreign_path_for_current_user}{foreign_attachment_id}/download/",
+            ).status_code,
+            404,
+        )
+        self.assertEqual(
+            self.request(
+                "delete", f"{foreign_path_for_current_user}{foreign_attachment_id}/"
+            ).status_code,
+            404,
+        )
+
+    def test_closed_month_allows_read_but_rejects_attachment_mutations(self):
+        uploaded = self.request(
+            "post",
+            data={"files": [SimpleUploadedFile("history.png", valid_png())]},
+            format="multipart",
+        )
+        self.assertEqual(uploaded.status_code, 201, uploaded.content)
+        attachment_id = uploaded.data["results"][0]["id"]
+        transition_accounting_month(
+            user=self.owner,
+            household_id=self.household.pk,
+            year_id=self.year.pk,
+            month_id=self.month.pk,
+            operation="close",
+        )
+
+        self.assertEqual(self.request("get").status_code, 200)
+        self.assertEqual(
+            self.request("get", f"{self.path}{attachment_id}/download/").status_code, 200
+        )
+        self.assertEqual(
+            self.request(
+                "post",
+                data={"files": [SimpleUploadedFile("new.png", valid_png())]},
+                format="multipart",
+            ).status_code,
+            409,
+        )
+        self.assertEqual(self.request("delete", f"{self.path}{attachment_id}/").status_code, 409)
+        self.assertEqual(
+            IncomeRecord.objects.get(pk=self.income.pk)
+            .attachments.filter(availability_state=IncomeAttachmentAvailability.AVAILABLE)
+            .count(),
+            1,
+        )
+
+    def test_missing_parent_is_not_found_before_closed_period_conflict(self):
+        transition_accounting_month(
+            user=self.owner,
+            household_id=self.household.pk,
+            year_id=self.year.pk,
+            month_id=self.month.pk,
+            operation="close",
+        )
+        missing_path = self.path.replace(str(self.income.pk), str(uuid4()))
+
+        self.assertEqual(self.request("get", missing_path).status_code, 404)
+        self.assertEqual(
+            self.request("delete", f"{missing_path}{uuid4()}/").status_code,
+            404,
+        )
+
+    def test_soft_deleted_parent_hides_attachment_list_and_download(self):
+        uploaded = self.request(
+            "post",
+            data={"files": [SimpleUploadedFile("parent.png", valid_png())]},
+            format="multipart",
+        )
+        self.assertEqual(uploaded.status_code, 201, uploaded.content)
+        attachment_id = uploaded.data["results"][0]["id"]
+        attachment = IncomeRecord.objects.get(pk=self.income.pk).attachments.get(pk=attachment_id)
+
+        delete_income_record(
+            user=self.owner,
+            household_id=self.household.pk,
+            year_id=self.year.pk,
+            month_id=self.month.pk,
+            income_id=self.income.pk,
+            expected_version=1,
+        )
+
+        self.assertEqual(self.request("get").status_code, 404)
+        self.assertEqual(
+            self.request("get", f"{self.path}{attachment_id}/download/").status_code,
+            404,
+        )
+        attachment.refresh_from_db()
+        self.assertEqual(attachment.availability_state, IncomeAttachmentAvailability.REMOVED)
+        self.assertIsNotNone(attachment.storage_deleted_at)
 
     def test_post_commit_handle_close_failure_keeps_available_storage_bytes(self):
         content = valid_png()

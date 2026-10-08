@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-07T20:34:47Z'
+last_updated: '2026-10-08T19:23:27Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -57,7 +57,9 @@ last_updated: '2026-10-07T20:34:47Z'
 | 2026-10-07T20:51:00Z | 015-income-attachments-api | implementation-ready | Implemented private attachment metadata, bounded format validation, staged all-or-nothing upload, tenant-scoped list/download/delete, audit/soft-delete cleanup, and dry-run reconciliation. Caddy 2.10.0 config validates; Ruff and scripts/quality.ps1 pass; 117 households tests pass, including seven attachment tests. Submitted Stage 4 for independent review; bolt advanced to Stage 5. |
 | 2026-10-07T21:02:00Z | 015-income-attachments-api | stage4-review-fixes | Resolved reviewer R4-1–R4-4: post-commit finalization errors no longer compensate committed bytes; reconciliation persists cursors across bounded passes and detects missing/checksum-mismatched available files without deleting metadata; JPEG requires valid SOF/SOS/EOI structure. Added commit-boundary, reconciliation progress/integrity, and JPEG regressions. 123 households tests, full quality, Ruff and migration check pass; submitted updated commit for independent Stage 4 review. |
 | 2026-10-07T21:08:00Z | 015-income-attachments-api | stage4-review-race-fix | Resolved reviewer R4-5 by re-reading the attachment after acquiring its batch lock and verifying only if its current state remains available. Added TransactionTestCase interleavings for committed removal against both dry-run and execute, plus invalid UUID cursor recovery and directory fsync after cursor replacement. Attachment suite: 15/15; requesting focused Stage 4 re-review. |
-| 2026-10-07T21:21:01Z | 015-income-attachments-api | stage5-test-evidence | Added CSRF, upload byte-limit, failure/rollback/retry, cross-process flock and upload-vs-close/delete/capacity regressions. Full households suite 136/136 and scripts/quality.ps1 pass. Caddy 2.10.0 runtime probe confirms 413 for oversized body but exposes ignored request_body read_timeout; production Caddyfile was left unchanged after automatic review rejected the required wider server-wide idle-timeout change. Stage 5 and bolt remain blocked pending the timeout-policy decision and reviewer acceptance. |
+| 2026-10-07T21:21:01Z | 015-income-attachments-api | stage5-test-evidence | Added CSRF, upload byte-limit, failure/rollback/retry, cross-process flock and upload-vs-close/delete/capacity regressions. Full households suite 136/136 and scripts/quality.ps1 pass. Caddy 2.10.0 adapter includes request_body.read_timeout; corrected idle-body probe had upstream reject 1/4 bytes with 400 while client saw empty 200. Production Caddyfile remains unchanged. Stage 5 and bolt remain blocked pending diagnosis of this inconsistent runtime response and reviewer acceptance. |
+
+| 2026-10-08T19:23:27Z | 015-income-attachments-api | stage5-review-evidence-revised | Added endpoint role/tenant/404 matrix and deterministic PostgreSQL lock/promotion/cleaner interleavings. Complete Django suite 168/168; explicit attachment production coverage 83% including reconciliation command at 73%; full quality passes. Repeatable asyncio TLS harness has valid positive controls, per-request byte/hash/access-log evidence and reproduces Caddy v2.10.0 empty 200 after deadline. Independent advisor confirms source semantics and proposes bounded repair candidates; production config remains unchanged and Stage 5 blocked. |
 
 ## Execution Summary
 
@@ -72,5 +74,3 @@ last_updated: '2026-10-07T20:34:47Z'
 ## Notes
 
 Bolt 014 and stories 001–004 are complete and independently accepted. Bolt 015 is in Stage 5 after implementation; story 005 remains pending final test report, independent review, and official completion. Unit 002 remains in progress. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.
-
-| 2026-10-07T21:21:01Z | 015-income-attachments-api | stage5-test-evidence | Added CSRF, upload byte-limit, failure/rollback/retry, cross-process flock and upload-vs-close/delete/capacity regressions. Full households suite 136/136 and scripts/quality.ps1 pass. Caddy 2.10.0 runtime probe confirms 413 for oversized body but exposes ignored request_body read_timeout; production Caddyfile was left unchanged after automatic review rejected the required wider server-wide idle-timeout change. Stage 5 and bolt remain blocked pending the timeout-policy decision and reviewer acceptance. |
