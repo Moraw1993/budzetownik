@@ -2,7 +2,7 @@
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
 created: '2026-10-07T11:31:16Z'
-last_updated: '2026-10-08T20:02:48Z'
+last_updated: '2026-10-08T20:18:26Z'
 ---
 
 # Construction Log: 002-monthly-income-api
@@ -22,7 +22,7 @@ last_updated: '2026-10-08T20:02:48Z'
 | Bolt ID | Stories | Status | Changed |
 | --- | --- | --- | --- |
 | 014-monthly-income-api | 001-record-income, 002-select-dictionary-source, 003-record-amount-currency-date, 004-period-totals-by-currency | ✅ complete | 2026-10-07T17:49:42Z |
-| 015-income-attachments-api | 005-private-income-attachments | ⏳ in-progress | 2026-10-07T18:03:48Z |
+| 015-income-attachments-api | 005-private-income-attachments | ✅ complete | 2026-10-08T20:18:26Z |
 
 ## Execution History
 
@@ -58,16 +58,19 @@ last_updated: '2026-10-08T20:02:48Z'
 | 2026-10-08T19:23:27Z | 015-income-attachments-api | stage5-review-evidence-revised | Added endpoint role/tenant/404 matrix and deterministic PostgreSQL lock/promotion/cleaner interleavings. Complete Django suite 168/168; explicit attachment production coverage 83% including reconciliation command at 73%; full quality passes. Repeatable asyncio TLS harness has valid positive controls, per-request byte/hash/access-log evidence and reproduces Caddy v2.10.0 empty 200 after deadline. Independent advisor confirms source semantics and proposes bounded repair candidates; production config remains unchanged and Stage 5 blocked. |
 | 2026-10-08T20:02:48Z | 015-income-attachments-api | stage5-proxy-repair-ready | Resolved remaining role/period matrix cells and R5-5 fail-closed evidence manifest with ten self-tests. Full Django 169/169; attachment coverage 83% (1003 statements/170 missed). Baseline20 reproduced 28 empty H1 200 responses. After advisor consultation, ordered API-only write-before-read deadlines and explicit h1/h2 pass final 133/133 probes including 20 stalled/drip per protocol, concurrent H2 stream isolation and exact late-write A/B. ADR-009 proposed; technical design/report corrected Gunicorn to explicit 660 s. Awaiting independent review; no service restart or release. |
 
+| 2026-10-08T20:13:54Z | 015-income-attachments-api | stage5-accepted | Reviewer accepted code 2a4dda2 and ADR-009 at 8.9/10 after independent 169/169 tests, 83% coverage, quality, ten assessor regressions, archived133 reassessment and fresh25 TLS smoke. R5-1–R5-5 resolved. |
+| 2026-10-08T20:18:26Z | 015-income-attachments-api | bolt-complete | Official bolt-complete.cjs marked 015, story005 and unit002 complete. Normalized the scanner's relevant frontmatter to LF and verified that units003/004 and bolts016/017 remain planned; intent003 is not marked complete. Reconciled story-index from all48 source stories (41 complete,7 planned/draft). |
+
 ## Execution Summary
 
 | Metric | Value |
 | --- | --- |
 | Original bolts planned | 2 |
 | Current bolt count | 2 |
-| Bolts completed | 1 |
-| Bolts in progress | 1 |
+| Bolts completed | 2 |
+| Bolts in progress | 0 |
 | Bolts remaining | 0 |
 
 ## Notes
 
-Bolt 014 and stories 001–004 are complete and independently accepted. Bolt 015 is in Stage 5 after implementation; story 005 remains pending final test report, independent review, and official completion. Unit 002 remains in progress. The completion script scans LF-only frontmatter and can silently skip CRLF bolt files; normalize/verify all scanned bolt files before future runs. Bolt 017 owns P95 measurement.
+Bolts 014 and 015 and stories001–005 are complete and independently accepted. Unit002 is complete. The LF-only completion scanner was given readable relevant metadata; no framework source was modified. Bolts016 UI and017 acceptance remain planned; P95 belongs to017. Work stops after this completion and handoff report.

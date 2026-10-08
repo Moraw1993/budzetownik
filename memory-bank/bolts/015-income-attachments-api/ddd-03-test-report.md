@@ -2,17 +2,17 @@
 unit: 002-monthly-income-api
 bolt: 015-income-attachments-api
 stage: test
-status: pending-review
-updated: '2026-10-08T20:02:48Z'
+status: complete
+updated: '2026-10-08T20:18:26Z'
 ---
 
 # Test Report — Monthly Income Attachments API
 
 ## Current result
 
-The complete Django suite passes: **169/169 tests** on PostgreSQL. Statement coverage is **83%** across the seven explicitly listed production attachment modules. Ten assessor integrity regressions pass, and full quality checks pass. The ordered Caddy write-before-read repair passes the final **133-case** runtime manifest for both supported protocols. Stage 5 awaits independent acceptance and official completion.
+The complete Django suite passes: **169/169 tests** on PostgreSQL. Statement coverage is **83%** across the seven explicitly listed production attachment modules. Ten assessor integrity regressions pass, and full quality checks pass. The ordered Caddy write-before-read repair passes the final **133-case** runtime manifest for both supported protocols. Stage 5 was independently accepted at 8.9/10 for code commit 2a4dda2; the official completion cascade finished at 2026-10-08T20:18:26Z.
 
-The independent reviewer rejected `8650ce8` at 7.0/10, then verified the 168-test/83%-coverage checkpoint `e8280a1` at 8.4/10 with R5-3/R5-4 resolved. This revision completes the remaining matrix cells, makes the evidence assessor fail closed, and fixes the reproduced proxy response defect with independent implementation advice from `_doradca`. The final review is separate from these author verification results.
+The independent reviewer rejected `8650ce8` at 7.0/10, then verified the 168-test/83%-coverage checkpoint `e8280a1` at 8.4/10 with R5-3/R5-4 resolved. This revision completes the remaining matrix cells, makes the evidence assessor fail closed, and fixes the reproduced proxy response defect with independent implementation advice from `_doradca`. The final independent review accepted 2a4dda2 at 8.9/10 on 2026-10-08T20:13:54Z.
 
 ## Application verification
 
@@ -91,7 +91,11 @@ Migration check, source diff review, formatter/lint checks and final quality res
 - [x] Role/tenant matrix and deterministic concurrency evidence added
 - [x] Proxy incomplete-body response defect resolved on both supported protocols
 - [x] Evidence assessor fails closed and its ten regression tests pass
-- [ ] Independent Stage 5 acceptance
-- [ ] Official bolt completion after acceptance
+- [x] Independent Stage 5 acceptance: 8.9/10 for 2a4dda2
+- [x] Official bolt completion after acceptance
 
-**Bolt 015 remains in progress pending independent Stage 5 acceptance.**
+**Bolt 015 and unit 002-monthly-income-api are complete. Bolts 016/017 remain planned.**
+
+## Independent verification
+
+Reviewer independently reran 169/169 Django tests, measured the same 83% coverage, ran 10/10 assessor regressions, quality, migration and Caddy validation. The reviewer reassessed a copy of the retained 133-case archive and additionally sent a fresh 25/25-case TLS smoke (.runtime/attachment-proxy-0386d1db/). The 133 original requests are author evidence; the independent fresh network run has 25 requests/checks. Stage 5 and ADR-009 are ACCEPTED / PASS at 8.9/10.

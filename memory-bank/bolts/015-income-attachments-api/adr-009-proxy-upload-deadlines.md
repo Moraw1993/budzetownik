@@ -1,7 +1,8 @@
 ---
 bolt: 015-income-attachments-api
 created: '2026-10-08T19:54:42Z'
-status: proposed
+status: accepted
+accepted: '2026-10-08T20:13:54Z'
 ---
 
 # ADR-009: Uporządkowane deadline’y odczytu i zapisu API

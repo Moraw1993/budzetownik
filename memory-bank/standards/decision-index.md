@@ -62,7 +62,7 @@ last_updated: 2026-10-07T12:16:28Z
 - **Summary**: Przychód jest historycznym faktem przypisanym do konkretnego odbiorcy i źródła. `IncomeRecord` przechowuje bieżące identyfikatory gospodarstwa, okresu, odbiorcy i źródła jako klucze obce oraz osobne snapshoty do historycznego odczytu.
 - **Read when**: Implementing income history, dictionary changes or archival, recipient/source reassignment, deletion, audit, or income totals.
 ## ADR-009: Uporządkowane deadline’y odczytu i zapisu API
-- Status: proposed; pending independent Stage 5 review.
+- Status: accepted; independent review 8.9/10 for 2a4dda2 at 2026-10-08T20:13:54Z.
 - Created: 2026-10-08T19:54:42Z.
 - Bolt: 015-income-attachments-api.
 - Dokument: [ADR](../bolts/015-income-attachments-api/adr-009-proxy-upload-deadlines.md).

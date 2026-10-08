@@ -4,9 +4,9 @@ intent: 003-budget-periods-and-income
 unit_type: backend
 default_bolt_type: ddd-construction-bolt
 phase: construction
-status: in-progress
-created: '2026-10-06T20:32:37Z'
-updated: '2026-10-07T18:04:00Z'
+status: complete
+created: "2026-10-06T20:32:37Z"
+updated: '2026-10-08T20:18:26Z'
 ---
 
 # API rzeczywistych przychodów
@@ -27,7 +27,7 @@ Właściciel reguł: FR-03, FR-04, FR-05, FR-06 i FR-08. Wpis wskazuje dokładni
 - Kwota jest wartością dziesiętną, waluta należy do wpisu, a data oznacza faktyczne otrzymanie i może leżeć poza miesiącem rozliczeniowym.
 - Sumy miesięczne i roczne grupują zapisane kwoty osobno według waluty; nie przeliczają ich i nie pobierają wartości z umów ani domyślnych kwot źródeł.
 - Załączniki wielu plików obsługuje osobny bolt 015; pozostają prywatne i powiązane z wpisem/gospodarstwem.
-- Zachowanie historycznego obrazu źródła i odbiorcy oraz limity załączników pozostają decyzjami projektu technicznego przed implementacją.
+- Historyczne snapshoty i idempotencję określają ADR-007/008; limity załączników ustalono w projekcie 015, a uporządkowane deadline’y i response budget w ADR-009.
 
 ## Podział boltów
 
@@ -44,7 +44,7 @@ Jednostka zależy od 001-periods-api oraz istniejącego 001-family-income-api (�
 - [x] **002-select-dictionary-source** — Must — 014-monthly-income-api
 - [x] **003-record-amount-currency-date** — Must — 014-monthly-income-api
 - [x] **004-period-totals-by-currency** — Must — 014-monthly-income-api
-- [ ] **005-private-income-attachments** — Should — 015-income-attachments-api
+- [x] **005-private-income-attachments** — Should — 015-income-attachments-api
 
 ## Kryteria zakończenia
 

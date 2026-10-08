@@ -2,12 +2,13 @@
 id: 005-private-income-attachments
 unit: 002-monthly-income-api
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: should
-created: '2026-10-06T20:32:37Z'
+created: "2026-10-06T20:32:37Z"
 assigned_bolt: 015-income-attachments-api
-implemented: false
-requirements: [FR-06]
+implemented: true
+requirements:
+  - FR-06
 ---
 
 # Story: 005-private-income-attachments
@@ -20,11 +21,11 @@ requirements: [FR-06]
 
 ## Acceptance Criteria
 
-- [ ] **Given** an income entry, **when** I attach multiple PNG, JPG/JPEG, or PDF files, **then** every accepted file remains associated with that entry and household.
-- [ ] **Given** a file with an unsupported type or a file exceeding the designed limits, **when** I upload it, **then** the API rejects it safely and communicates the validation error.
-- [ ] **Given** a user authorized for the income, **when** they request its attachment, **then** the app serves the file only after authorization.
-- [ ] **Given** a different household or unauthorized role, **when** they request the file by URL or identifier, **then** access is denied and the file is not publicly reachable.
-- [ ] **Given** one upload fails in a multi-file submission, **when** the operation completes, **then** the documented all-or-partial save behavior is consistent and no orphaned file is left behind.
+- [x] **Given** an income entry, **when** I attach multiple PNG, JPG/JPEG, or PDF files, **then** every accepted file remains associated with that entry and household.
+- [x] **Given** a file with an unsupported type or a file exceeding the designed limits, **when** I upload it, **then** the API rejects it safely and communicates the validation error.
+- [x] **Given** a user authorized for the income, **when** they request its attachment, **then** the app serves the file only after authorization.
+- [x] **Given** a different household or unauthorized role, **when** they request the file by URL or identifier, **then** access is denied and the file is not publicly reachable.
+- [x] **Given** one upload fails in a multi-file submission, **when** the operation completes, **then** the documented all-or-partial save behavior is consistent and no orphaned file is left behind.
 
 ## Technical Notes
 
