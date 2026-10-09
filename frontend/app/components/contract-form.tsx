@@ -29,6 +29,8 @@ export function ContractForm({
   contract,
   converting,
   suggestedCompanyId,
+  suggestedMemberId,
+  suggestedStartDate,
   onAddCompany,
   onSaved,
   onConflict,
@@ -41,6 +43,8 @@ export function ContractForm({
   contract: Contract | null;
   converting: IncomeSource | null;
   suggestedCompanyId: string;
+  suggestedMemberId?: string | null;
+  suggestedStartDate?: string;
   onAddCompany: () => void;
   onSaved: (contract: Contract) => void;
   onConflict: () => void;
@@ -51,7 +55,7 @@ export function ContractForm({
     contract?.contract_type ?? "employment",
   );
   const activeMembers = members.filter((member) => member.is_active);
-  const selectedMember = contract?.member_id ?? converting?.member_id;
+  const selectedMember = contract?.member_id ?? converting?.member_id ?? suggestedMemberId;
   const archivedMember = members.find(
     (member) => member.id === selectedMember && !member.is_active,
   );
@@ -239,11 +243,12 @@ export function ContractForm({
                 name="start_date"
                 type="date"
                 required
-                defaultValue={contract?.start_date ?? converting?.start_date}
+                defaultValue={contract?.start_date ?? converting?.start_date ?? suggestedStartDate}
                 error={fields.start_date}
               />
               <Field
-                label="Data zakończenia umowy"
+                label="Data zakończenia umowy (opcjonalna)"
+                hint="Puste pole oznacza umowę na czas nieokreślony."
                 name="end_date"
                 type="date"
                 defaultValue={contract?.end_date ?? converting?.end_date ?? ""}

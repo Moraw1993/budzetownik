@@ -53,14 +53,15 @@ test("role loss after failed edit disables remaining writable controls", async (
   });
   await page.getByRole("button", { name: "Zapisz przychód", exact: true }).click();
   await expect(page.getByLabel("Faktyczna kwota przychodu")).toBeDisabled();
-  await expect(page.getByRole("button", { name: "+ Dodaj źródło do słownika" })).toBeDisabled();
+  await expect(page.getByLabel("Źródło dochodu", { exact: true })).toBeDisabled();
 });
 test("quick source creation protects navigation during a pending write", async ({ page }) => {
   const state = await mockPeriods(page);
   state.months[3].state = "active";
   await openMonth(page);
   await fillIncome(page);
-  await page.getByRole("button", { name: "+ Dodaj źródło do słownika" }).click();
+  await page.getByLabel("Źródło dochodu", { exact: true }).focus();
+  await page.getByLabel("Źródło dochodu", { exact: true }).selectOption("__create_source__");
   await expect(page.getByLabel("Rodzaj źródła")).toBeFocused();
   await page.getByLabel("Nazwa innego źródła").fill("Dodatkowa praca");
   await page.getByLabel("Kategoria", { exact: true }).fill("praca");
@@ -76,13 +77,15 @@ test("quick source creation protects navigation during a pending write", async (
   });
   await page.getByRole("button", { name: "Dodaj inne źródło", exact: true }).click();
   await expect(page.getByLabel("Rodzaj źródła")).toBeDisabled();
-  await expect(page.getByRole("button", { name: "Anuluj dodawanie źródła" })).toBeDisabled();
-  await page.getByRole("button", { name: "Zarządzanie rodziną", exact: true }).click();
   await expect(
-    page.getByText("Poczekaj na wynik trwającej operacji.", { exact: true }),
-  ).toBeVisible();
+    page
+      .getByRole("dialog", { name: "Nowe źródło dochodu" })
+      .getByRole("button", { name: "Anuluj", exact: true }),
+  ).toBeDisabled();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Nowe źródło dochodu" })).toBeVisible();
   release();
-  await expect(page.getByRole("heading", { name: "Dodaj źródło do słownika" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Nowe źródło dochodu" })).toHaveCount(0);
   await expect(page.getByLabel("Faktyczna kwota przychodu")).toHaveValue("8000,00");
   expect(state.incomes).toHaveLength(0);
 });

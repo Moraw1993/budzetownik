@@ -447,7 +447,10 @@ export function IncomeForm({
                 required
                 value={values.source_id}
                 error={fields.source_id}
-                onChange={(event) => change("source_id", event.target.value)}
+                onChange={(event) => {
+                  if (event.target.value === "__create_source__") setShowSource(true);
+                  else change("source_id", event.target.value);
+                }}
               >
                 <option value="">
                   {kind === "member" && !values.member_id
@@ -462,6 +465,9 @@ export function IncomeForm({
                     {source.contract ? " · " + source.contract.company_name : ""}
                   </option>
                 ))}
+                {canManage(context.household) && (
+                  <option value="__create_source__">+ Dodaj nowe źródło…</option>
+                )}
                 {sameHistoricRecipient &&
                   !options?.some((source) => source.id === baseline.source_id) && (
                     <option value={baseline.source_id}>
@@ -469,17 +475,6 @@ export function IncomeForm({
                     </option>
                   )}
               </SelectField>
-              <div className="field">
-                <span>Brakuje źródła?</span>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  disabled={showSource}
-                  onClick={() => setShowSource(true)}
-                >
-                  + Dodaj źródło do słownika
-                </Button>
-              </div>
               <Field
                 label="Faktyczna kwota przychodu"
                 name="amount"
@@ -564,6 +559,7 @@ export function IncomeForm({
           onPendingChange={setSourcePending}
           context={context}
           members={members}
+          memberId={values.member_id}
           onCancel={() => setShowSource(false)}
           onSaved={(id) => {
             setShowSource(false);

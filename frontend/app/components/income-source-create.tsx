@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   apiAllPages,
   householdPath,
@@ -12,17 +12,19 @@ import { ContractForm } from "./contract-form";
 import { OtherSourceForm } from "./other-source-form";
 import { CompanyDialog } from "./company-dialog";
 import { ConfirmAction } from "./periods-common";
-import { Button, Panel, SelectField } from "./ui";
+import { Button, SelectField } from "./ui";
 
 export function IncomeSourceCreate({
   context,
   members,
+  memberId,
   onSaved,
   onCancel,
   onPendingChange,
 }: {
   context: PeriodContext;
   members: HouseholdMember[];
+  memberId: string | null;
   onSaved: (id: string) => void;
   onCancel: () => void;
   onPendingChange: (pending: boolean) => void;
@@ -42,14 +44,14 @@ export function IncomeSourceCreate({
   const [company, setCompany] = useState("");
   const [dialog, setDialog] = useState(false);
   const [error, setError] = useState("");
-  const root = useRef<HTMLDivElement>(null);
-  const trigger = useRef<HTMLElement | null>(null);
+  const root = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   useEffect(() => {
-    trigger.current = document.activeElement as HTMLElement | null;
+    const previous = document.activeElement as HTMLElement | null;
+    root.current?.showModal();
     root.current?.querySelector<HTMLSelectElement>("select")?.focus();
-    root.current?.scrollIntoView({ block: "nearest" });
     return () => {
-      if (trigger.current?.isConnected) trigger.current.focus();
+      if (previous?.isConnected) previous.focus();
     };
   }, []);
   useEffect(() => {
@@ -69,13 +71,24 @@ export function IncomeSourceCreate({
     else run();
   }
   return (
-    <div
+    <dialog
       ref={root}
-      onChangeCapture={() => setDirty(true)}
+      className="income-source-dialog"
+      aria-labelledby={titleId}
+      onChangeCapture={(event) => {
+        if ((event.target as HTMLElement).closest("form")) setDirty(true);
+      }}
+      onCancel={(event) => {
+        if (event.target !== event.currentTarget) return;
+        event.preventDefault();
+        if (discard) setDiscard(null);
+        else if (!dialog) leave(onCancel);
+      }}
       onKeyDown={(event) => {
-        if (event.key === "Escape" && !dialog && !discard) {
+        if (event.key === "Escape" && discard) {
+          event.preventDefault();
           event.stopPropagation();
-          leave(onCancel);
+          setDiscard(null);
         }
       }}
     >
@@ -95,20 +108,21 @@ export function IncomeSourceCreate({
           }}
         />
       )}
-      <Panel
-        title="Dodaj źródło do słownika"
-        description="Zapis źródła nie dodaje przychodu. Dane przychodu pozostają w formularzu."
-        action={
+      <div inert={discard ? true : undefined}>
+        <div className="dialog-heading">
+          <div>
+            <h2 id={titleId}>Nowe źródło dochodu</h2>
+            <p className="muted">Dodaj do słownika. Przychód zapiszesz osobno.</p>
+          </div>
           <Button
             type="button"
             variant="secondary"
             disabled={pending}
             onClick={() => leave(onCancel)}
           >
-            Anuluj dodawanie źródła
+            Anuluj
           </Button>
-        }
-      >
+        </div>
         {error && (
           <p className="notice error" role="alert">
             {error}
@@ -120,7 +134,10 @@ export function IncomeSourceCreate({
           value={kind}
           onChange={(event) => {
             const next = event.target.value;
-            leave(() => setKind(next));
+            leave(() => {
+              setKind(next);
+              setDirty(false);
+            });
           }}
         >
           <option value="other">Inne źródło</option>
@@ -128,6 +145,9 @@ export function IncomeSourceCreate({
         </SelectField>
         {kind === "other" ? (
           <OtherSourceForm
+            compact
+            suggestedMemberId={memberId}
+            suggestedStartDate={context.month.month_start}
             onPendingChange={updatePending}
             household={context.household}
             members={members}
@@ -139,6 +159,8 @@ export function IncomeSourceCreate({
         ) : (
           <div id="contract-form">
             <ContractForm
+              suggestedMemberId={memberId}
+              suggestedStartDate={context.month.month_start}
               onPendingChange={updatePending}
               household={context.household}
               members={members}
@@ -153,19 +175,19 @@ export function IncomeSourceCreate({
             />
           </div>
         )}
-        {dialog && (
-          <CompanyDialog
-            onPendingChange={updatePending}
-            household={context.household}
-            refreshAccess={() => setError("Dostęp zmienił się. Odśwież aplikację.")}
-            onClose={() => setDialog(false)}
-            onCreated={(created) => {
-              setCompanies((current) => [...current, created]);
-              setCompany(created.id);
-            }}
-          />
-        )}
-      </Panel>
-    </div>
+      </div>
+      {dialog && (
+        <CompanyDialog
+          onPendingChange={updatePending}
+          household={context.household}
+          refreshAccess={() => setError("Dostęp zmienił się. Odśwież aplikację.")}
+          onClose={() => setDialog(false)}
+          onCreated={(created) => {
+            setCompanies((current) => [...current, created]);
+            setCompany(created.id);
+          }}
+        />
+      )}
+    </dialog>
   );
 }
