@@ -3,7 +3,7 @@ stage: plan
 bolt: 016-periods-income-ui
 created: "2026-10-09T05:36:59Z"
 version: sidebar-v3
-status: awaiting-checkpoint
+status: accepted
 base: 29fc7e3744e11c3a8c48932e816ca2d4e01a59b8
 ---
 
@@ -15,7 +15,7 @@ Użytkownik wybiera rok i miesiąc, świadomie zarządza stanem okresu, zapisuje
 
 Wersja sidebar-v3 zachowuje obecny HouseholdShell: granatowy sidebar 248 px, topbar, nazwę Domowe Finanse, selektor gospodarstwa i jasną treść. Jedyna nowa pozycja nawigacyjna to „Okresy i przychody”. Kanwy PNG z 8 października są wyłącznie inspiracją — użytkownik potwierdził 9 października pozostawienie sidebaru. Ich górna nawigacja nie jest częścią projektu.
 
-Aktualny etap to Plan. Przed kodem produkcyjnym wymagane są ocena rzeczywistych wizualizacji przez osobnego subagenta (każdy widok >7,5/10 bez blokad) oraz jawna akceptacja tej wersji przez użytkownika. Kontynuacja nie jest traktowana jako akceptacja jeszcze nieocenionego projektu. Odizolowane HTML/CSS w evidence są wizualizacją, nie integracją do aplikacji.
+Plan sidebar-v3 zaakceptowano komendą „rozpocznij implementacje”; aktualny etap to Implement. Przed kodem produkcyjnym wymagane są ocena rzeczywistych wizualizacji przez osobnego subagenta (każdy widok >7,5/10 bez blokad) oraz jawna akceptacja tej wersji przez użytkownika. Kontynuacja nie jest traktowana jako akceptacja jeszcze nieocenionego projektu. Odizolowane HTML/CSS w evidence są wizualizacją, nie integracją do aplikacji.
 
 ## Zakres i mapa widoków
 
@@ -146,7 +146,7 @@ Kalendarz dzienny wydarzeń, wydatki, konwersja walut, automatyczne generowanie 
 - Wersja: sidebar-v3; wszystkie pięć ekranów i pomocnicze panele wymagają oceny.
 - Raport niezależny: evidence/ui-design/sidebar-v3/review.md (powstanie po ocenie).
 - Próg: wynik każdego widoku, nie średnia całej aplikacji, >7,5 i brak blokad.
-- Zgoda użytkownika na konkretną ocenioną wersję: oczekuje.
+- Zgoda użytkownika na konkretną ocenioną wersję: udzielona przed implementacją.
 
 ## Poprawki po niezależnym review v2
 
@@ -155,3 +155,5 @@ Wersja v2 miała dwa blokujące braki wizualizacji formularza. V3 zawiera I-unkn
 I-conflict pokazuje dwa zestawy danych (szkic / aktualny zapis) z kwotą i datą oraz odbiorcą/źródłem. I-merge zaczyna od aktualnych danych i oczekuje ręcznego wyboru; PATCH używa nowo pobranej wersji. Kolejny konflikt ponownie porównuje, nigdy automatycznie nie nadpisuje. I-edit obejmuje odbiorcę i źródło, z zachowaniem historycznych powiązań przy zmianie innych pól. I-unsaved-changes pokazuje potwierdzenie utraty szkicu. Pasek „Podglądy ekranów” i stos wariantów należą tylko do narzędzia oceny, nie do produkcyjnej nawigacji.
 
 V3 dodatkowo rozdziela sukces usunięcia załącznika od uploadu i pokazuje A-long/S-boundary dla długiej nazwy i kwoty granicznej na mobile. CSS pozwala zawinąć długi basename oraz wszystkie cyfry dużej kwoty bez overflow strony.
+
+Akceptacja nie zmienia projektu sidebar-v3. Hash planu w historycznej recenzji odpowiada snapshotowi commita 7a9dfd8 sprzed aktualizacji metadanych postępu.

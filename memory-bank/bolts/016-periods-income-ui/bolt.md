@@ -59,7 +59,7 @@ Zrealizować FR-01–FR-08 po stronie widocznych przepływów i spełnić pięć
 
 **Type**: Simple Construction Bolt (`simple-construction-bolt`).
 
-- [ ] 1. Plan → `implementation-plan.md`
+- [x] 1. Plan → `implementation-plan.md`
 - [ ] 2. Implement → source code and `implementation-walkthrough.md`
 - [ ] 3. Test → tests and `test-walkthrough.md`
 
@@ -87,3 +87,5 @@ Zrealizować FR-01–FR-08 po stronie widocznych przepływów i spełnić pięć
 Plan checkpoint prepared at 2026-10-09T06:07:09Z: implementation-plan.md and evidence/ui-design/sidebar-v3. Independent reviewer /root/review_ui016 accepted each view at 8.4–8.5/10 and all auxiliary panels above 7.5. The user's earlier PNG canvases were exploratory; the existing sidebar/topbar is preserved. Source hashes and 27 real CUA captures are recorded in review.md. Human acceptance of sidebar-v3 is pending; current_stage remains plan and production implementation has not started.
 
 User approved sidebar-v3 and requested implementation at 2026-10-09T06:21:19Z. Plan gate passed; production implementation begins. Prototype-only navigation is excluded.
+
+Implementation delivered at 2026-10-09T13:25:00Z, commit 3c0d1b5. Quality/build PASS; frontend tests 67 passed, 8 environment-gated skipped. Awaiting human Implement checkpoint; current_stage remains implement. Test and 017 are not complete.
