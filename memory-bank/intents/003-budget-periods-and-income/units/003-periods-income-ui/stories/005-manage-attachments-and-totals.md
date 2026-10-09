@@ -2,12 +2,14 @@
 id: 005-manage-attachments-and-totals
 unit: 003-periods-income-ui
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: should
-created: '2026-10-06T20:32:37Z'
+created: "2026-10-06T20:32:37Z"
 assigned_bolt: 016-periods-income-ui
-implemented: false
-requirements: [FR-06, FR-08]
+implemented: true
+requirements:
+  - FR-06
+  - FR-08
 ---
 
 # Story: 005-manage-attachments-and-totals
@@ -33,18 +35,20 @@ Follow the accepted design system and accessible labels for file controls, summa
 ## Dependencies
 
 ### Requires
+
 - 004-enter-income-details.
 - 004-period-totals-by-currency and 005-private-income-attachments in 002-monthly-income-api.
 
 ### Enables
+
 - 002-income-journey-attachments in 004-periods-income-acceptance.
 
 ## Edge Cases
 
-| Scenario | Expected Behavior |
-| --- | --- |
-| No income exists | Show a clear empty state and per-currency totals as defined by the API. |
-| Attachment download expires or is denied | Show a recoverable access error without exposing a public URL. |
+| Scenario                                 | Expected Behavior                                                       |
+| ---------------------------------------- | ----------------------------------------------------------------------- |
+| No income exists                         | Show a clear empty state and per-currency totals as defined by the API. |
+| Attachment download expires or is denied | Show a recoverable access error without exposing a public URL.          |
 
 ## Out of Scope
 

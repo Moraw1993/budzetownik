@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   api,
   apiAllPages,
@@ -15,7 +15,8 @@ import {
   type IncomeSource,
 } from "../lib/api";
 import { formatMoney } from "../lib/money";
-import { CompanyCreateForm, CompanyPanel } from "./company-panel";
+import { CompanyPanel } from "./company-panel";
+import { CompanyDialog } from "./company-dialog";
 import { ContractForm } from "./contract-form";
 import { ActionForm, Button, Panel } from "./ui";
 
@@ -57,7 +58,6 @@ export function ContractPanel({
   const [showCompanies, setShowCompanies] = useState(false);
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
   const [suggestedCompanyId, setSuggestedCompanyId] = useState("");
-  const companyDialogRef = useRef<HTMLDialogElement>(null);
   const canEdit = household.role === "owner" || household.role === "administrator";
   const formTarget = converting?.id ?? editing?.id ?? (creating ? "new" : "");
   const formReady = data !== null;
@@ -85,13 +85,6 @@ export function ContractPanel({
     if (formTarget && formReady)
       document.querySelector<HTMLSelectElement>('#contract-form select[name="member_id"]')?.focus();
   }, [formTarget, formReady]);
-
-  useEffect(() => {
-    if (companyDialogOpen) {
-      companyDialogRef.current?.showModal();
-      companyDialogRef.current?.querySelector<HTMLInputElement>('input[name="name"]')?.focus();
-    }
-  }, [companyDialogOpen]);
 
   useEffect(() => {
     if (suggestedCompanyId)
@@ -345,44 +338,17 @@ export function ContractPanel({
         />
       )}
       {companyDialogOpen && (
-        <dialog
-          ref={companyDialogRef}
-          className="company-dialog"
-          aria-labelledby="company-dialog-title"
-          onClose={() => {
-            setCompanyDialogOpen(false);
-            requestAnimationFrame(() => {
-              document
-                .querySelector<HTMLSelectElement>('#contract-form select[name="company_id"]')
-                ?.focus();
-            });
+        <CompanyDialog
+          household={household}
+          refreshAccess={refreshAccess}
+          onClose={() => setCompanyDialogOpen(false)}
+          onCreated={(company) => {
+            setData((current) =>
+              current ? { ...current, companies: [...current.companies, company] } : current,
+            );
+            setSuggestedCompanyId(company.id);
           }}
-        >
-          <div className="dialog-heading">
-            <div>
-              <h2 id="company-dialog-title">Nowa firma</h2>
-              <p className="muted">Podaj nazwę firmy. Po zapisaniu wybierzemy ją w umowie.</p>
-            </div>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => companyDialogRef.current?.close()}
-            >
-              Anuluj
-            </Button>
-          </div>
-          <CompanyCreateForm
-            household={household}
-            refreshAccess={refreshAccess}
-            onCreated={(company) => {
-              setData((current) =>
-                current ? { ...current, companies: [...current.companies, company] } : current,
-              );
-              setSuggestedCompanyId(company.id);
-              companyDialogRef.current?.close();
-            }}
-          />
-        </dialog>
+        />
       )}
     </div>
   );

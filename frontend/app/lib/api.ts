@@ -159,6 +159,11 @@ function errorFromResponse(status: number, body: unknown): ApiError {
           "gross_amount",
           "gross_basis",
           "expected_version",
+          "calendar_year",
+          "source_id",
+          "amount",
+          "receipt_date",
+          "files",
         ].includes(key)
       ) {
         const text = Array.isArray(value) ? value.join(" ") : value;
@@ -189,17 +194,23 @@ function errorFromResponse(status: number, body: unknown): ApiError {
   );
 }
 
-export async function api<T>(
-  path: string,
-  options: { method?: string; data?: unknown; signal?: AbortSignal } = {},
-): Promise<T> {
+type ApiOptions = {
+  method?: string;
+  data?: unknown;
+  signal?: AbortSignal;
+  headers?: Record<string, string>;
+  expectedStatus?: number;
+  responseType?: "json" | "blob";
+};
+
+async function apiRequest(path: string, options: ApiOptions): Promise<unknown> {
   const method = options.method ?? "GET";
-  const headers: Record<string, string> = { Accept: "application/json" };
+  const headers: Record<string, string> = { Accept: "application/json", ...options.headers };
+  const multipart = options.data instanceof FormData;
   if (method !== "GET") {
-    // Fetch a fresh token for every write, including after Django rotates the session.
     const setup = await api<{ csrf_token: string }>("/auth/setup/", { signal: options.signal });
     headers["X-CSRFToken"] = setup.csrf_token;
-    headers["Content-Type"] = "application/json";
+    if (!multipart) headers["Content-Type"] = "application/json";
   }
   let response: Response;
   try {
@@ -208,23 +219,40 @@ export async function api<T>(
       headers,
       credentials: "same-origin",
       cache: "no-store",
-      body: options.data === undefined ? undefined : JSON.stringify(options.data),
+      body:
+        options.data === undefined
+          ? undefined
+          : multipart
+            ? (options.data as FormData)
+            : JSON.stringify(options.data),
       signal: options.signal
         ? AbortSignal.any([options.signal, AbortSignal.timeout(15000)])
         : AbortSignal.timeout(15000),
     });
+    if (!response.ok) {
+      throw errorFromResponse(response.status, await response.json().catch(() => null));
+    }
+    if (options.expectedStatus && response.status !== options.expectedStatus) {
+      throw new ApiError(0, "Otrzymano nieoczekiwaną odpowiedź. Sprawdź wynik operacji.");
+    }
+    if (response.status === 204) return undefined;
+    if (options.responseType === "blob") return await response.blob();
+    const body: unknown = await response.json();
+    if (body === null)
+      throw new ApiError(0, "Otrzymano nieprawidłową odpowiedź. Sprawdź wynik operacji.");
+    return body;
   } catch (error) {
-    if (options.signal?.aborted) throw error;
-    throw new ApiError(
-      0,
-      "Nie można połączyć się z aplikacją. Sprawdź, czy jest uruchomiona, i ponów próbę.",
-    );
+    if (options.signal?.aborted || error instanceof ApiError) throw error;
+    throw new ApiError(0, "Nie można potwierdzić wyniku operacji. Sprawdź połączenie i dane.");
   }
-  const body: unknown =
-    response.status === 204 ? undefined : await response.json().catch(() => null);
-  if (!response.ok) throw errorFromResponse(response.status, body);
-  if (body === null) throw new ApiError(0, "Otrzymano nieprawidłową odpowiedź. Spróbuj ponownie.");
-  return body as T;
+}
+
+export async function api<T>(path: string, options: ApiOptions = {}): Promise<T> {
+  return (await apiRequest(path, options)) as T;
+}
+
+export async function apiBlob(path: string, signal?: AbortSignal): Promise<Blob> {
+  return (await apiRequest(path, { signal, responseType: "blob" })) as Blob;
 }
 
 export function messageOf(error: unknown): string {

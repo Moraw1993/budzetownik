@@ -5,16 +5,19 @@ import { api, householdPath, type Company, type Household } from "../lib/api";
 import { ActionForm, Button, Field, Panel } from "./ui";
 
 export function CompanyCreateForm({
+  onPendingChange,
   household,
   onCreated,
   refreshAccess,
 }: {
+  onPendingChange?: (pending: boolean) => void;
   household: Household;
   onCreated: (company: Company) => void;
   refreshAccess: () => void;
 }) {
   return (
     <ActionForm
+      onPendingChange={onPendingChange}
       submit="Dodaj firmę"
       onDenied={refreshAccess}
       action={async (form) => {

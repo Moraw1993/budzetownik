@@ -3,10 +3,10 @@ unit: 003-periods-income-ui
 intent: 003-budget-periods-and-income
 unit_type: frontend
 default_bolt_type: simple-construction-bolt
-phase: inception
-status: draft
-created: '2026-10-06T20:32:37Z'
-updated: '2026-10-06T20:32:37Z'
+phase: construction
+status: complete
+created: "2026-10-06T20:32:37Z"
+updated: "2026-10-09T14:07:28Z"
 ---
 
 # Interfejs okresów i przychodów
@@ -35,11 +35,11 @@ Zależy od 001-periods-api i 002-monthly-income-api oraz istniejącego 002-famil
 
 Łącznie 4 stories Must i 1 Should; wszystkie w planowanym bolcie 016.
 
-- [ ] **001-navigate-periods** — Must — 016-periods-income-ui
-- [ ] **002-change-period-state** — Must — 016-periods-income-ui
-- [ ] **003-add-income-recipient-source** — Must — 016-periods-income-ui
-- [ ] **004-enter-income-details** — Must — 016-periods-income-ui
-- [ ] **005-manage-attachments-and-totals** — Should — 016-periods-income-ui
+- [x] **001-navigate-periods** — Must — 016-periods-income-ui
+- [x] **002-change-period-state** — Must — 016-periods-income-ui
+- [x] **003-add-income-recipient-source** — Must — 016-periods-income-ui
+- [x] **004-enter-income-details** — Must — 016-periods-income-ui
+- [x] **005-manage-attachments-and-totals** — Should — 016-periods-income-ui
 
 ## Wyłączenia
 

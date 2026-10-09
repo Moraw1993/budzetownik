@@ -1,0 +1,135 @@
+.periods-workspace {
+  min-width: 0;
+}
+
+.period-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.period-breadcrumbs .button {
+  padding: 8px 12px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.period-breadcrumbs .button[aria-current="page"] {
+  background: var(--color-primary-soft);
+}
+
+.period-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.period-grid > .panel {
+  min-width: 0;
+  margin-bottom: 0;
+  padding: 24px;
+}
+
+.period-grid .row-actions {
+  margin-top: 16px;
+}
+
+.period-state {
+  margin-bottom: 8px;
+}
+
+.period-active {
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.period-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.period-summary > .panel {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.period-totals,
+.period-files {
+  padding: 0;
+  list-style: none;
+}
+
+.period-totals li {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.period-amount {
+  font-weight: 700;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.period-totals .period-amount {
+  font-size: 26px;
+}
+
+.period-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.period-form-grid > .field {
+  align-self: start;
+}
+
+.period-form-grid input,
+.period-form-grid select {
+  height: 46px;
+}
+
+.period-files li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.period-files li > div {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.period-file-name {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+@media (width <= 1200px) {
+  .period-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 480px) {
+  .period-grid,
+  .period-summary,
+  .period-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .period-grid > .panel {
+    padding: 20px;
+  }
+
+  .period-files .row-actions {
+    width: 100%;
+  }
+}

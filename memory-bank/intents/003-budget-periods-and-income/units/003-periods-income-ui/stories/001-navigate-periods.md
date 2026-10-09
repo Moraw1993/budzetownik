@@ -2,12 +2,14 @@
 id: 001-navigate-periods
 unit: 003-periods-income-ui
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: must
-created: '2026-10-06T20:32:37Z'
+created: "2026-10-06T20:32:37Z"
 assigned_bolt: 016-periods-income-ui
-implemented: false
-requirements: [FR-01, FR-02]
+implemented: true
+requirements:
+  - FR-01
+  - FR-02
 ---
 
 # Story: 001-navigate-periods
@@ -32,18 +34,20 @@ Follow the current light-background visual system, responsive layout, and existi
 ## Dependencies
 
 ### Requires
+
 - 001-create-year-months in 001-periods-api.
 
 ### Enables
+
 - 002-change-period-state.
 - 001-period-role-lifecycle in acceptance.
 
 ## Edge Cases
 
-| Scenario | Expected Behavior |
-| --- | --- |
+| Scenario           | Expected Behavior                                                             |
+| ------------------ | ----------------------------------------------------------------------------- |
 | Year list is empty | Explain the empty state and offer year creation only to an authorized editor. |
-| Narrow viewport | Months remain readable and navigable without horizontal clipping. |
+| Narrow viewport    | Months remain readable and navigable without horizontal clipping.             |
 
 ## Out of Scope
 

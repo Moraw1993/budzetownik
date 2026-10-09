@@ -23,6 +23,10 @@ export function Application({ invitation = false }: { invitation?: boolean }) {
   const selectedMembership = useRef<string | undefined>(undefined);
   const selectedSection = useRef<HouseholdSection>("family");
   const generation = useRef(0);
+  const editing = useRef(false);
+  const onEditing = useCallback((value: boolean) => {
+    editing.current = value;
+  }, []);
   const controller = useRef<AbortController | null>(null);
 
   const refresh = useCallback(async (membershipId?: string) => {
@@ -90,6 +94,7 @@ export function Application({ invitation = false }: { invitation?: boolean }) {
     }
     function visibility() {
       if (document.visibilityState === "hidden") hide();
+      else if (editing.current) document.documentElement.classList.remove("session-hidden");
       else void refresh();
     }
     window.addEventListener("pagehide", hide);
@@ -164,6 +169,7 @@ export function Application({ invitation = false }: { invitation?: boolean }) {
           preferredSection={session.preferredSection}
           refresh={refresh}
           logout={logout}
+          onEditing={onEditing}
           onSelect={(membershipId) => {
             selectedMembership.current = membershipId;
           }}

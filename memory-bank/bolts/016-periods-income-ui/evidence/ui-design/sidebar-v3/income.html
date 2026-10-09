@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dodaj przychód — podgląd bolta 016</title>
+    <link rel="stylesheet" href="preview.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">⌂ Domowe Finanse</div>
+        <p class="hint">PRZESTRZEŃ DOMOWA</p>
+        <nav aria-label="Sekcje gospodarstwa">
+          <a href="#content">Gospodarstwa</a>
+          <a href="#content">Zarządzanie rodziną</a>
+          <a href="years.html" class="active" aria-current="page">Okresy i przychody</a>
+          <a href="#content">Ustawienia</a>
+        </nav>
+      </aside>
+      <div class="workspace">
+        <header class="topbar">
+          <span>Gospodarstwa / Przykładowy dom / Okresy i przychody</span
+          ><span>Użytkownik demo · Wyloguj się</span>
+        </header>
+        <main class="content" id="content">
+          <div class="prototype-note">
+            Podgląd projektu sidebar-v3 · dane przykładowe · pola i odnośniki demonstrują układ, nie
+            zapisują danych.
+          </div>
+          <div class="context">
+            <div>
+              <p class="eyebrow">PRZYKŁADOWY DOM</p>
+              <h1>Dodaj przychód</h1>
+            </div>
+            <div class="field">
+              <label
+                >Aktywne gospodarstwo<select>
+                  <option>Przykładowy dom</option>
+                </select></label
+              >
+            </div>
+          </div>
+          <nav class="preview-nav" aria-label="Podglądy ekranów">
+            <a class="button" href="years.html">Lata</a>
+            <a class="button" href="months.html">Miesiące</a>
+            <a class="button primary" href="income.html">Formularz</a>
+            <a class="button" href="summary.html">Podsumowanie</a>
+            <a class="button" href="attachments.html">Załączniki</a>
+          </nav>
+          <p class="muted">Rok 2026 / Kwiecień <span class="badge active">Aktywny</span></p>
+          <section class="card stack">
+            <h2>Dane przychodu</h2>
+            <fieldset>
+              <legend>Odbiorca przychodu</legend>
+              <div class="radios">
+                <label><input type="radio" name="recipient" checked /> Osoba</label
+                ><label><input type="radio" name="recipient" /> Gospodarstwo domowe</label>
+              </div>
+            </fieldset>
+            <div class="fields">
+              <div class="field">
+                <label
+                  >Osoba<select>
+                    <option>Arek</option>
+                    <option>Dominika</option>
+                  </select></label
+                >
+              </div>
+              <div class="field">
+                <div class="field">
+                  <label
+                    >Źródło przychodu<select>
+                      <option>Wybierz źródło</option>
+                      <option>Wynagrodzenie · Firma A</option>
+                      <option>Dodatkowa praca</option>
+                    </select></label
+                  >
+                </div>
+                <a class="button" href="#I-source">+ Nowe źródło</a>
+              </div>
+            </div>
+            <div class="notice" role="status">
+              Umowa aktywna w tym okresie: Firma A · Umowa o pracę. Kwota brutto to informacja z
+              umowy — nie wypełniamy nią kwoty przychodu.
+            </div>
+            <div class="fields">
+              <div class="field">
+                <label>Faktycznie otrzymana kwota<input type="text" value="" /></label
+                ><span class="hint">Np. 8 000,00. Kwotę wpisujesz samodzielnie.</span>
+              </div>
+              <div class="field">
+                <label>Waluta<input type="text" value="PLN" /></label
+                ><span class="hint">Trzy litery, np. PLN lub EUR.</span>
+              </div>
+              <div class="field">
+                <label>Data otrzymania<input type="date" value="2026-03-30" /></label
+                ><span class="hint">Może być poza kwietniem; okres pozostanie wybrany jawnie.</span>
+              </div>
+            </div>
+            <div>
+              <h3>Pliki do dodania po zapisaniu przychodu</h3>
+              <label
+                >Wybierz potwierdzenia<input type="file" multiple accept=".png,.jpg,.jpeg,.pdf"
+              /></label>
+              <p class="hint">PNG, JPG/JPEG, PDF · 1–5 plików, do 10 MiB/plik i 25 MiB łącznie.</p>
+            </div>
+            <div class="actions">
+              <a class="button primary" href="#I-success">Zapisz przychód</a
+              ><a class="button" href="summary.html">Anuluj</a>
+            </div>
+          </section>
+          <div class="variants">
+            <h2>Stany i interakcje — wizualizacja</h2>
+            <section class="card variant" id="I-source">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-source</p>
+              <h2>Dodaj źródło do słownika</h2>
+              <p>
+                Przychód i wybrane pliki pozostają w formularzu. Zapis źródła nie zapisuje
+                przychodu.
+              </p>
+              <div class="actions">
+                <a class="button primary" href="#I-source">Inne źródło</a
+                ><a class="button" href="#I-contract">Umowa</a>
+              </div>
+              <br />
+              <div class="fields">
+                <div class="field">
+                  <label
+                    >Przypisz źródło do<select>
+                      <option>Arek</option>
+                      <option>Całe gospodarstwo</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label>Nazwa innego źródła<input type="text" value="Dodatkowa praca" /></label>
+                </div>
+                <div class="field">
+                  <label>Kategoria<input type="text" value="Praca dodatkowa" /></label>
+                </div>
+                <div class="field">
+                  <label>Płatnik<input type="text" value="Firma C" /></label>
+                </div>
+                <div class="field">
+                  <label
+                    >Częstotliwość<select>
+                      <option>Nieregularnie</option>
+                      <option>Miesięcznie</option>
+                      <option>Jednorazowo</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label>Data rozpoczęcia<input type="date" value="2026-04-01" /></label>
+                </div>
+                <div class="field">
+                  <label>Data zakończenia<input type="date" value="" /></label>
+                </div>
+                <div class="field">
+                  <label>Opcjonalna podpowiedź miesięczna<input type="text" value="" /></label
+                  ><span class="hint">Nie jest faktycznym przychodem.</span>
+                </div>
+                <div class="field">
+                  <label>Waluta<input type="text" value="PLN" /></label>
+                </div>
+              </div>
+              <label><input type="checkbox" class="source-regular" /> Źródło regularne</label>
+              <div class="field">
+                <label>Opis<textarea rows="2"></textarea></label>
+              </div>
+              <div class="actions">
+                <a class="button primary" href="#I-source-success">Dodaj inne źródło</a
+                ><a class="button" href="#content">Anuluj</a>
+              </div>
+            </section>
+            <section class="card variant" id="I-contract">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-contract</p>
+              <h2>Dodaj umowę</h2>
+              <p>
+                Reużycie istniejącego formularza umowy. Po zapisaniu wrócisz do bieżącego przychodu.
+              </p>
+              <div class="fields">
+                <div class="field">
+                  <label
+                    >Osoba umowy<select>
+                      <option>Arek</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label
+                    >Firma<select>
+                      <option>Firma A</option>
+                      <option>Firma C</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label>Nazwa umowy<input type="text" value="Wynagrodzenie" /></label>
+                </div>
+                <div class="field">
+                  <label
+                    >Typ umowy<select>
+                      <option>Umowa o pracę</option>
+                      <option>Umowa zlecenie</option>
+                      <option>Umowa o dzieło</option>
+                      <option>Inny</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label>Stanowisko<input type="text" value="Specjalista" /></label>
+                </div>
+                <div class="field">
+                  <label>Kwota brutto z umowy<input type="text" value="10000,00" /></label>
+                </div>
+                <div class="field">
+                  <label
+                    >Podstawa kwoty brutto<select>
+                      <option>Miesięcznie</option>
+                      <option>Godzinowo</option>
+                      <option>Łącznie</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label>Waluta umowy<input type="text" value="PLN" /></label>
+                </div>
+                <div class="field">
+                  <label>Data rozpoczęcia<input type="date" value="2026-01-01" /></label>
+                </div>
+                <div class="field">
+                  <label>Data zakończenia<input type="date" value="" /></label>
+                </div>
+              </div>
+              <div class="actions">
+                <a class="button" href="#I-company">+ Nowa firma</a
+                ><a class="button primary" href="#I-source-success">Dodaj umowę</a
+                ><a class="button" href="#content">Anuluj</a>
+              </div>
+            </section>
+            <section class="card variant" id="I-company">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-company</p>
+              <h2>Nowa firma</h2>
+              <p>Istniejący wzorzec dialogu firmy; zachowuje szkic umowy i przychodu.</p>
+              <div class="field">
+                <label>Nazwa firmy<input type="text" value="Firma C" /></label>
+              </div>
+              <div class="actions">
+                <a class="button primary" href="#I-contract">Dodaj firmę</a
+                ><a class="button" href="#I-contract">Anuluj</a>
+              </div>
+            </section>
+            <section class="card variant" id="I-source-success">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-source-success</p>
+              <h2>Źródło zapisane</h2>
+              <div class="notice" role="status">
+                Nowa pozycja jest w słowniku. Zostanie wybrana po potwierdzeniu dostępności dla
+                osoby i okresu.
+              </div>
+              <div class="notice error" role="alert">
+                Jeżeli nie pasuje: Źródło zapisane, ale nie jest dostępne w tym okresie.
+              </div>
+            </section>
+            <section class="card variant" id="I-source-loading">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-source-loading</p>
+              <h2>Ładowanie źródeł</h2>
+              <p role="status">Wczytujemy źródła dla wybranego odbiorcy i okresu…</p>
+            </section>
+            <section class="card variant" id="I-empty">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-empty</p>
+              <h2>Brak dostępnych źródeł</h2>
+              <p>Brak umów i innych źródeł dla osoby w tym okresie.</p>
+              <a class="button" href="#I-source">Nowe źródło</a>
+            </section>
+            <section class="card variant" id="I-error">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-error</p>
+              <h2>Popraw dane</h2>
+              <div class="field">
+                <label
+                  >Faktycznie otrzymana kwota<input
+                    value="0"
+                    aria-invalid="true"
+                    aria-describedby="amount-error" /></label
+                ><span class="field-error" id="amount-error"
+                  >Kwota musi być większa od zera, z maksymalnie dwoma miejscami po przecinku.</span
+                >
+              </div>
+              <div class="notice error" role="alert">
+                Nie zapisano przychodu. Dane i wybrane pliki są zachowane.
+              </div>
+            </section>
+            <section class="card variant" id="I-conflict">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-conflict</p>
+              <h2>Porównaj zmiany przychodu</h2>
+              <div class="notice error" role="alert">
+                Inny użytkownik zmienił ten wpis. Twój szkic nie został zapisany. Żadne wartości nie
+                zostaną nadpisane automatycznie.
+              </div>
+              <div class="grid two">
+                <section>
+                  <h3>Twój niezapisany szkic</h3>
+                  <p>Odbiorca: Arek</p>
+                  <p>Źródło: Wynagrodzenie · Firma A</p>
+                  <p><strong>Kwota: 8 200,00 PLN</strong></p>
+                  <p><strong>Otrzymano: 30.03.2026</strong></p>
+                </section>
+                <section>
+                  <h3>Aktualny zapis</h3>
+                  <p>Odbiorca: Arek</p>
+                  <p>Źródło: Wynagrodzenie · Firma A</p>
+                  <p><strong>Kwota: 8 100,00 PLN</strong></p>
+                  <p><strong>Otrzymano: 31.03.2026</strong></p>
+                </section>
+              </div>
+              <div class="actions">
+                <a class="button primary" href="#I-merge">Połącz zmiany ręcznie</a
+                ><a class="button" href="summary.html">Zachowaj aktualny zapis i porzuć szkic</a>
+              </div>
+            </section>
+            <section class="card variant" id="I-merge">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-merge</p>
+              <h2>Połącz zmiany ręcznie</h2>
+              <p>
+                Formularz poniżej zaczyna od aktualnych danych. Twój szkic jest nadal widoczny
+                powyżej. Samodzielnie wybierz wartości, które chcesz zapisać.
+              </p>
+              <div class="fields">
+                <div class="field">
+                  <label
+                    >Odbiorca<select>
+                      <option>Arek</option>
+                      <option>Dominika</option>
+                      <option>Gospodarstwo domowe</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label
+                    >Źródło przychodu<select>
+                      <option>Wynagrodzenie · Firma A</option>
+                      <option>Dodatkowa praca</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label>Kwota<input type="text" value="8100,00" /></label>
+                </div>
+                <div class="field">
+                  <label>Waluta<input type="text" value="PLN" /></label>
+                </div>
+                <div class="field">
+                  <label>Data otrzymania<input type="date" value="2026-03-31" /></label>
+                </div>
+              </div>
+              <div class="actions">
+                <a class="button primary" href="#I-success">Zapisz wybrane zmiany</a
+                ><a class="button" href="#I-conflict">Anuluj i zachowaj szkic</a>
+              </div>
+              <p class="hint">
+                Ponowny konflikt wróci do porównania. Zamknięcie miesiąca zablokuje zapis.
+              </p>
+            </section>
+            <section class="card variant" id="I-edit">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-edit</p>
+              <h2>Edytuj przychód</h2>
+              <p>
+                Dotychczasowy odbiorca: Arek · Źródło: Wynagrodzenie · Firma A. Niezmienione
+                powiązania zachowują dane historyczne.
+              </p>
+              <div class="fields">
+                <div class="field">
+                  <label
+                    >Odbiorca przychodu<select>
+                      <option>Osoba: Arek (dotychczasowy)</option>
+                      <option>Osoba: Dominika</option>
+                      <option>Gospodarstwo domowe</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label
+                    >Źródło przychodu<select>
+                      <option>Wynagrodzenie · Firma A (dotychczasowe)</option>
+                      <option>Dodatkowa praca</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field">
+                  <label>Faktycznie otrzymana kwota<input type="text" value="8000,00" /></label>
+                </div>
+                <div class="field">
+                  <label>Waluta<input type="text" value="PLN" /></label>
+                </div>
+                <div class="field">
+                  <label>Data otrzymania<input type="date" value="2026-03-30" /></label>
+                </div>
+              </div>
+              <p class="hint">
+                Zmiana odbiorcy wymaga ponownego wyboru dostępnego źródła. Archiwalne powiązanie
+                można zachować przy zmianie kwoty/daty; wybór nowego musi być aktywny w okresie.
+              </p>
+              <div class="actions">
+                <a class="button primary" href="#I-success">Zapisz zmiany</a
+                ><a class="button" href="summary.html">Anuluj</a>
+              </div>
+            </section>
+            <section class="card variant" id="I-unknown">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-unknown</p>
+              <h2>Nie znamy wyniku zapisu przychodu</h2>
+              <div class="notice error" role="alert">
+                Połączenie zostało przerwane. Przychód mógł zostać zapisany. Nie dodawaj drugiego
+                wpisu.
+              </div>
+              <p>
+                Poprzednia próba: Arek · Wynagrodzenie · Firma A · 8 000,00 PLN · otrzymano
+                30.03.2026 · rozliczenie kwiecień 2026.
+              </p>
+              <p>
+                Najpierw sprawdzimy i dokończymy tę samą próbę zapisu. Dopóki wynik jest nieznany,
+                dane tej próby są zablokowane, a pliki nie są wysyłane.
+              </p>
+              <div class="actions">
+                <a class="button primary" href="#I-checking">Sprawdź i dokończ poprzedni zapis</a
+                ><a class="button" href="summary.html">Zobacz listę przychodów</a>
+              </div>
+            </section>
+            <section class="card variant" id="I-checking">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-checking</p>
+              <h2>Sprawdzamy poprzedni zapis</h2>
+              <p role="status">
+                Ponawiamy tę samą próbę bez tworzenia drugiego wpisu. Poczekaj na potwierdzenie
+                wyniku.
+              </p>
+              <p class="hint">Nie wysyłamy jeszcze załączników.</p>
+            </section>
+            <section class="card variant" id="I-recovered">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-recovered</p>
+              <h2>Wynik poprzedniej próby potwierdzony</h2>
+              <div class="notice" role="status">
+                Przychód został zapisany: Arek · 8 000,00 PLN. Nie utworzono drugiego wpisu.
+              </div>
+              <div class="actions">
+                <a class="button" href="summary.html">Zobacz przychód</a
+                ><a class="button" href="attachments.html">Przejdź do załączników</a>
+              </div>
+            </section>
+            <section class="card variant" id="I-unsaved-changes">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-unsaved-changes</p>
+              <h2>Opuścić formularz?</h2>
+              <p>
+                Masz niezapisane zmiany. Po opuszczeniu formularza szkic i wybrane pliki zostaną
+                utracone.
+              </p>
+              <div class="actions">
+                <a class="button primary" href="#content">Zostań w formularzu</a
+                ><a class="button danger" href="summary.html">Porzuć zmiany</a>
+              </div>
+            </section>
+            <section class="card variant" id="I-success">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-success</p>
+              <h2>Przychód zapisany</h2>
+              <div class="notice" role="status">
+                Zapisano przychód: Arek · 8 000,00 PLN. Pliki są dodawane osobno.
+              </div>
+              <a class="button" href="summary.html">Zobacz przychody</a>
+            </section>
+            <section class="card variant" id="I-partial">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-partial</p>
+              <h2>Przychód zapisany — błąd załączników</h2>
+              <div class="notice error" role="alert">
+                Przychód został zapisany, ale załączniki nie zostały dodane. Nie zapisuj przychodu
+                ponownie.
+              </div>
+              <a class="button" href="attachments.html">Przejdź do załączników</a>
+            </section>
+            <section class="card variant" id="I-readonly">
+              <p class="eyebrow">WARIANT PODGLĄDU · I-readonly</p>
+              <h2>Miesiąc zamknięty</h2>
+              <p>
+                Dodawanie i edycja przychodów są zablokowane. Owner/Administrator może otworzyć
+                miesiąc po potwierdzeniu; Member/Viewer ma tylko odczyt.
+              </p>
+              <a class="button" href="months.html">Wróć do miesięcy</a>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

@@ -3,18 +3,27 @@ id: 016-periods-income-ui
 unit: 003-periods-income-ui
 intent: 003-budget-periods-and-income
 type: simple-construction-bolt
-status: planned
+status: complete
 stories:
   - 001-navigate-periods
   - 002-change-period-state
   - 003-add-income-recipient-source
   - 004-enter-income-details
   - 005-manage-attachments-and-totals
-created: '2026-10-06T20:32:37Z'
-started: null
-completed: null
+created: "2026-10-06T20:32:37Z"
+started: "2026-10-09T05:36:59Z"
+completed: "2026-10-09T14:04:57Z"
 current_stage: null
-stages_completed: []
+stages_completed:
+  - name: plan
+    completed: "2026-10-09T06:21:19Z"
+    artifact: implementation-plan.md
+  - name: implement
+    completed: "2026-10-09T13:36:04Z"
+    artifact: implementation-walkthrough.md
+  - name: test
+    completed: "2026-10-09T14:04:56Z"
+    artifact: test-walkthrough.md
 requires_bolts:
   - 013-periods-api
   - 014-monthly-income-api
@@ -46,35 +55,47 @@ Zrealizować FR-01–FR-08 po stronie widocznych przepływów i spełnić pięć
 
 ## Stories Included
 
-- [ ] [001-navigate-periods](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/001-navigate-periods.md): lista lat i miesięcy — Must.
-- [ ] [002-change-period-state](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/002-change-period-state.md): jawne akcje stanu — Must.
-- [ ] [003-add-income-recipient-source](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/003-add-income-recipient-source.md): odbiorca i źródło — Must.
-- [ ] [004-enter-income-details](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/004-enter-income-details.md): kwota, waluta i data — Must.
-- [ ] [005-manage-attachments-and-totals](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/005-manage-attachments-and-totals.md): załączniki i sumy — Should.
+- [x] [001-navigate-periods](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/001-navigate-periods.md): lista lat i miesięcy — Must.
+- [x] [002-change-period-state](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/002-change-period-state.md): jawne akcje stanu — Must.
+- [x] [003-add-income-recipient-source](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/003-add-income-recipient-source.md): odbiorca i źródło — Must.
+- [x] [004-enter-income-details](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/004-enter-income-details.md): kwota, waluta i data — Must.
+- [x] [005-manage-attachments-and-totals](../../intents/003-budget-periods-and-income/units/003-periods-income-ui/stories/005-manage-attachments-and-totals.md): załączniki i sumy — Should.
 
 ## Bolt Type and Stages
 
 **Type**: Simple Construction Bolt (`simple-construction-bolt`).
 
-- [ ] 1. Plan → `implementation-plan.md`
-- [ ] 2. Implement → source code and `implementation-walkthrough.md`
-- [ ] 3. Test → tests and `test-walkthrough.md`
+- [x] 1. Plan → `implementation-plan.md`
+- [x] 2. Implement → source code and `implementation-walkthrough.md`
+- [x] 3. Test → tests and `test-walkthrough.md`
 
 ## Dependencies
 
 ### Requires
+
 - [013-periods-api](../013-periods-api/bolt.md), [014-monthly-income-api](../014-monthly-income-api/bolt.md), and [015-income-attachments-api](../015-income-attachments-api/bolt.md).
 - [011-family-management-ui](../011-family-management-ui/bolt.md) for the current source-management flows.
 
 ### Enables
+
 - `017-periods-income-acceptance`.
 
 ## Success Criteria
 
-- [ ] All five stories work with the server as the source of truth for access and validation.
-- [ ] Responsive states, forms, validation, summaries, and authenticated file access pass UI and API checks.
-- [ ] No typed source-name path is offered; actual income is distinct from a source suggestion.
+- [x] All five stories work with the server as the source of truth for access and validation.
+- [x] Responsive states, forms, validation, summaries, and authenticated file access pass UI and API checks.
+- [x] No typed source-name path is offered; actual income is distinct from a source suggestion.
 
 ## Notes
 
 **Mandatory UI gate before implementation:** plan → visualization → independent-agent review with score **greater than 7.5/10** → explicit user acceptance. Record evidence under `memory-bank/standards/ui-design-review.md`; inception approval alone does not satisfy this gate. Preserve the application's light background and current visual language.
+
+Plan checkpoint prepared at 2026-10-09T06:07:09Z: implementation-plan.md and evidence/ui-design/sidebar-v3. Independent reviewer /root/review_ui016 accepted each view at 8.4–8.5/10 and all auxiliary panels above 7.5. The user's earlier PNG canvases were exploratory; the existing sidebar/topbar is preserved. Source hashes and 27 real CUA captures are recorded in review.md. Human acceptance of sidebar-v3 is pending; current_stage remains plan and production implementation has not started.
+
+User approved sidebar-v3 and requested implementation at 2026-10-09T06:21:19Z. Plan gate passed; production implementation begins. Prototype-only navigation is excluded.
+
+Implementation delivered at 2026-10-09T13:25:00Z, commit 3c0d1b5. Quality/build PASS; frontend tests 67 passed, 8 environment-gated skipped. Awaiting human Implement checkpoint; current_stage remains implement. Test and 017 are not complete.
+
+User approved all remaining stages through push/merge to develop and synchronization of the primary checkout at 2026-10-09T13:36:04Z. Implement accepted; Test starts. Release and main branch publication are outside this authorization.
+
+Completed by bolt-complete.cjs at 2026-10-09T14:07:28Z: five stories and UI unit complete; intent stays open because 017 is planned. Test evidence: test-walkthrough.md. User authorized completion and integration through develop.
