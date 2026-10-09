@@ -569,7 +569,7 @@ textarea:disabled,
 }
 
 .income-source-dialog :where(form > fieldset) > .button {
-  margin-top: 16px;
+  margin-top: 0;
 }
 
 .panel-wide-form > form > fieldset > .field {
@@ -789,6 +789,10 @@ details {
 #contract-form {
   min-width: 0;
   scroll-margin-top: 24px;
+}
+
+.income-source-dialog[open] .income-source-dialog-content > .field {
+  flex-shrink: 0;
 }
 
 #contract-form .form-grid > .field {
@@ -1357,19 +1361,47 @@ tbody th {
 }
 
 .income-source-dialog {
-  width: min(760px, calc(100% - 32px));
+  width: min(920px, calc(100% - 32px));
   max-height: calc(100dvh - 32px);
   padding: 24px;
+  overflow: hidden;
+}
+
+.income-source-dialog[open],
+.income-source-dialog-content,
+.income-source-dialog-form,
+.income-source-dialog-form > #contract-form,
+.income-source-dialog-form > #contract-form > .stack,
+.income-source-dialog .income-source-dialog-form form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.income-source-dialog-form fieldset {
+  display: contents;
+}
+
+.income-source-dialog .dialog-heading,
+.income-source-dialog-form .notice,
+.income-source-dialog[open] .income-source-dialog-form :where(fieldset) > .button {
+  flex-shrink: 0;
+}
+
+.income-source-dialog .source-fields,
+.income-source-dialog .source-contract-fields {
+  min-height: 0;
+  padding: 4px;
   overflow-y: auto;
 }
 
 .income-source-dialog .form-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: start;
 }
 
 .income-source-dialog details {
-  margin-block: 16px;
+  margin-block: 8px;
 }
 
 .income-source-dialog summary {
@@ -1379,12 +1411,30 @@ tbody th {
   cursor: pointer;
 }
 
+.source-extra-notes {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.source-extra-notes textarea {
+  min-height: 72px;
+}
+
+@media (width <= 899px) {
+  .income-source-dialog .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (width <= 600px) {
   .income-source-dialog {
     padding: 20px;
   }
 
-  .income-source-dialog .form-grid {
+  .income-source-dialog .form-grid,
+  .source-extra-notes {
     grid-template-columns: 1fr;
   }
 
