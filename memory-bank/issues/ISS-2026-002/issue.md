@@ -70,7 +70,7 @@ Osobne CTA i panel pod formularzem. Rodzaje źródeł i modele nie są zdublowan
 - Resolution: opcja w słowniku i kompaktowy modal ze wspólnymi formularzami; wyraźnie opcjonalny koniec umowy.
 - Resolved in version/commit: 4b132b8 (task-income-source-dialog, develop integration tracked in PR).
 - Verification: 72PASS Playwright, scripts/quality.ps1 PASS, Docker build PASS, final independent review accepted8.6/8.4 and11/11PASS. Evidence in ../../tasks/income-source-dialog/evidence/ui-design/.
-- Closed at: 2026-10-09T21:00:00Z.
+- Closed at: 2026-10-09T20:52:08Z.
 
 ## Reporter notes
 
