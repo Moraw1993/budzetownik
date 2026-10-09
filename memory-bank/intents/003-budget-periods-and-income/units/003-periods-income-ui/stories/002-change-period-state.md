@@ -2,12 +2,14 @@
 id: 002-change-period-state
 unit: 003-periods-income-ui
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: must
-created: '2026-10-06T20:32:37Z'
+created: "2026-10-06T20:32:37Z"
 assigned_bolt: 016-periods-income-ui
-implemented: false
-requirements: [FR-02, FR-07]
+implemented: true
+requirements:
+  - FR-02
+  - FR-07
 ---
 
 # Story: 002-change-period-state
@@ -33,18 +35,20 @@ Use distinct actions for activate, close, and reopen. Confirm destructive/lockin
 ## Dependencies
 
 ### Requires
+
 - 001-navigate-periods.
 - 002-activate-month and 003-close-and-reopen-month in 001-periods-api.
 
 ### Enables
+
 - 003-add-income-recipient-source.
 
 ## Edge Cases
 
-| Scenario | Expected Behavior |
-| --- | --- |
+| Scenario                                     | Expected Behavior                                                                   |
+| -------------------------------------------- | ----------------------------------------------------------------------------------- |
 | Another user changes the period concurrently | Refresh or error state reflects server state rather than a stale optimistic status. |
-| User has a read-only role | No control exposes a write action. |
+| User has a read-only role                    | No control exposes a write action.                                                  |
 
 ## Out of Scope
 

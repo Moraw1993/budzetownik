@@ -1,7 +1,7 @@
 ---
 unit: 003-periods-income-ui
 intent: 003-budget-periods-and-income
-updated: "2026-10-09T05:36:59Z"
+updated: "2026-10-09T14:10:57Z"
 ---
 
 # Construction log
@@ -18,3 +18,11 @@ User explicitly approved implementation of reviewed sidebar-v3; existing sidebar
 ## 2026-10-09T13:25:00Z — Implement checkpoint
 
 Implementacja: 0e13ec5 i 3c0d1b5. Quality/build PASS; 67 testów frontendowych PASS, 8 środowiskowych skipped. 18 renderów i niezależny review w evidence. Oczekiwanie na akceptację Implement; Test oraz 017 pozostają otwarte.
+
+## 2026-10-09T14:04:56Z — Test verified
+
+169 Django tests PASS (isolated keepdb), 10 actual HTTPS flows PASS (5 family, 4 periods/incomes, 1 after restart), quality PASS. Roles/foreign IDs/links preserve data and audit after rejected writes. Database/API snapshots and private file bytes persist after restart. User authorized all stages through push/merge and primary checkout synchronization. Completion script and integration follow; 017 remains planned.
+
+## 2026-10-09T14:07:28Z — 016-periods-income-ui completed
+
+Official bolt-complete.cjs executed on an isolated LF-normalized metadata copy. Exactly seven expected files changed; results applied: bolt complete, all five stories complete/implemented, UI unit complete. Intent remains unchanged with one incomplete acceptance unit (017). Restart persistence and byte-identical authenticated file download PASS. User's authorization covers remaining checkpoints and integration; no release.

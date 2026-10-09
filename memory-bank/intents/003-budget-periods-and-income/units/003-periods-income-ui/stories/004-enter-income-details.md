@@ -2,12 +2,14 @@
 id: 004-enter-income-details
 unit: 003-periods-income-ui
 intent: 003-budget-periods-and-income
-status: draft
+status: complete
 priority: must
-created: '2026-10-06T20:32:37Z'
+created: "2026-10-06T20:32:37Z"
 assigned_bolt: 016-periods-income-ui
-implemented: false
-requirements: [FR-03, FR-05]
+implemented: true
+requirements:
+  - FR-03
+  - FR-05
 ---
 
 # Story: 004-enter-income-details
@@ -33,18 +35,20 @@ Reuse project form, money, date, and API error patterns. Do not convert currenci
 ## Dependencies
 
 ### Requires
+
 - 003-add-income-recipient-source.
 - 003-record-amount-currency-date in 002-monthly-income-api.
 
 ### Enables
+
 - 005-manage-attachments-and-totals.
 
 ## Edge Cases
 
-| Scenario | Expected Behavior |
-| --- | --- |
+| Scenario                                  | Expected Behavior                                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | Receipt date is outside the selected year | Keep the explicitly selected period and show the actual receipt date without silent reassignment. |
-| Save request fails | Keep the form data and allow retry after presenting the error. |
+| Save request fails                        | Keep the form data and allow retry after presenting the error.                                    |
 
 ## Out of Scope
 
