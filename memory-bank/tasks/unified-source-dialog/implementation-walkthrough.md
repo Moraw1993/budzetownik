@@ -20,4 +20,8 @@ Zapis z rodziny odświeża dane i liczniki. Nowa umowa ma komunikat wskazujący 
 - scripts/quality.ps1:PASS; formatter, Ruff, ESLint, Stylelint, TypeScript i probes.
 - Docker frontend build:PASS; obraz sha256:9259cfcf3f703404286c7c0422501194223a5e79ea5ccd68595e338e69cc77e1. Główna aplikacja będzie aktualizowana po final review/integracji.
 
+## Końcowa niezależna recenzja
+
+Checkpoint8f3e2e1. Recenzent /root/review_unified_sources obejrzał wszystkie12actualJPEG i przejrzał wspólny komponent oraz oba wejścia. Accepted8.5–8.8/10, brak blockerów. Samodzielnie uruchomił16testówPASS (records8, recovery6, zapis rodziny1, ukryty błąd1). Raport: evidence/ui-design/final-review.md. Baza develop09eafea777f4fde5614f8e7d7ca0b73a91a0cdd9 ponownie pobrana i merge-tree bez konfliktów.
+
 Historyczne obrazy poprzedniego taska zachowano. Testy zapisują nowe dowody do bieżącego taska. Pliki użytkownika ISS-2026-001 i pnpm pozostają poza zmianą. Bolt017 oraz release nie są częścią taska.
