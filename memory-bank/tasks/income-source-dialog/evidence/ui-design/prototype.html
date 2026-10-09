@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pl">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Źródło przychodu — makieta v1</title>
+  <link rel="stylesheet" href="../../../../../frontend/app/globals.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+    main {
+      padding: 32px;
+      margin-left: 248px;
+    }
+    aside {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 248px;
+      padding: 32px;
+      background: #07101d;
+      color: white;
+    }
+    dialog {
+      width: min(760px, calc(100% - 32px));
+      max-height: calc(100dvh - 32px);
+      padding: 24px;
+      color: var(--color-text-primary);
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      overflow-y: auto;
+    }
+    dialog::backdrop {
+      background: #02081499;
+    }
+    .form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+    dialog form > .button {
+      margin-top: 16px;
+    }
+    dialog > .field {
+      margin-bottom: 16px;
+    }
+    details {
+      margin-block: 16px;
+    }
+    summary {
+      cursor: pointer;
+      min-height: 44px;
+      padding: 8px 0;
+      color: var(--color-primary);
+    }
+    @media (max-width: 600px) {
+      aside {
+        display: none;
+      }
+      main {
+        margin: 0;
+        padding: 16px;
+      }
+      dialog {
+        padding: 20px;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .dialog-heading {
+        flex-direction: column;
+      }
+    }
+  </style>
+  <aside>
+    <h2>Domowe Finanse</h2>
+    <p>Rodzina</p>
+    <p>Okresy i przychody</p>
+  </aside>
+  <main>
+    <h1>Dodaj przychód</h1>
+    <p>2026 / Kwiecień · Aktywny</p>
+    <section class="panel">
+      <div class="form-grid">
+        <label class="field"
+          >Osoba<select>
+            <option>Osoba A</option>
+          </select></label
+        >
+        <label class="field"
+          >Źródło dochodu<select>
+            <option>Wybierz źródło</option>
+            <option>Odsetki</option>
+            <option>+ Dodaj nowe źródło…</option>
+          </select></label
+        >
+        <label class="field">Faktyczna kwota przychodu<input value="8000,25" /></label>
+        <label class="field">Waluta<input value="PLN" /></label>
+      </div>
+    </section>
+  </main>
+  <dialog aria-labelledby="title">
+    <div class="dialog-heading">
+      <div>
+        <h2 id="title">Nowe źródło dochodu</h2>
+        <p class="muted">Dodaj do słownika. Przychód zapiszesz osobno.</p>
+      </div>
+      <button class="button button-secondary">Anuluj</button>
+    </div>
+    <label class="field"
+      >Rodzaj źródła<select id="kind">
+        <option value="other">Inne źródło</option>
+        <option value="contract">Umowa</option>
+      </select></label
+    >
+    <form id="other">
+      <div class="form-grid">
+        <label class="field"
+          >Przypisz źródło do<select>
+            <option>Osoba A</option>
+            <option>Całe gospodarstwo</option>
+          </select></label
+        >
+        <label class="field">Nazwa innego źródła<input value="Odsetki z lokaty" /></label>
+        <label class="field">Kategoria<input value="Oszczędności" /></label>
+        <label class="field"
+          >Częstotliwość<select>
+            <option>Miesięcznie</option>
+          </select></label
+        >
+        <label class="field">Data rozpoczęcia<input type="date" value="2026-04-01" /></label>
+        <label class="field">Waluta<input value="PLN" /></label>
+      </div>
+      <details>
+        <summary>Dodatkowe informacje</summary>
+        <div class="form-grid">
+          <label class="field">Płatnik<input /></label>
+          <label class="field">Data zakończenia (opcjonalna)<input type="date" /></label>
+          <label class="field">Opcjonalna podpowiedź miesięczna<input /></label>
+        </div>
+        <label class="check-field"><input type="checkbox" checked />Źródło regularne</label
+        ><label class="field">Opis<textarea rows="2"></textarea></label>
+      </details>
+      <button class="button button-primary">Dodaj inne źródło</button>
+    </form>
+    <form id="contract" hidden>
+      <div class="form-grid">
+        <label class="field"
+          >Osoba umowy<select>
+            <option>Osoba A</option>
+          </select></label
+        >
+        <label class="field"
+          >Firma<select>
+            <option>Firma przykładowa</option></select
+          ><button type="button" class="button button-secondary">+ Nowa firma</button></label
+        >
+        <label class="field">Nazwa umowy<input value="Wynagrodzenie" /></label>
+        <label class="field"
+          >Typ umowy<select>
+            <option>Umowa o pracę</option>
+          </select></label
+        >
+        <label class="field">Stanowisko<input /></label>
+        <label class="field">Kwota brutto z umowy<input value="10000,00" /></label>
+        <label class="field"
+          >Podstawa kwoty brutto<select>
+            <option>Miesięcznie</option>
+          </select></label
+        >
+        <label class="field">Waluta umowy<input value="PLN" /></label>
+        <label class="field">Data rozpoczęcia umowy<input type="date" value="2026-04-01" /></label>
+        <label class="field"
+          >Data zakończenia umowy (opcjonalna)<input type="date" /><span class="hint"
+            >Puste pole oznacza umowę na czas nieokreślony.</span
+          ></label
+        >
+      </div>
+      <button class="button button-primary">Dodaj umowę</button>
+    </form>
+  </dialog>
+  <script>
+    document.querySelector("dialog").showModal();
+    document.querySelector("#kind").focus();
+    document.querySelector("#kind").onchange = (event) => {
+      document.querySelector("#other").hidden = event.target.value !== "other";
+      document.querySelector("#contract").hidden = event.target.value !== "contract";
+    };
+    document.querySelectorAll("form").forEach((form) => {
+      form.onsubmit = (event) => event.preventDefault();
+    });
+  </script>
+</html>
