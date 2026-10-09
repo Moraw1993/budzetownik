@@ -68,10 +68,20 @@ Osobne CTA i panel pod formularzem. Rodzaje źródeł i modele nie są zdublowan
 - Owner: implementation agent.
 - Related task: income-source-dialog; related bolt: 016-periods-income-ui (already complete).
 - Resolution: opcja w słowniku i kompaktowy modal ze wspólnymi formularzami; wyraźnie opcjonalny koniec umowy.
-- Resolved in version/commit: 4b132b8 (task-income-source-dialog, develop integration tracked in PR).
+- Resolved in version/commit: 8f3e2e1 (unified-source-dialog; zastępuje częściową naprawę4b132b8).
 - Verification: 72PASS Playwright, scripts/quality.ps1 PASS, Docker build PASS, final independent review accepted8.6/8.4 and11/11PASS. Evidence in ../../tasks/income-source-dialog/evidence/ui-design/.
-- Closed at: 2026-10-09T20:52:08Z.
+- Closed at: 2026-10-09T21:32:30Z.
 
 ## Reporter notes
 
 Umowa może mieć czas nieokreślony. Zachować to zachowanie i pokazać użytkownikowi znaczenie pustej daty końcowej.
+
+## Ponowne zgłoszenie — 2026-10-09T21:14:03Z
+
+Użytkownik dostarczył trzy obrazy:1/2przy60% powiększenia i3z rzeczywistym formularzem rodziny przy100%. Potwierdzają, że tworzenie w rodzinie pozostało dużym panelem inline, a modal przychodu ma inny układ. Poprzednie zamknięcie ISS dotyczyło tylko CTA i modala przychodów; nie dowodziło identyczności obu wejść. Issue ponownie in-progress, task unified-source-dialog.
+
+Obrazy użytkownika nie są kopiowane do repozytorium (zawierają dane konta). Oryginały w załącznikach tej rozmowy. Nowe makiety i testy wykorzystują wyłącznie dane syntetyczne. Weryfikacja obu wejść przy100% obejmuje1920x950,1440x800,1366x650 oraz390x740, szczegóły rozwinięte, bez zmniejszania typografii i bez CSSzoom.
+
+## Weryfikacja ponownej naprawy — 2026-10-09T21:32:30Z
+
+Oba wejścia tworzenia korzystają z jednego IncomeSourceCreate; inline tworzenie w rodzinie usunięte. Rzeczywiste12zrzutów przy100%, dokładne porównanie geometrii i wszystkich etykiet, osiągalność ostatniego pola oraz całego CTA na1920x950/1440x800/1366x650/390x740.81PASS/2SKIP, scripts/quality.ps1 PASS, build PASS. Niezależny reviewer accepted8.5–8.8/10, własne16PASS. Aktualny raport: ../../tasks/unified-source-dialog/evidence/ui-design/final-review.md. Historyczna edycja istniejącego źródła z archiwizacją to odrębny przepływ.

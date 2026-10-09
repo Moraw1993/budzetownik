@@ -37,7 +37,7 @@ for (const width of [1440, 390]) {
     );
     await page.screenshot({
       path:
-        "../memory-bank/tasks/income-source-dialog/evidence/ui-design/actual-other-" +
+        "../memory-bank/tasks/unified-source-dialog/evidence/ui-design/regression-other-" +
         width +
         ".jpg",
     });
@@ -108,7 +108,7 @@ for (const width of [1440, 390]) {
       await end.scrollIntoViewIfNeeded();
       await page.screenshot({
         path:
-          "../memory-bank/tasks/income-source-dialog/evidence/ui-design/actual-contract-" +
+          "../memory-bank/tasks/unified-source-dialog/evidence/ui-design/regression-contract-" +
           width +
           ".jpg",
       });

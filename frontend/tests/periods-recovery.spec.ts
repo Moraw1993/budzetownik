@@ -77,6 +77,7 @@ test("quick source creation protects navigation during a pending write", async (
   });
   await page.getByRole("button", { name: "Dodaj inne źródło", exact: true }).click();
   await expect(page.getByLabel("Rodzaj źródła")).toBeDisabled();
+  await expect(page.getByLabel("Nazwa innego źródła")).toBeDisabled();
   await expect(
     page
       .getByRole("dialog", { name: "Nowe źródło dochodu" })

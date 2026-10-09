@@ -23,6 +23,7 @@ test("Owner dodaje relację, członka i źródło bez utraty precyzji", async ({
   await page.getByLabel("Przypisz źródło do").selectOption({ label: "Anna" });
   await page.getByLabel("Nazwa innego źródła").fill("Stypendium");
   await page.getByLabel("Kategoria").fill("nauka");
+  await page.getByText("Dodatkowe informacje", { exact: true }).click();
   await page.getByLabel("Płatnik").fill("Uczelnia");
   await page.getByLabel("Częstotliwość").selectOption("weekly");
   await page.getByLabel("Data rozpoczęcia", { exact: true }).fill("2026-01-01");

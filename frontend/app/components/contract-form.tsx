@@ -125,7 +125,7 @@ export function ContractForm({
       >
         {(fields) => (
           <>
-            <div className="form-grid">
+            <div className="form-grid source-contract-fields">
               <SelectField
                 label="Osoba umowy"
                 name="member_id"

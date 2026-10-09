@@ -5,9 +5,9 @@ import {
   householdPath,
   messageOf,
   type Company,
+  type Household,
   type HouseholdMember,
 } from "../lib/api";
-import { type PeriodContext } from "../lib/periods-api";
 import { ContractForm } from "./contract-form";
 import { OtherSourceForm } from "./other-source-form";
 import { CompanyDialog } from "./company-dialog";
@@ -15,19 +15,23 @@ import { ConfirmAction } from "./periods-common";
 import { Button, SelectField } from "./ui";
 
 export function IncomeSourceCreate({
-  context,
+  household,
+  suggestedStartDate,
+  refreshAccess,
   members,
   memberId,
   onSaved,
   onCancel,
   onPendingChange,
 }: {
-  context: PeriodContext;
+  household: Household;
+  suggestedStartDate?: string;
+  refreshAccess?: () => void;
   members: HouseholdMember[];
   memberId: string | null;
-  onSaved: (id: string) => void;
+  onSaved: (id: string, kind: "other" | "contract") => void;
   onCancel: () => void;
-  onPendingChange: (pending: boolean) => void;
+  onPendingChange?: (pending: boolean) => void;
 }) {
   const [pending, setPending] = useState(false);
   const [dirty, setDirty] = useState(false);
@@ -35,7 +39,7 @@ export function IncomeSourceCreate({
   const updatePending = useCallback(
     (value: boolean) => {
       setPending(value);
-      onPendingChange(value);
+      onPendingChange?.(value);
     },
     [onPendingChange],
   );
@@ -56,7 +60,7 @@ export function IncomeSourceCreate({
   }, []);
   useEffect(() => {
     const controller = new AbortController();
-    apiAllPages<Company>(householdPath(context.household.id, "companies/"), controller.signal)
+    apiAllPages<Company>(householdPath(household.id, "companies/"), controller.signal)
       .then((reply) => {
         if (!controller.signal.aborted) setCompanies(reply);
       })
@@ -64,7 +68,11 @@ export function IncomeSourceCreate({
         if (!controller.signal.aborted) setError(messageOf(cause));
       });
     return () => controller.abort();
-  }, [context.household.id]);
+  }, [household.id]);
+  function accessChanged() {
+    setError("Dostęp zmienił się. Odśwież aplikację.");
+    refreshAccess?.();
+  }
   function leave(run: () => void) {
     if (pending) return;
     if (dirty) setDiscard({ run });
@@ -73,6 +81,7 @@ export function IncomeSourceCreate({
   return (
     <dialog
       ref={root}
+      id="income-source-dialog"
       className="income-source-dialog"
       aria-labelledby={titleId}
       onChangeCapture={(event) => {
@@ -96,7 +105,7 @@ export function IncomeSourceCreate({
         <ConfirmAction
           variant="danger"
           title="Odrzucić szkic źródła?"
-          description="Niezapisane dane źródła zostaną usunięte. Szkic przychodu pozostanie."
+          description="Niezapisane dane źródła zostaną usunięte. Przychody pozostaną bez zmian."
           confirm="Odrzuć szkic źródła"
           pending={pending}
           onCancel={() => setDiscard(null)}
@@ -108,7 +117,7 @@ export function IncomeSourceCreate({
           }}
         />
       )}
-      <div inert={discard ? true : undefined}>
+      <div className="income-source-dialog-content" inert={discard ? true : undefined}>
         <div className="dialog-heading">
           <div>
             <h2 id={titleId}>Nowe źródło dochodu</h2>
@@ -143,44 +152,46 @@ export function IncomeSourceCreate({
           <option value="other">Inne źródło</option>
           <option value="contract">Umowa</option>
         </SelectField>
-        {kind === "other" ? (
-          <OtherSourceForm
-            compact
-            suggestedMemberId={memberId}
-            suggestedStartDate={context.month.month_start}
-            onPendingChange={updatePending}
-            household={context.household}
-            members={members}
-            source={null}
-            onSaved={(source) => onSaved(source.id)}
-            onConflict={() => setError("Źródło zmieniło się. Sprawdź słownik.")}
-            refreshAccess={() => setError("Dostęp zmienił się. Odśwież aplikację.")}
-          />
-        ) : (
-          <div id="contract-form">
-            <ContractForm
+        <div className="income-source-dialog-form">
+          {kind === "other" ? (
+            <OtherSourceForm
+              compact
               suggestedMemberId={memberId}
-              suggestedStartDate={context.month.month_start}
+              suggestedStartDate={suggestedStartDate}
               onPendingChange={updatePending}
-              household={context.household}
+              household={household}
               members={members}
-              companies={companies}
-              contract={null}
-              converting={null}
-              suggestedCompanyId={company}
-              onSaved={(saved) => onSaved(saved.id)}
-              onAddCompany={() => setDialog(true)}
-              onConflict={() => setError("Umowa zmieniła się. Sprawdź słownik.")}
-              refreshAccess={() => setError("Dostęp zmienił się. Odśwież aplikację.")}
+              source={null}
+              onSaved={(source) => onSaved(source.id, "other")}
+              onConflict={() => setError("Źródło zmieniło się. Sprawdź słownik.")}
+              refreshAccess={accessChanged}
             />
-          </div>
-        )}
+          ) : (
+            <div id="contract-form">
+              <ContractForm
+                suggestedMemberId={memberId}
+                suggestedStartDate={suggestedStartDate}
+                onPendingChange={updatePending}
+                household={household}
+                members={members}
+                companies={companies}
+                contract={null}
+                converting={null}
+                suggestedCompanyId={company}
+                onSaved={(saved) => onSaved(saved.id, "contract")}
+                onAddCompany={() => setDialog(true)}
+                onConflict={() => setError("Umowa zmieniła się. Sprawdź słownik.")}
+                refreshAccess={accessChanged}
+              />
+            </div>
+          )}
+        </div>
       </div>
       {dialog && (
         <CompanyDialog
           onPendingChange={updatePending}
-          household={context.household}
-          refreshAccess={() => setError("Dostęp zmienił się. Odśwież aplikację.")}
+          household={household}
+          refreshAccess={accessChanged}
           onClose={() => setDialog(false)}
           onCreated={(created) => {
             setCompanies((current) => [...current, created]);

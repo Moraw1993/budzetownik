@@ -557,7 +557,9 @@ export function IncomeForm({
       {showSource && members && (
         <IncomeSourceCreate
           onPendingChange={setSourcePending}
-          context={context}
+          household={context.household}
+          suggestedStartDate={context.month.month_start}
+          refreshAccess={onRecheck}
           members={members}
           memberId={values.member_id}
           onCancel={() => setShowSource(false)}

@@ -243,7 +243,7 @@ test("źródło gospodarstwa bez kwoty i jednorazowa częstotliwość", async ({
   await page.goto("/");
   await page.getByRole("tab", { name: "Źródła dochodu" }).click();
   await page.getByRole("button", { name: "Dodaj źródło" }).click();
-  await expect(page.getByLabel("Przypisz źródło do")).toBeFocused();
+  await expect(page.getByLabel("Rodzaj źródła")).toBeFocused();
   await page.getByLabel("Nazwa innego źródła").fill("Sprzedaż roweru");
   await page.getByLabel("Kategoria").fill("sprzedaż");
   await page.getByLabel("Częstotliwość").selectOption("one_off");
@@ -454,7 +454,7 @@ for (const width of [1440, 1024, 390]) {
     await expect(page.getByLabel("Firma", { exact: true })).toBeFocused();
     await page.getByRole("tab", { name: "Źródła dochodu" }).click();
     await page.getByRole("button", { name: "Dodaj źródło", exact: true }).click();
-    await expect(page.getByLabel("Przypisz źródło do")).toBeFocused();
+    await expect(page.getByLabel("Rodzaj źródła")).toBeFocused();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,
     );

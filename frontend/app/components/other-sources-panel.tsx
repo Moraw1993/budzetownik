@@ -12,6 +12,7 @@ import {
 import { formatMoney } from "../lib/money";
 import { ActionForm, Button, Panel } from "./ui";
 
+import { IncomeSourceCreate } from "./income-source-create";
 import { OtherSourceForm, frequencyLabels } from "./other-source-form";
 
 function SourceTable({
@@ -126,7 +127,7 @@ export function OtherSourcesPanel({
   const others = sources.filter((source) => source.kind === "other");
 
   useEffect(() => {
-    if (showForm)
+    if (showForm && editing)
       document
         .querySelector<HTMLSelectElement>('#other-source-form select[name="member_id"]')
         ?.focus();
@@ -158,10 +159,11 @@ export function OtherSourcesPanel({
             miesiąca.
           </p>
         </div>
-        {canEdit && !showForm && (
+        {canEdit && (!showForm || !editing) && (
           <Button
             type="button"
-            aria-controls="other-source-form"
+            aria-controls="income-source-dialog"
+            aria-haspopup="dialog"
             onClick={() => {
               setEditing(null);
               setShowForm(true);
@@ -183,7 +185,7 @@ export function OtherSourcesPanel({
           {conflict}
         </p>
       )}
-      {!showForm && (
+      {(!showForm || !editing) && (
         <>
           <SourceTable
             title="Inne źródła osób"
@@ -203,7 +205,20 @@ export function OtherSourcesPanel({
           />
         </>
       )}
-      {canEdit && showForm && (
+      {canEdit && showForm && !editing && (
+        <IncomeSourceCreate
+          household={household}
+          members={members}
+          memberId={null}
+          refreshAccess={refreshAccess}
+          onCancel={() => setShowForm(false)}
+          onSaved={(_, kind) => {
+            saved();
+            if (kind === "contract") setNotice("Zapisano umowę. Jest dostępna w zakładce Umowy.");
+          }}
+        />
+      )}
+      {canEdit && showForm && editing && (
         <div id="other-source-form">
           <Panel
             title={editing ? `Edycja: ${editing.name}` : "Dodaj inne źródło dochodu"}

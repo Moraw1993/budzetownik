@@ -241,7 +241,7 @@ function OtherSourceFields({
     <TextAreaField
       label="Opis"
       name="description"
-      rows={3}
+      rows={compact ? 2 : 3}
       maxLength={2000}
       defaultValue={source?.description}
       error={fields.description}
@@ -264,6 +264,7 @@ function OtherSourceFields({
   );
   return compact ? (
     <div
+      className="source-fields"
       onInvalidCapture={(event) => {
         if ((event.target as HTMLElement).closest("details")) setDetailsOpen(true);
       }}
@@ -286,8 +287,10 @@ function OtherSourceFields({
           {end_dateField}
           {default_monthly_amountField}
         </div>
-        {regularField}
-        {descriptionField}
+        <div className="source-extra-notes">
+          <div>{regularField}</div>
+          {descriptionField}
+        </div>
       </details>
     </div>
   ) : (
