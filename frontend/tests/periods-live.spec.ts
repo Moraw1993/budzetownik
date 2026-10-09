@@ -147,14 +147,16 @@ test.describe.serial("real API acceptance of bolt 016", () => {
     await page.getByLabel("Faktyczna kwota przychodu").fill("100,50");
     await page.getByLabel("Waluta", { exact: true }).fill("EUR");
     await page.getByLabel("Data otrzymania").fill("2025-09-30");
-    await page.getByRole("button", { name: "+ Dodaj źródło do słownika", exact: true }).click();
+    await page.getByLabel("Źródło dochodu", { exact: true }).focus();
+    await page.getByLabel("Źródło dochodu", { exact: true }).selectOption("__create_source__");
     await expect(page.getByLabel("Rodzaj źródła")).toBeFocused();
     await page.getByLabel("Nazwa innego źródła").fill("Lokata UI " + runId + " " + calendarYear);
     await page.getByLabel("Kategoria", { exact: true }).fill("Oszczędności");
     await page.getByLabel("Data rozpoczęcia", { exact: true }).fill("2025-01-01");
+    await page.getByText("Dodatkowe informacje", { exact: true }).click();
     await page.getByLabel("Opcjonalna podpowiedź miesięczna").fill("99999,99");
     await page.getByRole("button", { name: "Dodaj inne źródło", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "Dodaj źródło do słownika" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Nowe źródło dochodu" })).toHaveCount(0);
     await expect(page.getByLabel("Źródło dochodu", { exact: true })).not.toHaveValue("");
     state.householdSource = await page.getByLabel("Źródło dochodu", { exact: true }).inputValue();
     await expect(page.getByLabel("Faktyczna kwota przychodu")).toHaveValue("100,50");

@@ -32,8 +32,9 @@ export function Button({
 export function Field({
   label,
   error,
+  hint,
   ...props
-}: ComponentProps<"input"> & { label: string; error?: string }) {
+}: ComponentProps<"input"> & { label: string; error?: string; hint?: string }) {
   const id = useId();
   return (
     <div className="field">
@@ -42,8 +43,16 @@ export function Field({
         {...props}
         id={id}
         aria-invalid={!!error}
-        aria-describedby={error ? id + "-error" : undefined}
+        aria-describedby={
+          [hint ? id + "-hint" : "", error ? id + "-error" : ""].filter(Boolean).join(" ") ||
+          undefined
+        }
       />
+      {hint && (
+        <span id={id + "-hint"} className="hint">
+          {hint}
+        </span>
+      )}
       {error && (
         <span id={id + "-error"} className="field-error">
           {error}

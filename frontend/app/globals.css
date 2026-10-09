@@ -564,6 +564,14 @@ textarea:disabled,
   width: 100%;
 }
 
+.income-source-dialog > div > .field {
+  margin-bottom: 16px;
+}
+
+.income-source-dialog :where(form > fieldset) > .button {
+  margin-top: 16px;
+}
+
 .panel-wide-form > form > fieldset > .field {
   max-width: 760px;
 }
@@ -613,7 +621,8 @@ textarea:disabled,
   justify-self: start;
 }
 
-.company-dialog {
+.company-dialog,
+.income-source-dialog {
   width: min(480px, calc(100% - 32px));
   max-height: calc(100vh - 40px);
   padding: 28px;
@@ -623,7 +632,8 @@ textarea:disabled,
   border-radius: 16px;
 }
 
-.company-dialog::backdrop {
+.company-dialog::backdrop,
+.income-source-dialog::backdrop {
   background: #020814cc;
 }
 
@@ -1344,4 +1354,41 @@ tbody th {
   color: var(--color-text-primary);
   font-size: 14px;
   font-weight: 650;
+}
+
+.income-source-dialog {
+  width: min(760px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.income-source-dialog .form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.income-source-dialog details {
+  margin-block: 16px;
+}
+
+.income-source-dialog summary {
+  min-height: 44px;
+  padding-block: 8px;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+@media (width <= 600px) {
+  .income-source-dialog {
+    padding: 20px;
+  }
+
+  .income-source-dialog .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .income-source-dialog .dialog-heading {
+    flex-direction: column;
+  }
 }
