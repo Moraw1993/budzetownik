@@ -85,4 +85,3 @@ Obrazy użytkownika nie są kopiowane do repozytorium (zawierają dane konta). O
 ## Weryfikacja ponownej naprawy — 2026-10-09T21:32:30Z
 
 Oba wejścia tworzenia korzystają z jednego IncomeSourceCreate; inline tworzenie w rodzinie usunięte. Rzeczywiste12zrzutów przy100%, dokładne porównanie geometrii i wszystkich etykiet, osiągalność ostatniego pola oraz całego CTA na1920x950/1440x800/1366x650/390x740.81PASS/2SKIP, scripts/quality.ps1 PASS, build PASS. Niezależny reviewer accepted8.5–8.8/10, własne16PASS. Aktualny raport: ../../tasks/unified-source-dialog/evidence/ui-design/final-review.md. Historyczna edycja istniejącego źródła z archiwizacją to odrębny przepływ.
-
