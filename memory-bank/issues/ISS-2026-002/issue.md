@@ -2,7 +2,7 @@
 id: ISS-2026-002
 title: "Dodawanie źródła przesuwa formularz przychodu"
 type: bug
-status: closed
+status: in-progress
 reported_at: "2026-10-09T20:30:18Z"
 reporting_path: "User report in implementation chat"
 affected_version: "local develop build"
@@ -75,3 +75,9 @@ Osobne CTA i panel pod formularzem. Rodzaje źródeł i modele nie są zdublowan
 ## Reporter notes
 
 Umowa może mieć czas nieokreślony. Zachować to zachowanie i pokazać użytkownikowi znaczenie pustej daty końcowej.
+
+## Ponowne zgłoszenie — 2026-10-09T21:14:03Z
+
+Użytkownik dostarczył trzy obrazy:1/2przy60% powiększenia i3z rzeczywistym formularzem rodziny przy100%. Potwierdzają, że tworzenie w rodzinie pozostało dużym panelem inline, a modal przychodu ma inny układ. Poprzednie zamknięcie ISS dotyczyło tylko CTA i modala przychodów; nie dowodziło identyczności obu wejść. Issue ponownie in-progress, task unified-source-dialog.
+
+Obrazy użytkownika nie są kopiowane do repozytorium (zawierają dane konta). Oryginały w załącznikach tej rozmowy. Nowe makiety i testy wykorzystują wyłącznie dane syntetyczne. Weryfikacja obu wejść przy100% obejmuje1920x950,1440x800,1366x650 oraz390x740, szczegóły rozwinięte, bez zmniejszania typografii i bez CSSzoom.
