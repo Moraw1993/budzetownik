@@ -18,6 +18,10 @@ Dialog blokuje tło, skupia i przywraca fokus, chroni szkic potwierdzeniem i blo
 - Pięć nowych przypadków w income-source-dialog.spec.ts: szkic/pliki/fokus/geometria/Escape1440i390, umowa/firmy/null1440i390, ukryty błąd API. Pending i utrata roli w periods-recovery.
 - Szeroki ponowny przebieg po poprawie konfiguracji testów:72PASS, exit0. Pierwsza próba serwera Next dev była przerwana po błędzie środowiska Windows (odmowa kanonizacji katalogu); finalny test korzystał z izolowanego kontenera produkcyjnego frontendu na8098.
 
+## Końcowa niezależna recenzja
+
+Recenzent /root/review_source_dialog zaakceptował kod i rzeczywiste widoki: inne źródło8.6/10, umowa8.4/10, brak P1/P2. Niezależny przebieg11/11PASS. Raport: [final-review.md](evidence/ui-design/final-review.md). Implementacja zweryfikowana w4b132b8; baza develop63df3c6176d1a32c9fb601e347a6ae280b948551. Próba merge-tree zakończona bez konfliktów.
+
 ## Granice
 
 Brak zmian modelu, migracji i reguł finansowych. Bolt016 pozostaje ukończony;017 nie jest rozpoczynany tym taskiem. Zastane dokumenty użytkownika i pliki pnpm pozostają poza commitem. Finalna niezależna recenzja i integracja są osobno zapisane po ich rzeczywistym wykonaniu.

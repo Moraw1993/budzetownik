@@ -39,4 +39,4 @@ Score = (9 + 8 + 8 + 8 + 8) / 5 = **8,2/10**. Decyzja **accepted**; brak blokuj�
 - Testować zachowanie kwoty/waluty/daty/załączników przychodu po otwarciu i anulowaniu, brak sentinel w source_id, dobór nowego źródła tylko przy zgodnym odbiorcy/okresie oraz brak zapisu dla Member/Viewer i zamkniętego miesiąca.
 
 Implementacja v2 może się rozpocząć. Wymagany osobny przegląd końcowy kodu i realnych widoków.
-`nDodatkowo rzeczywiście obejrzano contract-mobile-bottom.jpg (390 × 844): wewnętrzne przewijanie udostępnia opcjonalny koniec, wskazówkę oraz CTA bez poziomego obcięcia. Wspiera akceptację mobilnej umowy.
+Dodatkowo rzeczywiście obejrzano contract-mobile-bottom.jpg (390 × 844): wewnętrzne przewijanie udostępnia opcjonalny koniec, wskazówkę oraz CTA bez poziomego obcięcia. Wspiera akceptację mobilnej umowy.
