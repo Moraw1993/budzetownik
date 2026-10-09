@@ -13,11 +13,14 @@ stories:
 created: "2026-10-06T20:32:37Z"
 started: "2026-10-09T05:36:59Z"
 completed: null
-current_stage: implement
+current_stage: test
 stages_completed:
   - name: plan
     completed: "2026-10-09T06:21:19Z"
     artifact: implementation-plan.md
+  - name: implement
+    completed: "2026-10-09T13:36:04Z"
+    artifact: implementation-walkthrough.md
 requires_bolts:
   - 013-periods-api
   - 014-monthly-income-api
@@ -60,7 +63,7 @@ Zrealizować FR-01–FR-08 po stronie widocznych przepływów i spełnić pięć
 **Type**: Simple Construction Bolt (`simple-construction-bolt`).
 
 - [x] 1. Plan → `implementation-plan.md`
-- [ ] 2. Implement → source code and `implementation-walkthrough.md`
+- [x] 2. Implement → source code and `implementation-walkthrough.md`
 - [ ] 3. Test → tests and `test-walkthrough.md`
 
 ## Dependencies
@@ -89,3 +92,5 @@ Plan checkpoint prepared at 2026-10-09T06:07:09Z: implementation-plan.md and evi
 User approved sidebar-v3 and requested implementation at 2026-10-09T06:21:19Z. Plan gate passed; production implementation begins. Prototype-only navigation is excluded.
 
 Implementation delivered at 2026-10-09T13:25:00Z, commit 3c0d1b5. Quality/build PASS; frontend tests 67 passed, 8 environment-gated skipped. Awaiting human Implement checkpoint; current_stage remains implement. Test and 017 are not complete.
+
+User approved all remaining stages through push/merge to develop and synchronization of the primary checkout at 2026-10-09T13:36:04Z. Implement accepted; Test starts. Release and main branch publication are outside this authorization.

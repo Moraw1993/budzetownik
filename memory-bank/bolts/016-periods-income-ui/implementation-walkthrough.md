@@ -3,7 +3,7 @@ stage: implement
 bolt: 016-periods-income-ui
 created: "2026-10-09"
 design: sidebar-v3
-status: awaiting-checkpoint
+status: accepted
 implementation_commit: 3c0d1b5
 ---
 
