@@ -3,17 +3,17 @@ id: 016-periods-income-ui
 unit: 003-periods-income-ui
 intent: 003-budget-periods-and-income
 type: simple-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 001-navigate-periods
   - 002-change-period-state
   - 003-add-income-recipient-source
   - 004-enter-income-details
   - 005-manage-attachments-and-totals
-created: '2026-10-06T20:32:37Z'
-started: null
+created: "2026-10-06T20:32:37Z"
+started: "2026-10-09T05:36:59Z"
 completed: null
-current_stage: null
+current_stage: plan
 stages_completed: []
 requires_bolts:
   - 013-periods-api
@@ -63,10 +63,12 @@ Zrealizować FR-01–FR-08 po stronie widocznych przepływów i spełnić pięć
 ## Dependencies
 
 ### Requires
+
 - [013-periods-api](../013-periods-api/bolt.md), [014-monthly-income-api](../014-monthly-income-api/bolt.md), and [015-income-attachments-api](../015-income-attachments-api/bolt.md).
 - [011-family-management-ui](../011-family-management-ui/bolt.md) for the current source-management flows.
 
 ### Enables
+
 - `017-periods-income-acceptance`.
 
 ## Success Criteria
@@ -78,3 +80,5 @@ Zrealizować FR-01–FR-08 po stronie widocznych przepływów i spełnić pięć
 ## Notes
 
 **Mandatory UI gate before implementation:** plan → visualization → independent-agent review with score **greater than 7.5/10** → explicit user acceptance. Record evidence under `memory-bank/standards/ui-design-review.md`; inception approval alone does not satisfy this gate. Preserve the application's light background and current visual language.
+
+Plan checkpoint prepared at 2026-10-09T06:07:09Z: implementation-plan.md and evidence/ui-design/sidebar-v3. Independent reviewer /root/review_ui016 accepted each view at 8.4–8.5/10 and all auxiliary panels above 7.5. The user's earlier PNG canvases were exploratory; the existing sidebar/topbar is preserved. Source hashes and 27 real CUA captures are recorded in review.md. Human acceptance of sidebar-v3 is pending; current_stage remains plan and production implementation has not started.

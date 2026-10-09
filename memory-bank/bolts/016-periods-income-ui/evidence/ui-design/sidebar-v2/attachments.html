@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Załączniki przychodu — podgląd bolta 016</title>
+    <link rel="stylesheet" href="preview.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">⌂ Domowe Finanse</div>
+        <p class="hint">PRZESTRZEŃ DOMOWA</p>
+        <nav aria-label="Sekcje gospodarstwa">
+          <a href="#content">Gospodarstwa</a>
+          <a href="#content">Zarządzanie rodziną</a>
+          <a href="years.html" class="active" aria-current="page">Okresy i przychody</a>
+          <a href="#content">Ustawienia</a>
+        </nav>
+      </aside>
+      <div class="workspace">
+        <header class="topbar">
+          <span>Gospodarstwa / Przykładowy dom / Okresy i przychody</span
+          ><span>Użytkownik demo · Wyloguj się</span>
+        </header>
+        <main class="content" id="content">
+          <div class="prototype-note">
+            Podgląd projektu sidebar-v2 · dane przykładowe · pola i odnośniki demonstrują układ, nie
+            zapisują danych.
+          </div>
+          <div class="context">
+            <div>
+              <p class="eyebrow">PRZYKŁADOWY DOM</p>
+              <h1>Załączniki przychodu</h1>
+            </div>
+            <div class="field">
+              <label
+                >Aktywne gospodarstwo<select>
+                  <option>Przykładowy dom</option>
+                </select></label
+              >
+            </div>
+          </div>
+          <nav class="preview-nav" aria-label="Podglądy ekranów">
+            <a class="button" href="years.html">Lata</a>
+            <a class="button" href="months.html">Miesiące</a>
+            <a class="button" href="income.html">Formularz</a>
+            <a class="button" href="summary.html">Podsumowanie</a>
+            <a class="button primary" href="attachments.html">Załączniki</a>
+          </nav>
+          <p class="muted">
+            Rok 2026 / Kwiecień / Przychód <span class="badge active">Aktywny</span>
+          </p>
+          <section class="card">
+            <h2>Arek · Wynagrodzenie · Firma A</h2>
+            <p class="amount">8 000,00 PLN</p>
+            <p class="muted">Otrzymano 30.03.2026 · Rozliczenie: kwiecień 2026</p>
+            <a class="button" href="summary.html">Wróć do przychodów</a>
+          </section>
+          <br />
+          <section class="card">
+            <h2>Dokumenty</h2>
+            <p class="hint">Pliki pobierasz po zalogowaniu, zgodnie z dostępem do gospodarstwa.</p>
+            <div class="upload">
+              <h3>Dodaj potwierdzenia przychodu</h3>
+              <label
+                >Wybierz pliki<input type="file" multiple accept=".png,.jpg,.jpeg,.pdf"
+              /></label>
+              <p class="hint">
+                PNG, JPG/JPEG, PDF · do 10 MiB na plik.<br />1–5 plików i do 25 MiB jednorazowo.
+              </p>
+              <a class="button primary" href="#A-success">Dodaj wybrane pliki</a>
+            </div>
+            <div class="file-row">
+              <div>
+                <strong>potwierdzenie.pdf</strong>
+                <p class="hint">PDF · 420 KiB · Zapisany</p>
+              </div>
+              <div class="actions">
+                <a class="button" href="#A-download">Pobierz</a
+                ><a class="button danger" href="#A-delete">Usuń</a>
+              </div>
+            </div>
+            <div class="file-row">
+              <div>
+                <strong>potwierdzenie-przelewu.jpg</strong>
+                <p class="hint">JPG · 1,2 MiB · Zapisany</p>
+              </div>
+              <div class="actions">
+                <a class="button" href="#A-download">Pobierz</a
+                ><a class="button danger" href="#A-delete">Usuń</a>
+              </div>
+            </div>
+            <p class="hint">2 z 20 aktywnych plików · limit 50 MiB na przychód.</p>
+          </section>
+          <div class="variants">
+            <h2>Stany i interakcje — wizualizacja</h2>
+            <section class="card variant" id="A-queue">
+              <p class="eyebrow">WARIANT PODGLĄDU · A-queue</p>
+              <h2>Wybrane pliki — jeszcze niezapisane</h2>
+              <p>nowe-potwierdzenie.png · 300 KiB · Oczekuje na dodanie</p>
+              <div class="actions">
+                <a class="button primary" href="#A-success">Dodaj wybrany plik</a
+                ><a class="button" href="#content">Usuń z kolejki</a>
+              </div>
+            </section>
+            <section class="card variant" id="A-delete">
+              <p class="eyebrow">WARIANT PODGLĄDU · A-delete</p>
+              <h2>Usuń załącznik</h2>
+              <p>
+                Usunąć potwierdzenie.pdf z tego przychodu? Plik przestanie być dostępny na liście.
+              </p>
+              <div class="actions">
+                <a class="button danger" href="#A-success">Usuń załącznik</a
+                ><a class="button" href="#content">Anuluj</a>
+              </div>
+            </section>
+            <section class="card variant" id="A-empty">
+              <p class="eyebrow">WARIANT PODGLĄDU · A-empty</p>
+              <h2>Brak załączników</h2>
+              <p>
+                Ten przychód nie ma jeszcze potwierdzeń. W aktywnym miesiącu Owner/Administrator
+                może dodać pliki.
+              </p>
+            </section>
+            <section class="card variant" id="A-loading">
+              <p class="eyebrow">WARIANT PODGLĄDU · A-loading</p>
+              <h2>Dodawanie plików</h2>
+              <p role="status">
+                Dodajemy 2 wybrane pliki… Poczekaj na potwierdzenie. Nie wysyłaj ich ponownie.
+              </p>
+            </section>
+            <section class="card variant" id="A-error">
+              <p class="eyebrow">WARIANT PODGLĄDU · A-error</p>
+              <h2>Pliki nie zostały zapisane</h2>
+              <div class="notice error" role="alert">
+                Plik ma nieobsługiwany format lub przekracza limit. Popraw wybór i dodaj pliki
+                ponownie.
+              </div>
+            </section>
+            <section class="card variant" id="A-unknown">
+              <p class="eyebrow">WARIANT PODGLĄDU · A-unknown</p>
+              <h2>Nie znamy wyniku dodawania plików</h2>
+              <div class="notice error" role="alert">
+                Połączenie zostało przerwane. Pliki mogły zostać zapisane. Sprawdź listę przed
+                ponowieniem.
+              </div>
+              <a class="button" href="#content">Sprawdź listę</a>
+              <p class="hint">
+                Nie ponawiamy uploadu automatycznie. Nazwa i rozmiar nie są dowodem identyczności
+                plików.
+              </p>
+            </section>
+            <section class="card variant" id="A-readonly">
+              <p class="eyebrow">WARIANT PODGLĄDU · A-readonly</p>
+              <h2>Załączniki w zamkniętym miesiącu</h2>
+              <p>
+                Możesz pobierać pliki. Dodawanie i usuwanie są zablokowane. Owner/Administrator może
+                wcześniej otworzyć miesiąc.
+              </p>
+              <a class="button" href="#A-download">Pobierz potwierdzenie.pdf</a>
+            </section>
+            <section class="card variant" id="A-download">
+              <p class="eyebrow">WARIANT PODGLĄDU · A-download</p>
+              <h2>Błąd pobierania</h2>
+              <div class="notice error" role="alert">
+                Plik jest niedostępny lub utracono dostęp. Odśwież listę i spróbuj ponownie.
+              </div>
+              <a class="button" href="#content">Odśwież listę</a>
+            </section>
+            <section class="card variant" id="A-success">
+              <p class="eyebrow">WARIANT PODGLĄDU · A-success</p>
+              <h2>Pliki zapisane</h2>
+              <div class="notice" role="status">
+                Dodano pliki i odświeżono listę. Przychód pozostaje zapisany.
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

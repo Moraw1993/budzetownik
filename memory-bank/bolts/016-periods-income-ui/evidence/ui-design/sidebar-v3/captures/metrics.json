@@ -1,0 +1,93 @@
+[
+  {
+    "page": "years",
+    "targetCssWidth": 1440,
+    "requestedWidth": 1599,
+    "clientWidth": 1440,
+    "scrollWidth": 1440
+  },
+  {
+    "page": "months",
+    "targetCssWidth": 1440,
+    "requestedWidth": 1599,
+    "clientWidth": 1440,
+    "scrollWidth": 1440
+  },
+  {
+    "page": "income",
+    "targetCssWidth": 1440,
+    "requestedWidth": 1599,
+    "clientWidth": 1440,
+    "scrollWidth": 1440
+  },
+  {
+    "page": "summary",
+    "targetCssWidth": 1440,
+    "requestedWidth": 1599,
+    "clientWidth": 1440,
+    "scrollWidth": 1440
+  },
+  {
+    "page": "attachments",
+    "targetCssWidth": 1440,
+    "requestedWidth": 1599,
+    "clientWidth": 1440,
+    "scrollWidth": 1440
+  },
+  {
+    "page": "years",
+    "targetCssWidth": 390,
+    "requestedWidth": 444,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "page": "months",
+    "targetCssWidth": 390,
+    "requestedWidth": 444,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "page": "income",
+    "targetCssWidth": 390,
+    "requestedWidth": 444,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "page": "summary",
+    "targetCssWidth": 390,
+    "requestedWidth": 444,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "page": "attachments",
+    "targetCssWidth": 390,
+    "requestedWidth": 444,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "page": "attachments",
+    "state": "A-long",
+    "targetCssWidth": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "page": "attachments",
+    "state": "A-removed",
+    "targetCssWidth": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  },
+  {
+    "page": "summary",
+    "state": "S-boundary",
+    "targetCssWidth": 390,
+    "clientWidth": 390,
+    "scrollWidth": 390
+  }
+]

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lata rozliczeniowe — podgląd bolta 016</title>
+    <link rel="stylesheet" href="preview.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">⌂ Domowe Finanse</div>
+        <p class="hint">PRZESTRZEŃ DOMOWA</p>
+        <nav aria-label="Sekcje gospodarstwa">
+          <a href="#content">Gospodarstwa</a>
+          <a href="#content">Zarządzanie rodziną</a>
+          <a href="years.html" class="active" aria-current="page">Okresy i przychody</a>
+          <a href="#content">Ustawienia</a>
+        </nav>
+      </aside>
+      <div class="workspace">
+        <header class="topbar">
+          <span>Gospodarstwa / Przykładowy dom / Okresy i przychody</span
+          ><span>Użytkownik demo · Wyloguj się</span>
+        </header>
+        <main class="content" id="content">
+          <div class="prototype-note">
+            Podgląd projektu sidebar-v2 · dane przykładowe · pola i odnośniki demonstrują układ, nie
+            zapisują danych.
+          </div>
+          <div class="context">
+            <div>
+              <p class="eyebrow">PRZYKŁADOWY DOM</p>
+              <h1>Lata rozliczeniowe</h1>
+            </div>
+            <div class="field">
+              <label
+                >Aktywne gospodarstwo<select>
+                  <option>Przykładowy dom</option>
+                </select></label
+              >
+            </div>
+          </div>
+          <nav class="preview-nav" aria-label="Podglądy ekranów">
+            <a class="button primary" href="years.html">Lata</a>
+            <a class="button" href="months.html">Miesiące</a>
+            <a class="button" href="income.html">Formularz</a>
+            <a class="button" href="summary.html">Podsumowanie</a>
+            <a class="button" href="attachments.html">Załączniki</a>
+          </nav>
+          <p class="muted">Wybierz rok, aby zobaczyć jego miesiące.</p>
+          <div class="actions"><a class="button primary" href="#Y-add">+ Dodaj rok</a></div>
+          <br />
+          <div class="grid">
+            <section class="card">
+              <h2>2026</h2>
+              <p class="muted">12 miesięcy</p>
+              <a class="button" href="months.html">Zobacz miesiące</a>
+            </section>
+            <section class="card">
+              <h2>2025</h2>
+              <p class="muted">12 miesięcy</p>
+              <a class="button" href="months.html">Zobacz miesiące</a>
+            </section>
+            <section class="card">
+              <h2>2024</h2>
+              <p class="muted">12 miesięcy</p>
+              <a class="button" href="months.html">Zobacz miesiące</a>
+            </section>
+          </div>
+          <p class="hint">Strona 1 z 1 · 3 lata</p>
+          <div class="variants">
+            <h2>Stany i interakcje — wizualizacja</h2>
+            <section class="card variant" id="Y-add">
+              <p class="eyebrow">WARIANT PODGLĄDU · Y-add</p>
+              <h2>Dodaj rok</h2>
+              <div class="fields">
+                <div class="field">
+                  <label>Rok<input type="number" value="2027" /></label
+                  ><span class="hint">Liczba całkowita od 1 do 9999.</span>
+                </div>
+              </div>
+              <div class="notice" role="status">
+                Powstanie 12 nieaktywnych miesięcy. Aktywujesz je osobno.
+              </div>
+              <div class="actions">
+                <a class="button primary" href="#Y-success">Dodaj rok</a
+                ><a class="button" href="#content">Anuluj</a>
+              </div>
+            </section>
+            <section class="card variant" id="Y-empty">
+              <p class="eyebrow">WARIANT PODGLĄDU · Y-empty</p>
+              <h2>Brak lat rozliczeniowych</h2>
+              <p>Dodaj pierwszy rok, aby rozpocząć.</p>
+              <a class="button primary" href="#Y-add">Dodaj rok</a>
+              <p class="hint">
+                Member/Viewer widzi informację: Poproś właściciela lub administratora o dodanie
+                roku.
+              </p>
+            </section>
+            <section class="card variant" id="Y-error">
+              <p class="eyebrow">WARIANT PODGLĄDU · Y-error</p>
+              <h2>Nie udało się pobrać lat</h2>
+              <div class="notice error" role="alert">
+                Dane są chwilowo niedostępne. Twój wybór gospodarstwa został zachowany.
+              </div>
+              <a class="button" href="#content">Spróbuj ponownie</a>
+            </section>
+            <section class="card variant" id="Y-duplicate">
+              <p class="eyebrow">WARIANT PODGLĄDU · Y-duplicate</p>
+              <h2>Ten rok już istnieje</h2>
+              <div class="notice error" role="alert">
+                Wybierz istniejący rok z listy. Nie utworzono drugiego roku ani nie aktywowano
+                miesięcy.
+              </div>
+              <a class="button" href="#content">Pokaż listę</a>
+            </section>
+            <section class="card variant" id="Y-loading">
+              <p class="eyebrow">WARIANT PODGLĄDU · Y-loading</p>
+              <h2>Ładowanie</h2>
+              <p role="status">Wczytujemy lata rozliczeniowe…</p>
+            </section>
+            <section class="card variant" id="Y-success">
+              <p class="eyebrow">WARIANT PODGLĄDU · Y-success</p>
+              <h2>Rok dodany</h2>
+              <div class="notice" role="status">
+                Dodano rok 2027. Wszystkie 12 miesięcy są nieaktywne.
+              </div>
+              <a class="button" href="months.html">Zobacz miesiące</a>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

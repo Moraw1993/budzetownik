@@ -3,10 +3,10 @@ unit: 003-periods-income-ui
 intent: 003-budget-periods-and-income
 unit_type: frontend
 default_bolt_type: simple-construction-bolt
-phase: inception
-status: draft
+phase: construction
+status: in-progress
 created: '2026-10-06T20:32:37Z'
-updated: '2026-10-06T20:32:37Z'
+updated: '2026-10-09T05:36:59Z'
 ---
 
 # Interfejs okresów i przychodów
