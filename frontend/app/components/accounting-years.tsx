@@ -15,8 +15,10 @@ import { LoadError } from "./periods-common";
 export function AccountingYears({
   household,
   onSelect,
+  onRecheck,
 }: {
   household: Household;
+  onRecheck: () => void;
   onSelect: (year: AccountingYear) => void;
 }) {
   const [data, setData] = useState<Paginated<AccountingYear> | null>(null);
@@ -66,6 +68,7 @@ export function AccountingYears({
             }
           >
             <ActionForm
+              onDenied={onRecheck}
               submit="Utwórz rok"
               action={async (form) => {
                 try {

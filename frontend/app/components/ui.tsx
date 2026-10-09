@@ -148,6 +148,7 @@ export function ActionForm({
   submitVariant = "primary",
   onDenied,
   success,
+  onPendingChange,
 }: {
   action: (data: FormData) => Promise<void>;
   children: (fields: Record<string, string>, pending: boolean) => ReactNode;
@@ -155,6 +156,7 @@ export function ActionForm({
   submitVariant?: "primary" | "secondary" | "danger";
   onDenied?: () => void;
   success?: string;
+  onPendingChange?: (pending: boolean) => void;
 }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -172,6 +174,10 @@ export function ActionForm({
   useEffect(() => {
     if (error) errorRef.current?.focus();
   }, [error]);
+  useEffect(() => {
+    onPendingChange?.(pending);
+    return () => onPendingChange?.(false);
+  }, [pending, onPendingChange]);
   return (
     <form
       onSubmit={async (event) => {

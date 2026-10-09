@@ -1,18 +1,30 @@
 "use client";
 import Link from "next/link";
 
-import { useRef, useEffect, useState } from "react";
-import { ChevronDown, House, ShieldCheck, LogOut, Settings2, Users } from "lucide-react";
-import { api, roleLabels, type Household, type User } from "../lib/api";
+import { useRef, useEffect, useState, useCallback } from "react";
+import {
+  CalendarDays,
+  ChevronDown,
+  House,
+  ShieldCheck,
+  LogOut,
+  Settings2,
+  Users,
+} from "lucide-react";
+import { api, messageOf, roleLabels, type Household, type User } from "../lib/api";
 import { AccessPanel } from "./access-panel";
+import { PeriodsPanel } from "./periods-panel";
+import { ConfirmAction } from "./periods-common";
+import { type EditGuard } from "./income-form";
 import { FamilyPanel } from "./family-panel";
 import { ActionForm, Button, Field, Panel } from "./ui";
 
-export type HouseholdSection = "family" | "settings";
+export type HouseholdSection = "family" | "settings" | "periods";
 
 const sectionLabels: Record<HouseholdSection, string> = {
   family: "Zarządzanie rodziną",
   settings: "Ustawienia gospodarstwa / Dostępy",
+  periods: "Okresy i przychody",
 };
 
 export function HouseholdShell({
@@ -24,6 +36,7 @@ export function HouseholdShell({
   logout,
   onSelect,
   onSectionChange,
+  onEditing,
 }: {
   user: User;
   households: Household[];
@@ -33,6 +46,7 @@ export function HouseholdShell({
   logout: () => Promise<void>;
   onSelect: (membershipId: string) => void;
   onSectionChange: (section: HouseholdSection) => void;
+  onEditing: (editing: boolean) => void;
 }) {
   const [activeId, setActiveId] = useState(preferredId ?? households[0]?.id ?? "");
   const [creating, setCreating] = useState(households.length === 0);
@@ -47,9 +61,36 @@ export function HouseholdShell({
     };
   }, []);
 
+  const editGuard = useRef<EditGuard>({ dirty: false, busy: false, unknown: false });
+  const [navigation, setNavigation] = useState<{ run: () => void } | null>(null);
+  const [navigationError, setNavigationError] = useState("");
+  const requestNavigation = useCallback((run: () => void) => {
+    if (editGuard.current.busy) {
+      setNavigationError("Poczekaj na wynik trwającej operacji.");
+      return;
+    }
+    if (editGuard.current.unknown) {
+      setNavigationError("Najpierw sprawdź i dokończ poprzedni zapis przychodu.");
+      return;
+    }
+    setNavigationError("");
+    if (editGuard.current.dirty) setNavigation({ run });
+    else run();
+  }, []);
+  const updateGuard = useCallback(
+    (guard: EditGuard) => {
+      editGuard.current = guard;
+      onEditing(guard.dirty || guard.busy || guard.unknown);
+    },
+    [onEditing],
+  );
+
   function selectSection(nextSection: HouseholdSection) {
-    setSection(nextSection);
-    onSectionChange(nextSection);
+    if (nextSection === section) return;
+    requestNavigation(() => {
+      setSection(nextSection);
+      onSectionChange(nextSection);
+    });
   }
 
   return (
@@ -86,6 +127,15 @@ export function HouseholdShell({
               <Settings2 size={18} aria-hidden="true" />
               Ustawienia
             </button>
+            <button
+              type="button"
+              className={section === "periods" ? "section-link active" : "section-link"}
+              aria-current={section === "periods" ? "page" : undefined}
+              onClick={() => selectSection("periods")}
+            >
+              <CalendarDays size={18} aria-hidden="true" />
+              Okresy i przychody
+            </button>
           </nav>
         )}
         <div className="sidebar-note">
@@ -104,7 +154,17 @@ export function HouseholdShell({
             <ActionForm
               submit="Wyloguj się"
               submitVariant="secondary"
-              action={logout}
+              action={async () => {
+                if (
+                  editGuard.current.dirty ||
+                  editGuard.current.busy ||
+                  editGuard.current.unknown
+                ) {
+                  requestNavigation(() => {
+                    void logout().catch((cause) => setNavigationError(messageOf(cause)));
+                  });
+                } else await logout();
+              }}
               onDenied={() => {
                 void refresh();
               }}
@@ -129,7 +189,9 @@ export function HouseholdShell({
                     ? "Nowe gospodarstwo"
                     : section === "settings"
                       ? "Ustawienia gospodarstwa"
-                      : "Twoja rodzina, w jednym miejscu"}
+                      : section === "periods"
+                        ? "Okresy i przychody"
+                        : "Twoja rodzina, w jednym miejscu"}
                 </h1>
                 {!!households.length && !creating && (
                   <div className="household-switcher">
@@ -140,17 +202,21 @@ export function HouseholdShell({
                       id="household-context"
                       value={activeId}
                       onChange={(event) => {
-                        contextVersion.current++;
-                        if (event.target.value === "create") {
-                          setCreating(true);
-                          selectSection("family");
-                          return;
-                        }
-                        setActiveId(event.target.value);
-                        const selected = households.find((home) => home.id === event.target.value);
-                        if (selected) onSelect(selected.membership_id);
-                        setCreating(false);
-                        selectSection("family");
+                        const value = event.target.value;
+                        requestNavigation(() => {
+                          contextVersion.current++;
+                          if (value === "create") {
+                            setCreating(true);
+                            selectSection("family");
+                            return;
+                          }
+                          setActiveId(value);
+                          const selected = households.find((home) => home.id === value);
+                          if (selected) onSelect(selected.membership_id);
+                          setCreating(false);
+                          setSection("family");
+                          onSectionChange("family");
+                        });
                       }}
                     >
                       {households.map((household) => (
@@ -169,7 +235,9 @@ export function HouseholdShell({
                   ? "Dostępy i zaproszenia dotyczą wybranego gospodarstwa."
                   : creating
                     ? "Nadaj nazwę nowemu gospodarstwu domowemu."
-                    : "Osoby, źródła dochodu i umowy Twojego gospodarstwa."}
+                    : section === "periods"
+                      ? "Lata, miesiące i faktyczne przychody Twojego gospodarstwa."
+                      : "Osoby, źródła dochodu i umowy Twojego gospodarstwa."}
               </p>
             </div>
           </div>
@@ -178,6 +246,27 @@ export function HouseholdShell({
               <span className="badge">{roleLabels[active.role]}</span>
               <span>Waluta: {active.currency}</span>
             </p>
+          )}
+          {navigationError && (
+            <p className="notice warning" role="alert">
+              {navigationError}
+            </p>
+          )}
+          {navigation && (
+            <ConfirmAction
+              variant="danger"
+              title="Masz niezapisane zmiany"
+              description="Opuszczenie widoku usunie szkic i kolejkę niezapisanych plików."
+              confirm="Opuść widok i odrzuć szkic"
+              pending={false}
+              onCancel={() => setNavigation(null)}
+              onConfirm={() => {
+                const run = navigation.run;
+                setNavigation(null);
+                updateGuard({ dirty: false, busy: false, unknown: false });
+                run();
+              }}
+            />
           )}
           {creating ? (
             <Panel
@@ -237,6 +326,13 @@ export function HouseholdShell({
               refresh={() => {
                 void refresh(active.membership_id);
               }}
+            />
+          ) : active && section === "periods" ? (
+            <PeriodsPanel
+              key={active.id}
+              household={active}
+              requestNavigation={requestNavigation}
+              onGuard={updateGuard}
             />
           ) : active && section === "family" ? (
             <FamilyPanel

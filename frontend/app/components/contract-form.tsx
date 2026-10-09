@@ -33,6 +33,7 @@ export function ContractForm({
   onSaved,
   onConflict,
   refreshAccess,
+  onPendingChange,
 }: {
   household: Household;
   members: HouseholdMember[];
@@ -41,9 +42,10 @@ export function ContractForm({
   converting: IncomeSource | null;
   suggestedCompanyId: string;
   onAddCompany: () => void;
-  onSaved: () => void;
+  onSaved: (contract: Contract) => void;
   onConflict: () => void;
   refreshAccess: () => void;
+  onPendingChange?: (pending: boolean) => void;
 }) {
   const [contractType, setContractType] = useState<ContractType>(
     contract?.contract_type ?? "employment",
@@ -75,6 +77,7 @@ export function ContractForm({
       )}
       <ActionForm
         submit={isConversion ? "Przekształć w umowę" : contract ? "Zapisz umowę" : "Dodaj umowę"}
+        onPendingChange={onPendingChange}
         onDenied={refreshAccess}
         action={async (form) => {
           const endDate = String(form.get("end_date") ?? "");
@@ -103,8 +106,9 @@ export function ContractForm({
               ? { expected_version: converting?.version ?? contract?.version }
               : {}),
           };
+          let saved: Contract;
           try {
-            await api<Contract>(householdPath(household.id, path), {
+            saved = await api<Contract>(householdPath(household.id, path), {
               method: contract && !converting ? "PATCH" : "POST",
               data: payload,
             });
@@ -112,7 +116,7 @@ export function ContractForm({
             if (cause instanceof ApiError && cause.status === 409) onConflict();
             throw cause;
           }
-          onSaved();
+          onSaved(saved);
         }}
       >
         {(fields) => (

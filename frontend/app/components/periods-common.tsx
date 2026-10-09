@@ -16,7 +16,9 @@ export function ConfirmAction({
   error,
   onConfirm,
   onCancel,
+  variant = "primary",
 }: {
+  variant?: "primary" | "danger";
   title: string;
   description: string;
   confirm: string;
@@ -50,7 +52,7 @@ export function ConfirmAction({
           <Button type="button" variant="secondary" disabled={pending} onClick={onCancel}>
             Anuluj
           </Button>
-          <Button type="button" disabled={pending} onClick={onConfirm}>
+          <Button type="button" variant={variant} disabled={pending} onClick={onConfirm}>
             {pending ? "Trwa zapisywanie…" : confirm}
           </Button>
         </div>

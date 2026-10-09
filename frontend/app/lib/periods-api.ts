@@ -47,8 +47,8 @@ export type SourceOption = {
   end_date: string | null;
   contract: {
     company_name: string;
-    gross_amount: string;
-    gross_basis: string;
+    company_id: string;
+    other_type_name: string | null;
     contract_type: string;
   } | null;
 };

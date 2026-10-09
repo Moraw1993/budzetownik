@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { api, householdPath, messageOf, type Household } from "../lib/api";
+import { api, ApiError, householdPath, messageOf, type Household } from "../lib/api";
 import {
   canManage,
   months,
@@ -15,8 +15,10 @@ export function AccountingMonths({
   household,
   year,
   onSelect,
+  onRecheck,
 }: {
   household: Household;
+  onRecheck: () => void;
   year: AccountingYear;
   onSelect: (month: AccountingMonth) => void;
 }) {
@@ -59,6 +61,9 @@ export function AccountingMonths({
       setNotice("Zapisano stan miesiąca.");
     } catch (cause) {
       setActionError(messageOf(cause));
+      if (cause instanceof ApiError && [401, 403, 404, 409].includes(cause.status))
+        setSelected(null);
+      onRecheck();
     } finally {
       setPending(false);
       setRevision((value) => value + 1);
@@ -79,6 +84,11 @@ export function AccountingMonths({
       {notice && (
         <p className="notice success" role="status">
           {notice}
+        </p>
+      )}
+      {actionError && !selected && (
+        <p className="notice error" role="alert">
+          {actionError} Sprawdź aktualny stan i wybierz akcję ponownie.
         </p>
       )}
       {selected && (
