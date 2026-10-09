@@ -295,4 +295,28 @@ test.describe.serial("real API acceptance of bolt 016", () => {
       },
     );
   }
+
+  test("after restart: saved income and private file bytes remain readable", async ({
+    page,
+  }, info) => {
+    state = JSON.parse(
+      readFileSync(path.join(familyFixture().directory, "periods-ui-state.json"), "utf8"),
+    ) as LiveState;
+    await loginFamily(page, "owner");
+    await navigateMonth(page);
+    const saved = await liveApi<Income>(page, monthPath() + "incomes/" + state.income.id + "/");
+    expect(saved.amount).toBe("8900.00");
+    await personRow(page).getByRole("button", { name: "Załączniki" }).click();
+    await expect(page.locator(".period-files li")).toHaveCount(2);
+    const download = page.waitForEvent("download");
+    await page
+      .locator(".period-files li")
+      .filter({ hasText: "dowod.png" })
+      .getByRole("button", { name: "Pobierz" })
+      .click();
+    const file = await download;
+    const target = info.outputPath("after-restart.png");
+    await file.saveAs(target);
+    expect(readFileSync(target)).toEqual(png);
+  });
 });
